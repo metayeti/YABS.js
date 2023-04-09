@@ -1,0 +1,7 @@
+{
+	"batch_build": [
+		"build_basic.json",
+		"build_jsonly.json",
+		"build_advanced.json"
+	]
+}

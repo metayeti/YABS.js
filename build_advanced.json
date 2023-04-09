@@ -1,0 +1,43 @@
+{
+	"source_dir": "tests/test_advanced",
+	"destination_dir": "build_advanced/",
+	"headers": {
+		"src1_header": [
+			"/* script, minified */"
+		],
+		"src2_header": [
+			"/* script2, minified",
+			" * version: %VERSION%",
+			" * author: %AUTHOR% */"
+		]
+	},
+	"html": [
+		"index.html",
+		"index2.html",
+		"nested/html.html"
+	],
+	"sources": [
+		{
+			"file": "src/script1.js",
+			"header": "src1_header"
+		},
+		{
+			"file": "src/script2.js",
+			"header": "src2_header"
+		},
+		"src/script3.js",
+		{
+			"file": "src/script4.js",
+			"header": [
+				"/* inline",
+				" * multiline",
+				" * header */"
+			]
+		}
+	],
+	"files": [
+		"some_file.txt",
+		"images/*",
+		"data/*"
+	]
+}

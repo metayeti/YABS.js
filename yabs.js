@@ -4,8 +4,12 @@
  *   \_   |     |  _ -|__   |_  | |_ -|
  *    /__/|__|__|_____|_____|_|_| |___|
  *                            |___|
+ *
  *  Yet-Another-Build-System.js
+ *  https://github.com/pulzed/YABS.js
+ *  ---
  *  (c) 2023 Danijel Durakovic
+ *  MIT License
  *
  */
 

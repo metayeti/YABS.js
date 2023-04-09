@@ -14,6 +14,14 @@ YABS.js is a lightweight JavaScript build system.
 
 YABS.js takes a single JSON file containing the build instructions as an input. It then verifies, prepares and invokes the build process.
 
+## Basic usage
+
+1) Drop `yabs.js` into your project root folder
+2) Create a `build.json`
+3) Execute with `node yabs.js`
+
+If your build instructions file is called something other than `build.json` or `build_all.json`, use `node yabs.js mybuild.json`.
+
 ## Minimal example
 
 todo
