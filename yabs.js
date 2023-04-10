@@ -28,7 +28,6 @@ const BUILDSYS_GLOBALS = {
 };
 
 const YABS = (function() {
-
 	// detect whether output is a terminal or not
 	// (so color codes can be stripped for redirected output)
 	const IS_TTY = process.stdout.isTTY;
@@ -39,6 +38,9 @@ const YABS = (function() {
 	const OUTPUT_FG_BLACK = (IS_TTY) ? '\x1b[30m' : '';
 	const OUTPUT_FG_GREEN = (IS_TTY) ? '\x1b[32m' : '';
 	const OUTPUT_FG_RED   = (IS_TTY) ? '\x1b[31m' : '';
+
+	const BuildConfig = class {
+	}
 
 	const log = {
 		out: function(msg) {
