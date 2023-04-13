@@ -14,7 +14,6 @@
  */
 
 /*jshint esversion:6*/
-/*jshint globalstrict:true*/
 
 /**
  * @file yabs.js
@@ -25,8 +24,6 @@ const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
 const { EOL } = require('os');
-
-"use strict";
 
 /**
  * yabs.js namespace
@@ -40,12 +37,15 @@ const yabs = {};
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-// YABS.js version
-yabs.version = '0.0.3';
+yabs.version = '0.0.3'; // YABS.js version
+
+// constants
+yabs.DEFAULT_BUILDALL_FILE = 'build_all.json';
+yabs.DEFAULT_BUILD_FILE = 'build.json';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Utility features
+//  Utility
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -92,31 +92,13 @@ yabs.util.generateFileListRecursively = function(source_path, destination_path, 
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Build configuration
-//
-////////////////////////////////////////////////////////////////////////////////
-
-yabs.BuildConfig = class {
-};
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Builder
-//
-////////////////////////////////////////////////////////////////////////////////
-
-yabs.Builder = class {
-};
-
-////////////////////////////////////////////////////////////////////////////////
-//
 //  Logger
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.Log = class {
+yabs.Logger = class {
 	/**
-	 * Log constructor.
+	 * Logger constructor.
 	 */
 	constructor() {
 		// detect whether output is a terminal or not
@@ -176,14 +158,61 @@ yabs.Log = class {
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
 		this.out('                           |___|');
 		this.out_raw(this._OUTPUT_RESET);
-		this.out('  Yet');
-		this.out('  Another' + ' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]');
-		this.out('  Build      https://github.com/pulzed/yabs.js');
-		this.out('  System.js         (c) 2023 Danijel Durakovic');
+		this.out(' Yet');
+		this.out(' Another' + ' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]');
+		this.out(' Build      https://github.com/pulzed/yabs.js');
+		this.out(' System.js         (c) 2023 Danijel Durakovic');
 		this.endl();
-		this.out(' - - - - - - - - - - - - - - - - - - - - - - -');
+		this.out('- - - - - - - - - - - - - - - - - - - - - - -');
 		this.endl();
 	}
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Build configuration
+//
+////////////////////////////////////////////////////////////////////////////////
+
+yabs.BuildConfig = class {
+	/**
+	 * BuildConfig constructor.
+	 */
+	constructor(source_file) {
+		const file_data = fs.readFileSync(source_file);
+		const json_data = JSON.parse(file_data);
+
+		///debug
+		process.stdout.write(file_data);
+		//process.stdout.write(JSON.stringify(json_data));
+		///~debug
+	}
+	/**
+	 * Returns whether or not this is a batch build.
+	 * 
+	 * @returns {bool}
+	 */
+	isBatchBuild() {
+		return this._isBatch;
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Builder
+//
+////////////////////////////////////////////////////////////////////////////////
+
+yabs.Builder = class {
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  BatchBuilder
+//
+////////////////////////////////////////////////////////////////////////////////
+
+yabs.BatchBuilder = class {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -197,14 +226,57 @@ yabs.App = class {
 	 * App constructor.
 	 */
 	constructor() {
-		this._log = new yabs.Log();
+		this._log = new yabs.Logger();
 	}
 	/**
 	 * Program entry point.
 	 */
-	main() {
+	main(argv) {
+		// print out header
 		this._log.header();
-		this._log.error('Missing input file!');
+		try {
+			// figure out what we're building first
+			let buildCfg = null;
+			if (!argv[2]) { // parametress run
+
+				if (yabs.util.exists(yabs.DEFAULT_BUILDALL_FILE)) {
+					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILDALL_FILE);
+				}
+				else if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
+					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
+				}
+			}
+			else {
+				// parse command line parameters
+				const build_instr_file = argv[2];
+				if (yabs.util.exists(build_instr_file)) {
+					buildCfg = new yabs.BuildConfig(build_instr_file);
+				}
+				else {
+					throw 'Cannot find file: ' + build_instr_file;
+				}
+			}
+			// make sure we have build configuration
+			if (!buildCfg) {
+				throw 'Missing input file!';
+			}
+			// check if this is a batch build
+			if (buildCfg.isBatchBuild()) {
+				// this is a batch build
+				const batchBuild = new yabs.BatchBuilder();
+				// TODO
+			}	
+			else {
+				// this is a normal build
+				const build = new yabs.Builder();
+				// TODO
+			}
+		}
+		catch(e) {
+			this._log.error(e);
+			this._log.out('\nBuild aborted.');
+		}
+		// print ouf final newline
 		this._log.endl();
 	}
 };
