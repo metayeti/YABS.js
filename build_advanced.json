@@ -35,6 +35,15 @@
 			]
 		}
 	],
+	"variables": {
+		"debug": [
+			"DEBUG=true"
+		],
+		"test": [
+			"TESTVAR1=true",
+			"TESTVAR2=false"
+		]
+	},
 	"files": [
 		"some_file.txt",
 		"images/*",

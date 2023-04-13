@@ -238,12 +238,11 @@ yabs.App = class {
 			// figure out what we're building first
 			let buildCfg = null;
 			if (!argv[2]) { // parametress run
-
-				if (yabs.util.exists(yabs.DEFAULT_BUILDALL_FILE)) {
-					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILDALL_FILE);
-				}
-				else if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
+				if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
 					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
+				}
+				else if (yabs.util.exists(yabs.DEFAULT_BUILDALL_FILE)) {
+					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILDALL_FILE);
 				}
 			}
 			else {
