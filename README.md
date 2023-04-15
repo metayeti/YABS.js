@@ -59,8 +59,7 @@ For now, it doesn't really matter what these files contain. Let's imagine they c
 
 To build, simply call `node yabs.js` from the root and the build output will appear in the `build` folder. We don't need any additional parameters because YABS.js will default to `build.json` if it exists.
 
-This is all we need to do to build a simple web application. In the following sections, we will go deeper into the structure of the build instructions JSON.
-
+This is all we need to do to build a simple web application. In the following sections, we will go deeper into the structure of the build instructions JSON file.
 
 ## Build instructions file
 
@@ -71,18 +70,18 @@ There is a lot more that we can do with the build instructions JSON. Let's look 
 To add a custom header to the output script, we can add a `header` entry to individual script files:
 
 ```JSON
-  "sources": {
+  "sources": [
     {
       "file": "src/script.js",
       "header": "/* This is a minified script! */"
     }
-  }
+  ]
 ```
 
 We can make the header multiline:
 
 ```JSON
-  "sources": {
+  "sources": [
     {
       "file": "src/script.js",
       "header": [
@@ -91,10 +90,37 @@ We can make the header multiline:
         " * in a minified script! */",
       ]
     }
+  ]
+```
+
+If we want to use the same header across many output sourcefiles, we can add a `headers` entry to the build instructions JSON:
+
+```JSON
+  "headers": {
+    "some_header_key": [
+      "/* this is a shared header */
+    ]
   }
 ```
 
+Then we can refer to it using `use_header` inside `sources`:
+
+```JSON
+  "sources": [
+    {
+      "file": "src/script1.js",
+      "use_header": "some_header_key"
+    },
+    {
+      "file": "src/script2.js",
+      "use_header": "some_header_key"
+    }
+  ]
+```
+
 ### 2. Adding variables to custom headers
+
+We can add variables to output sourcefiles' headers:
 
 TODO
 
