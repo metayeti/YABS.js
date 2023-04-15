@@ -38,7 +38,7 @@ The build instructions file is a plain JSON file with a few entries, let's name 
   ],
   "files": [
     "img/cat.jpg",
-	"img/dog.png"
+    "img/dog.png"
   ]
 }
 ```
