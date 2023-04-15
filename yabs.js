@@ -40,8 +40,8 @@ const yabs = {};
 yabs.version = '0.0.3'; // YABS.js version
 
 // constants
-yabs.DEFAULT_BUILDALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
+yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -107,10 +107,8 @@ yabs.Logger = class {
 		// output constants and color codes
 		this._OUTPUT_RESET     = (is_tty) ? '\x1b[0m'  : '';
 		this._OUTPUT_BRIGHT    = (is_tty) ? '\x1b[1m'  : '';
-		this._OUTPUT_FG_BLACK  = (is_tty) ? '\x1b[30m' : '';
 		this._OUTPUT_FG_RED    = (is_tty) ? '\x1b[31m' : '';
 		this._OUTPUT_FG_GREEN  = (is_tty) ? '\x1b[32m' : '';
-		this._OUTPUT_FG_YELLOW = (is_tty) ? '\x1b[33m' : '';
 	}
 	/**
 	 * Prints a message, followed by newline.
@@ -151,13 +149,11 @@ yabs.Logger = class {
 	 * Prints the YABS.js header.
 	 */
 	header() {
-		this.out_raw(this._OUTPUT_BRIGHT + this._OUTPUT_FG_YELLOW);
 		this.out('  __ __ _____ _____ _____     _');
 		this.out(' |  |  |  _  |  _  |   __|   |_|___');
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
 		this.out('                           |___|');
-		this.out_raw(this._OUTPUT_RESET);
 		this.out(' Yet');
 		this.out(' Another' + ' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]');
 		this.out(' Build      https://github.com/pulzed/yabs.js');
@@ -183,7 +179,7 @@ yabs.BuildConfig = class {
 		const json_data = JSON.parse(file_data);
 
 		///debug
-		process.stdout.write(file_data);
+		//process.stdout.write(file_data);
 		//process.stdout.write(JSON.stringify(json_data));
 		///~debug
 	}
@@ -241,8 +237,8 @@ yabs.App = class {
 				if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
 					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
 				}
-				else if (yabs.util.exists(yabs.DEFAULT_BUILDALL_FILE)) {
-					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILDALL_FILE);
+				else if (yabs.util.exists(yabs.DEFAULT_BUILD_ALL_FILE)) {
+					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_ALL_FILE);
 				}
 			}
 			else {
