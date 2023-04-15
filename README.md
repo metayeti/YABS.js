@@ -98,7 +98,7 @@ If we want to use the same header across many output sourcefiles, we can add a `
 ```JSON
   "headers": {
     "some_header_key": [
-      "/* this is a shared header */
+      "/* this is a shared header */"
     ]
   }
 ```
