@@ -120,9 +120,45 @@ Then we can refer to it using `use_header` inside `sources`:
 
 ### 2. Adding variables to custom headers
 
-We can add variables to output sourcefiles' headers:
+We can add variables to output sourcefiles' headers. These are extracted from JSDoc-like meta-tags in the sourcefile:
 
-TODO
+At the top of the JS file, we might have something like this:
+
+```JS
+/**
+ * @name Awesome sourcefile
+ * @version 0.5.0
+ * @author Scooby
+ * @copyright_holder Big Corp
+ * @license MIT
+ */
+```
+
+We can now use these entries with our output headers using the `%variable%` notation:
+
+```JSON
+  "sources": [
+    {
+      "file": "src/script.js",
+      "header": [
+        "/* Minified %name%, v%version%",
+        " * Written by %author%, released under %license%",
+        " * Copyright (c) $YEAR$ %copyright_holder% */",
+      ]
+    }
+  ]
+```
+
+The header in the output sourcefile will be the following:
+```JS
+/* Minified Awesome sourcefile, v0.5.0
+ * Written by Scooby, released under MIT
+ * Copyright (c) 2023 Big Corp */
+```
+
+The variable names are arbitrary and can be anything, as long as it matches the JSDoc-like meta-tag in the original sourcefile. They are required to be one single word without any spaces. If the variable is not found, it will be substituted with blank.
+
+`$YEAR$` is a special variable that will output the current year.
 
 ### 3. Using the preprocessor
 
