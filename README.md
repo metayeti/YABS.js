@@ -12,7 +12,7 @@ YABS.js is a lightweight JavaScript build system.
 
 ## How it works
 
-YABS.js takes a single JSON file containing the build instructions as an input. It then verifies, prepares and invokes the build process.
+YABS.js takes a single JSON file containing build instructions as an input. It then verifies, prepares and invokes the build process.
 
 ## Basic usage
 
@@ -37,19 +37,31 @@ The build instructions file is a plain JSON file with a few entries, let's name 
     "src/srcipt.js"
   ],
   "files": [
-    "img/cat.jpg",
-    "img/dog.png"
+    "css/style.css",
+    "img/*"
   ]
 }
 ```
 
+`source_dir` represents the source directory for the webapp that we wish to build.
+
+`destination_dir` represents the build output directory.
+
+`html` lists all associated HTML files.
+
+`sources` lists all associated JavaScript files.
+
+`files` list every other file associated with the webapp. Note the use of masks above: `img/*` means we wish to fetch all files in `img/`.
+
 The hierarchy of files for this minimal build will look like this:
 ```
-📁 src
-  📜 script.js
+📁 css
+  📜 style.css
 📁 img
   📄 cat.jpg
   📄 dog.png
+📁 src
+  📜 script.js
 📄 index.html
 📄 build.json
 📄 yabs.js
@@ -159,6 +171,8 @@ The header in the output sourcefile will be the following:
 The variable names are arbitrary and can be anything, as long as it matches the JSDoc-like meta-tag in the original sourcefile. They are required to be one single word without any spaces. If the variable is not found, it will be substituted with blank.
 
 `$YEAR$` is a special variable that will output the current year.
+
+If we have a shared `headers` entry in the build instructions file and we leverage variables in one of the headers, those variables will be individual-script specific. This means that every script that uses those headers should include the JSDoc-like meta-headers at the top of the file.
 
 ### 3. Using the preprocessor
 
