@@ -43,7 +43,7 @@ The build instructions file is a plain JSON file with a few entries, let's name 
 }
 ```
 
-`source_dir` represents the source directory for the webapp that we wish to build.
+`source_dir` represents the source directory for the webapp that we wish to build. The value `.` means the source directory is the same as the root directory where `yabs.js` resides.
 
 `destination_dir` represents the build output directory.
 
