@@ -37,7 +37,7 @@ const yabs = {};
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.version = '0.0.3'; // YABS.js version
+yabs.version = '0.0.5'; // YABS.js version
 
 // constants
 yabs.DEFAULT_BUILD_FILE = 'build.json';
@@ -159,7 +159,7 @@ yabs.Logger = class {
 		this.out(' Build      https://github.com/pulzed/yabs.js');
 		this.out(' System.js         (c) 2023 Danijel Durakovic');
 		this.endl();
-		this.out('- - - - - - - - - - - - - - - - - - - - - - -');
+		this.out('---------------------------------------------');
 		this.endl();
 	}
 };
@@ -175,13 +175,129 @@ yabs.BuildConfig = class {
 	 * BuildConfig constructor.
 	 */
 	constructor(source_file) {
+		// TODO: check all arrays with arr.every(x => typeof x === 'string')
+
+		// parse source JSON
 		const file_data = fs.readFileSync(source_file);
 		const json_data = JSON.parse(file_data);
-
+		// check if this is a batch build
+		if (json_data.hasOwnProperty('batch_build')) {
+			this._is_batch = true;
+			if (json_data.batch_build instanceof Array) {
+				this._batch_listing = json_data.batch_build;
+			}
+			if (!this._batch_listing) {
+				this._batch_listing = [];
+			}	
+			return; // since this is a batch build, we are all done here
+		}
+		// extract source_dir
+		if (!json_data.hasOwnProperty('source_dir')) {
+			throw 'Build instructions file is missing the source_dir entry!';
+		}
+		this._source_dir = json_data.source_dir;
+		// extract destination_dir
+		if (!json_data.hasOwnProperty('destination_dir')) {
+			throw 'Build instructions file is missing the destination_dir entry!';
+		}
+		this._destination_dir = json_data.destination_dir;
+		// extract html listing
+		if (json_data.hasOwnProperty('html')) {
+			if (json_data.html instanceof Array) {
+				this._html_listing = json_data.html;
+			}
+			else if (typeof json_data.html === 'string') {
+				this._html_listing = [ json_data.html ];
+			}
+		}
+		if (!this._html_listing) {
+			this._html_listing = [];
+		}
+		// extract sources listing
+		if (json_data.hasOwnProperty('sources')) {
+			if (json_data.sources instanceof Array) {
+				this._sources_listing = [];
+				json_data.sources.forEach(source_entry => {
+					if (typeof source_entry === 'string') {
+						this._sources_listing.push({
+							file: source_entry
+						});
+					}
+					else if (typeof source_entry === 'object' && source_entry !== null) {
+						const source_entry_object = {};
+						if (source_entry.hasOwnProperty('file')) {
+							if (typeof source_entry.file === 'string') {
+								source_entry_object.file = source_entry.file;
+							}
+						}
+						if (source_entry.hasOwnProperty('header')) {
+							if (source_entry.header instanceof Array) {
+								source_entry_object.header = source_entry.header;
+							}
+							else if (typeof source_entry.header === 'string') {
+								source_entry_object.header = [ source_entry.header ];
+							}
+						}
+						else if (source_entry.hasOwnProperty('use_header')) {
+							// using header from reference
+							if (json_data.headers) {
+								if (typeof source_entry.use_header === 'string') {
+									if (json_data.headers.hasOwnProperty(source_entry.use_header)) {
+										const header_ref = json_data.headers[source_entry.use_header];
+										if (header_ref instanceof Array) {
+											source_entry_object.header = header_ref;
+										}
+										else if (typeof header_ref === 'string') {
+											source_entry_object.header = [ header_ref ];
+										}
+									}
+								}
+							}
+						}
+						if (source_entry_object.file) {
+							this._sources_listing.push(source_entry_object);
+						}
+					}
+				});
+			}
+			else {
+				throw "The sources entry in build instructions file need to be an Array type!";
+			}
+		}
+		if (!this._sources_listing) {
+			this._sources_listing = [];
+		}
+		// extract files listing
+		if (json_data.hasOwnProperty('files')) {
+			if (json_data.files instanceof Array) {
+				this._files_listing = json_data.files;
+			}
+			else if (typeof json_data.files === 'string') {
+				this._files_listing = [ json_data.files ];
+			}
+		}
+		if (!this._files_listing) {
+			this._files_listing = [];
+		}
+		// extract variables
+		this._variables = {};
+		if (json_data.hasOwnProperty('variables')) {
+			for (const variable_key in json_data.variables) {
+				const variable_data = json_data.variables[variable_key];
+				if (variable_data instanceof Array) {
+					this._variables[variable_key] = variable_data;
+				}
+			}
+		}
 		///debug
-		//process.stdout.write(file_data);
-		//process.stdout.write(JSON.stringify(json_data));
-		///~debug
+		console.log('source_dir:', this._source_dir);
+		console.log('destination_dir:', this._destination_dir);
+		console.log('html_listing:', this._html_listing);
+		console.log('sources_listing:', this._sources_listing);
+		console.log('files_listing:', this._files_listing);
+		console.log('variables:', this._variables);
+		///debug
+			
 	}
 	/**
 	 * Returns whether or not this is a batch build.
@@ -189,7 +305,70 @@ yabs.BuildConfig = class {
 	 * @returns {bool}
 	 */
 	isBatchBuild() {
-		return this._isBatch;
+		return this._is_batch;
+	}
+
+	/**
+	 * Returns batch listing.
+	 * 
+	 * @returns {array}
+	 */
+	getBatchListing() {
+		return this._batch_listing;
+	}
+
+	/**
+	 * Returns source directory.
+	 * 
+	 * @returns {string}
+	 */
+	getSourceDir() {
+		return this._source_dir;
+	}
+
+	/**
+	 * Returns destination directory.
+	 * 
+	 * @returns {string}
+	 */
+	getDestinationDir() {
+		return this._destination_dir;
+	}
+
+	/**
+	 * Returns HTML listing.
+	 * 
+	 * @returns {array}
+	 */
+	getHTMLListing() {
+		return this._html_listing;
+	}
+
+	/**
+	 * Returns sources listing.
+	 * 
+	 * @returns {array}
+	 */
+	getSourcesListing() {
+		return this._sources_listing;
+	}
+
+	/**
+	 * Returns files listing.
+	 * 
+	 * @returns {array}
+	 */
+	getFilesListing() {
+		return this._files_listing;
+	}
+
+	/**
+	 * Returns the variables collection.
+	 * 
+	 * @returns {object}
+	 */
+	getVariables() {
+		return this._variables;
 	}
 };
 
@@ -200,6 +379,11 @@ yabs.BuildConfig = class {
 ////////////////////////////////////////////////////////////////////////////////
 
 yabs.Builder = class {
+	/**
+	 * Builder constructor.
+	 */
+	constructor(build_cfg) {
+	}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -209,6 +393,11 @@ yabs.Builder = class {
 ////////////////////////////////////////////////////////////////////////////////
 
 yabs.BatchBuilder = class {
+	/**
+	 * BatchBuilder constructor.
+	 */
+	constructor(build_cfg) {
+	}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -232,38 +421,38 @@ yabs.App = class {
 		this._log.header();
 		try {
 			// figure out what we're building first
-			let buildCfg = null;
+			let build_cfg = null;
 			if (!argv[2]) { // parametress run
 				if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
-					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
+					build_cfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
 				}
 				else if (yabs.util.exists(yabs.DEFAULT_BUILD_ALL_FILE)) {
-					buildCfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_ALL_FILE);
+					build_cfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_ALL_FILE);
 				}
 			}
 			else {
 				// parse command line parameters
 				const build_instr_file = argv[2];
 				if (yabs.util.exists(build_instr_file)) {
-					buildCfg = new yabs.BuildConfig(build_instr_file);
+					build_cfg = new yabs.BuildConfig(build_instr_file);
 				}
 				else {
 					throw 'Cannot find file: ' + build_instr_file;
 				}
 			}
 			// make sure we have build configuration
-			if (!buildCfg) {
+			if (!build_cfg) {
 				throw 'Missing input file!';
 			}
 			// check if this is a batch build
-			if (buildCfg.isBatchBuild()) {
+			if (build_cfg.isBatchBuild()) {
 				// this is a batch build
-				const batchBuild = new yabs.BatchBuilder();
+				const batchBuild = new yabs.BatchBuilder(build_cfg);
 				// TODO
 			}	
 			else {
 				// this is a normal build
-				const build = new yabs.Builder();
+				const build = new yabs.Builder(build_cfg);
 				// TODO
 			}
 		}

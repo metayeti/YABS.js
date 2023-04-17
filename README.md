@@ -2,13 +2,14 @@
 
 YABS.js is a lightweight JavaScript build system.
 
-( **Currently in development** -- NOT production ready )
+(  **Currently in development** -- NOT production ready )
 
 ## Prerequisites
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
-- [preprocessor.js](https://www.npmjs.com/package/preprocessor) ( install with "npm -g install preprocessor" ) - only needed if the build leverages the preprocessor
+- [preprocessor.js](https://www.npmjs.com/package/preprocessor) ( install with "npm -g install preprocessor" )
 
+( The preprocessor package is only needed if the build leverages the preprocessor. )
 
 ## How it works
 
@@ -20,13 +21,11 @@ YABS.js takes a single JSON file containing build instructions as an input. It t
 2) Create a `build.json`
 3) Execute with `node yabs.js`
 
-If your build instructions file is called something other than `build.json` or `build_all.json`, use `node yabs.js mybuildfile.json`.
+YABS.js will default to `build.json` or `build_all.json` when no other parameter is given. If your build instructions file is named something else, use `node yabs.js mybuildfile.json`.
 
 ## Minimal example
 
-To demonstrate basic usage, we will need a structure of a (very) basic web application, and we will need a build instructions file.
-
-The build instructions file is a plain JSON file with a few entries, let's name it `build.json` and put the following into it: 
+To demonstrate basic usage, we will need a structure of a basic web application, and we will need a build instructions file. The build instructions file is a plain JSON file with a few entries, let's name it `build.json` and add the following into it: 
 
 ```JSON
 {
@@ -43,27 +42,27 @@ The build instructions file is a plain JSON file with a few entries, let's name 
 }
 ```
 
-`source_dir` represents the source directory for the webapp that we wish to build. The value `.` means the source directory is the same as the root directory where `yabs.js` resides.
+`source_dir` represents the source directory for the web application that we wish to build. The value `"."` means the source directory is the same as the root directory where `yabs.js` resides.
 
-`destination_dir` represents the build output directory.
+`destination_dir` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist, it will be automatically created.
 
-`html` lists all associated HTML files.
+`html` lists all HTML files associated with our web application. It can be a plain string or a list of files.
 
 `sources` lists all associated JavaScript files.
 
-`files` list every other file associated with the webapp. Note the use of masks above: `img/*` means we wish to fetch all files in `img/`.
+`files` list all other file associated with the web application. Note the use of masks above: `"img/*"` means we wish to fetch all files in the `img/` directory.
 
 The hierarchy of files for this minimal build will look like this:
 ```
 📁 css
-  📜 style.css
+  📄 style.css
 📁 img
   📄 cat.jpg
   📄 dog.png
 📁 src
-  📜 script.js
-📄 index.html
+  📄 script.js
 📄 build.json
+📄 index.html
 📄 yabs.js
 ```
 
@@ -71,15 +70,17 @@ For now, it doesn't really matter what these files contain. Let's imagine they c
 
 To build, simply call `node yabs.js` from the root and the build output will appear in the `build` folder. We don't need any additional parameters because YABS.js will default to `build.json` if it exists.
 
-This is all we need to do to build a simple web application. In the following sections, we will go deeper into the structure of the build instructions JSON file.
+This is all we need to do to build a simple web application. In the following sections, additional capabilities of the build instructions file will be explained.
 
 ## Build instructions file
 
-There is a lot more that we can do with the build instructions JSON. Let's look at some examples.
+There is more that we can accomplish with the build instructions file. Let's look at some examples.
 
 ### 1. Adding custom headers to scripts
 
-To add a custom header to the output script, we can add a `header` entry to individual script files:
+Sometimes, we want to add copyright information or other relevant information in the minified output scripts.
+
+To add a custom header to the output script, we can add a `header` entry to individual script files. We need to change the structure slightly, and wrap the listing into another object, where we refer to the script file with a `file` entry:
 
 ```JSON
   "sources": [
@@ -105,7 +106,7 @@ We can make the header multiline:
   ]
 ```
 
-If we want to use the same header across many output sourcefiles, we can add a `headers` entry to the build instructions JSON:
+If we want to use the same header across many output files, we can add a `headers` entry to the build instructions file:
 
 ```JSON
   "headers": {
@@ -132,9 +133,9 @@ Then we can refer to it using `use_header` inside `sources`:
 
 ### 2. Adding variables to custom headers
 
-We can add variables to output sourcefiles' headers. These are extracted from JSDoc-like meta-tags in the sourcefile:
+We can add variables to output sourcefiles' headers. These are extracted from JSDoc tags in the sourcefile:
 
-At the top of the JS file, we might have something like this:
+At the top of the JS file, we will add something like this:
 
 ```JS
 /**
@@ -146,7 +147,7 @@ At the top of the JS file, we might have something like this:
  */
 ```
 
-We can now use these entries with our output headers using the `%variable%` notation:
+We can now use these entries with our output headers using `%variable%` notation:
 
 ```JSON
   "sources": [
@@ -168,11 +169,11 @@ The header in the output sourcefile will be the following:
  * Copyright (c) 2023 Big Corp */
 ```
 
-The variable names are arbitrary and can be anything, as long as it matches the JSDoc-like meta-tag in the original sourcefile. They are required to be one single word without any spaces. If the variable is not found, it will be substituted with blank.
+The variable names are arbitrary and can be anything, as long as they match the JSDoc tags in the sourcefile. They are required to be one single word without any spaces, and they are case-sensitive.
 
-`$YEAR$` is a special variable that will output the current year.
+`$YEAR$` is a special variable that outputs the current year.
 
-If we have a shared `headers` entry in the build instructions file and we leverage variables in one of the headers, those variables will be individual-script specific. This means that every script that uses those headers should include the JSDoc-like meta-headers at the top of the file.
+If there is a shared `headers` entry in the build instructions file and we use variables in those, those variables will be related to the individual scripts that use them. This means that every script that uses those headers should include the JSDoc tags at the top of the file.
 
 ### 3. Using the preprocessor
 
@@ -182,11 +183,24 @@ To use the preprocessor, first add a `variables` entry to the build instructions
   "variables": {
     "debug": [
       "DEBUG=true"
+    ],
+    "nodebug": [
+      "DEBUG=false"
     ]
   }
 ```
 
-Now, every time a `-debug` parameter is invoked via the command line, the preprocessor variables listed under the `debug` entry will be used for the build.
+Now, every time a `-debug` parameter is invoked via the command line, the preprocessor variables listed under the `debug` entry will be used for the build. Any number of variables can be listed and processed this way.
+
+In the sourcefile, this might look something like this:
+
+```JS
+// #ifdef DEBUG
+console.log('compiled with -debug');
+// #else
+console.log('compiled with -nodebug');
+// #endif
+```
 
 ### 4. Batch building
 
@@ -199,9 +213,7 @@ YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't
   ]
 ```
 
-To invoke, use `node yabs.js build_all.json`. This will invoke building `build_main.json` first, and then `build_other.json` right after. Any number of build instructions can be bundled into the batch build. Note that if any of the builds fail, the entire batch build will fail. To prevent this, you can use `--nofail` when invoking the build.
-
-By default (unless specified otherwise via the command line), YABS.js will try to find `build.json` first. If it doesn't, it will try to find `build_all.json`. So you can make YABS.js default to `build_all.json` by simply having only that file in the root directory.
+To start the build, use `node yabs.js build_all.json` (or just `node yabs.js` if `build_all.json` is the only build instructions file sitting in the root directory). This will invoke the `build_main.json` build first, and then the `build_other.json` build right after. Any number of build instructions can be bundled into the batch build. Note that if any of the builds fail, the entire batch build will fail. To prevent this, you can use `--nofail` when starting the build.
 
 ## License
 

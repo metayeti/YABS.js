@@ -7,23 +7,23 @@
 		],
 		"src2_header": [
 			"/* script2, minified",
-			" * version: %VERSION%",
-			" * author: %AUTHOR% */"
+			" * version: %version%",
+			" * author: %author% */"
 		]
 	},
 	"html": [
 		"index.html",
 		"index2.html",
-		"nested/html.html"
+		"nested/some.html"
 	],
 	"sources": [
 		{
 			"file": "src/script1.js",
-			"header": "src1_header"
+			"use_header": "src1_header"
 		},
 		{
 			"file": "src/script2.js",
-			"header": "src2_header"
+			"use_header": "src2_header"
 		},
 		"src/script3.js",
 		{
@@ -35,6 +35,11 @@
 			]
 		}
 	],
+	"files": [
+		"some_file.txt",
+		"images/*",
+		"data/*"
+	],
 	"variables": {
 		"debug": [
 			"DEBUG=true"
@@ -43,10 +48,5 @@
 			"TESTVAR1=true",
 			"TESTVAR2=false"
 		]
-	},
-	"files": [
-		"some_file.txt",
-		"images/*",
-		"data/*"
-	]
+	}
 }

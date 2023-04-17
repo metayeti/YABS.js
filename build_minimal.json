@@ -1,0 +1,12 @@
+{
+	"source_dir": "tests/minimal",
+	"destination_dir": "build/minimal",
+	"html": "index.html",
+	"sources": [
+		"src/script.js"
+	],
+	"files": [
+		"css/style.css",
+		"img/*"
+	]
+}
