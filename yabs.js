@@ -175,8 +175,6 @@ yabs.BuildConfig = class {
 	 * BuildConfig constructor.
 	 */
 	constructor(source_file) {
-		// TODO: check all arrays with arr.every(x => typeof x === 'string')
-
 		// parse source JSON
 		const file_data = fs.readFileSync(source_file);
 		const json_data = JSON.parse(file_data);
@@ -184,6 +182,9 @@ yabs.BuildConfig = class {
 		if (json_data.hasOwnProperty('batch_build')) {
 			this._is_batch = true;
 			if (json_data.batch_build instanceof Array) {
+				if (!json_data.batch_build.every(element => typeof element === 'string')) {
+					throw 'Every element in "batch_build" entry listing has to be a String type!';
+				}
 				this._batch_listing = json_data.batch_build;
 			}
 			if (!this._batch_listing) {
@@ -204,6 +205,9 @@ yabs.BuildConfig = class {
 		// extract html listing
 		if (json_data.hasOwnProperty('html')) {
 			if (json_data.html instanceof Array) {
+				if (!json_data.html.every(element => typeof element === 'string')) {
+					throw 'Every element in "html" entry listing has to be a String type!';
+				}
 				this._html_listing = json_data.html;
 			}
 			else if (typeof json_data.html === 'string') {
@@ -232,6 +236,9 @@ yabs.BuildConfig = class {
 						}
 						if (source_entry.hasOwnProperty('header')) {
 							if (source_entry.header instanceof Array) {
+								if (!source_entry.header.every(element => typeof element === 'string')) {
+									throw 'Every element in "sources" entry "header" listing has to be a String type!';
+								}
 								source_entry_object.header = source_entry.header;
 							}
 							else if (typeof source_entry.header === 'string') {
@@ -245,6 +252,9 @@ yabs.BuildConfig = class {
 									if (json_data.headers.hasOwnProperty(source_entry.use_header)) {
 										const header_ref = json_data.headers[source_entry.use_header];
 										if (header_ref instanceof Array) {
+											if (!header_ref.every(element => typeof element === 'string')) {
+												throw 'Every element in "headers" listing has to be a String type!';
+											}
 											source_entry_object.header = header_ref;
 										}
 										else if (typeof header_ref === 'string') {
@@ -261,7 +271,7 @@ yabs.BuildConfig = class {
 				});
 			}
 			else {
-				throw "The sources entry in build instructions file need to be an Array type!";
+				throw 'The "sources" entry in build instructions file has to be an Array type!';
 			}
 		}
 		if (!this._sources_listing) {
@@ -270,6 +280,9 @@ yabs.BuildConfig = class {
 		// extract files listing
 		if (json_data.hasOwnProperty('files')) {
 			if (json_data.files instanceof Array) {
+				if (!json_data.files.every(element => typeof element === 'string')) {
+					throw 'Every element in "files" entry listing has to be a String type!';
+				}
 				this._files_listing = json_data.files;
 			}
 			else if (typeof json_data.files === 'string') {
@@ -285,6 +298,9 @@ yabs.BuildConfig = class {
 			for (const variable_key in json_data.variables) {
 				const variable_data = json_data.variables[variable_key];
 				if (variable_data instanceof Array) {
+					if (!variable_data.every(element => typeof element === 'string')) {
+						throw 'Every element in "variables" entry listing has to be a String type!';
+					}
 					this._variables[variable_key] = variable_data;
 				}
 			}

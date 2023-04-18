@@ -2,9 +2,7 @@
 	"source_dir": "tests/test_advanced",
 	"destination_dir": "build_advanced/",
 	"headers": {
-		"src1_header": [
-			"/* script, minified */"
-		],
+		"src1_header": "/* script, minified */",
 		"src2_header": [
 			"/* script2, minified",
 			" * version: %version%",
