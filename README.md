@@ -213,7 +213,7 @@ YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't
   ]
 ```
 
-To start the build, use `node yabs.js build_all.json` (or just `node yabs.js` if we only have `build_all.json`, but not `build.json` in th root directory). This will start the `build_main.json` build first, and then the `build_other.json` build right after. Any number of build instructions can be bundled into the batch build. Note that if any of the builds fail, all subsequent builds will stop. To prevent this, you can use `--nofail` when starting the build.
+To start the build, use `node yabs.js build_all.json` (or just `node yabs.js` if you only have `build_all.json`, but not `build.json` in the root directory). This will start the `build_main.json` build first, and then the `build_other.json` build right after. Any number of build instructions files can be bundled into the batch build. Note that if any of the builds fail, all subsequent builds will stop. To prevent this, you can use `--nofail` when starting the build.
 
 ## License
 
