@@ -4,12 +4,12 @@ YABS.js is a lightweight JavaScript build system.
 
 (  **Currently in development** -- NOT production ready )
 
-## Prerequisites
+## Dependencies
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
 - [preprocessor.js](https://www.npmjs.com/package/preprocessor) ( install with "npm -g install preprocessor" )
 
-( The preprocessor package is only needed if the build leverages the preprocessor. )
+The preprocessor package is only needed if the build leverages the preprocessor.
 
 ## How it works
 
@@ -21,7 +21,7 @@ YABS.js takes a single JSON file containing build instructions as an input. It t
 2) Create a `build.json`
 3) Execute with `node yabs.js`
 
-YABS.js will default to `build.json` or `build_all.json` when no other parameter is given. If your build instructions file is named something else, use `node yabs.js mybuildfile.json`.
+YABS.js will default to `build.json` or `build_all.json` when no build instructions file is provided. If your build instructions file is named something else, use `node yabs.js mybuildfile.json`.
 
 ## Minimal example
 
@@ -173,7 +173,7 @@ The variable names are arbitrary and can be anything, as long as they match the 
 
 `$YEAR$` is a special variable that outputs the current year.
 
-If there is a shared `headers` entry in the build instructions file and we use variables in those, those variables will be related to the individual scripts that use them. This means that every script that uses those headers should include the JSDoc tags at the top of the file.
+If there is a shared `headers` entry in the build instructions file and we use variables in those, those variables will be related to the individual scripts that use them. This means that every script that uses those headers should include the associated JSDoc tags at the top of the file.
 
 ### 3. Using the preprocessor
 
@@ -204,7 +204,7 @@ console.log('compiled with -nodebug');
 
 ### 4. Batch building
 
-YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't have to be called like that, but it's a useful convention) and add a single entry called `batch_build`. Inside, list all your build instructions files:
+YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't have to be called like that, but it's a useful convention) and add a single entry named `batch_build`. Inside, list all your build instructions files:
 
 ```JSON
   "batch_build": [
@@ -213,7 +213,7 @@ YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't
   ]
 ```
 
-To start the build, use `node yabs.js build_all.json` (or just `node yabs.js` if `build_all.json` is the only build instructions file sitting in the root directory). This will invoke the `build_main.json` build first, and then the `build_other.json` build right after. Any number of build instructions can be bundled into the batch build. Note that if any of the builds fail, the entire batch build will fail. To prevent this, you can use `--nofail` when starting the build.
+To start the build, use `node yabs.js build_all.json` (or just `node yabs.js` if we only have `build_all.json`, but not `build.json` in th root directory). This will start the `build_main.json` build first, and then the `build_other.json` build right after. Any number of build instructions can be bundled into the batch build. Note that if any of the builds fail, all subsequent builds will stop. To prevent this, you can use `--nofail` when starting the build.
 
 ## License
 
