@@ -142,7 +142,7 @@ yabs.Logger = class {
 			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_RED}(` +
 			`${this._OUTPUT_RESET}!` +
 			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_RED}) Error: ` +
-			`${this._OUTPUT_RESET} ${message}\n`
+			`${this._OUTPUT_RESET}${message}\n`
 		);	
 	}
 	/**
@@ -433,12 +433,32 @@ yabs.App = class {
 	 * Program entry point.
 	 */
 	main(argv) {
+		// parse command line parameters
+		const option_parameters = []; // --option parameters
+		const variable_parameters = []; // -variable parameters (for preprocessor)
+		const free_paremeters = []; // should only contain a single item - the build instructions file
+		argv.slice(2).forEach(str_value => {
+			if (str_value.startsWith('--')) {
+				option_parameters.push(str_value.slice(2));
+			}
+			else if (str_value.startsWith('-')) {
+				variable_parameters.push(str_value.slice(1));
+			}
+			else {
+				free_paremeters.push(str_value);
+			}
+		});
+
+		console.log('free parameters:', free_paremeters);
+		console.log('option parameters:', option_parameters);
+		console.log('variable parameters:', variable_parameters);
+
 		// print out header
 		this._log.header();
 		try {
 			// figure out what we're building first
 			let build_cfg = null;
-			if (!argv[2]) { // parametress run
+			if (free_paremeters.length === 0) { // parametress run
 				if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
 					build_cfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
 				}
@@ -447,8 +467,7 @@ yabs.App = class {
 				}
 			}
 			else {
-				// parse command line parameters
-				const build_instr_file = argv[2];
+				const build_instr_file = free_paremeters[0];
 				if (yabs.util.exists(build_instr_file)) {
 					build_cfg = new yabs.BuildConfig(build_instr_file);
 				}
