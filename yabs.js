@@ -173,6 +173,8 @@ yabs.Logger = class {
 yabs.BuildConfig = class {
 	/**
 	 * BuildConfig constructor.
+	 * 
+	 * @param {string} source_file - Build instructions JSON file.
 	 */
 	constructor(source_file) {
 		// parse source JSON
@@ -397,8 +399,10 @@ yabs.BuildConfig = class {
 yabs.Builder = class {
 	/**
 	 * Builder constructor.
+	 * 
+	 * @param {object} build_config
 	 */
-	constructor(build_cfg) {
+	constructor(build_config) {
 	}
 };
 
@@ -411,8 +415,10 @@ yabs.Builder = class {
 yabs.BatchBuilder = class {
 	/**
 	 * BatchBuilder constructor.
+	 * 
+	 * @param {object} build_config
 	 */
-	constructor(build_cfg) {
+	constructor(build_config) {
 	}
 };
 
@@ -433,61 +439,63 @@ yabs.App = class {
 	 * Program entry point.
 	 */
 	main(argv) {
-		// parse command line parameters
-		const option_parameters = []; // --option parameters
-		const variable_parameters = []; // -variable parameters (for preprocessor)
-		const free_paremeters = []; // should only contain a single item - the build instructions file
+		// parse build parameters
+		const build_params = {
+			option: [], // --option parameters
+			variable: [], // -variable parameters (used for preprocessor)
+			free: [] // free parameters (should only contain a single item which points to the build instructions file)
+		};
 		argv.slice(2).forEach(str_value => {
-			if (str_value.startsWith('--')) {
-				option_parameters.push(str_value.slice(2));
+			if (str_value.startsWith('--')) { // this is an --option parameter
+				build_params.option.push(str_value.slice(2));
 			}
-			else if (str_value.startsWith('-')) {
-				variable_parameters.push(str_value.slice(1));
+			else if (str_value.startsWith('-')) { // this is a -variable parameter
+				build_params.variable.push(str_value.slice(1));
 			}
-			else {
-				free_paremeters.push(str_value);
+			else { // this is a free parameter
+				build_params.free.push(str_value);
 			}
 		});
 
-		console.log('free parameters:', free_paremeters);
-		console.log('option parameters:', option_parameters);
-		console.log('variable parameters:', variable_parameters);
+		console.log('option parameters:', build_params.option);
+		console.log('variable parameters:', build_params.variable);
+		console.log('free parameters:', build_params.free);
 
 		// print out header
 		this._log.header();
 		try {
 			// figure out what we're building first
-			let build_cfg = null;
-			if (free_paremeters.length === 0) { // parametress run
+			let build_config = null;
+			if (build_params.free.length === 0) { // parametress run
 				if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
-					build_cfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
+					build_config = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
 				}
 				else if (yabs.util.exists(yabs.DEFAULT_BUILD_ALL_FILE)) {
-					build_cfg = new yabs.BuildConfig(yabs.DEFAULT_BUILD_ALL_FILE);
+					build_config = new yabs.BuildConfig(yabs.DEFAULT_BUILD_ALL_FILE);
 				}
 			}
 			else {
-				const build_instr_file = free_paremeters[0];
+				const build_instr_file = build_params.free[0];
 				if (yabs.util.exists(build_instr_file)) {
-					build_cfg = new yabs.BuildConfig(build_instr_file);
+					build_config = new yabs.BuildConfig(build_instr_file);
 				}
 				else {
 					throw 'Cannot find file: ' + build_instr_file;
 				}
 			}
 			// make sure we have build configuration
-			if (!build_cfg) {
+			if (!build_config) {
 				throw 'Missing input file!';
 			}
 			// check if this is a batch build
-			if (build_cfg.isBatchBuild()) {
+			if (build_config.isBatchBuild()) {
 				// this is a batch build
-				const batchBuild = new yabs.BatchBuilder(build_cfg);
+				const batchBuild = new yabs.BatchBuilder(build_config);
 				// TODO
 			}	
 			else {
 				// this is a normal build
-				const build = new yabs.Builder(build_cfg);
+				const build = new yabs.Builder(build_config);
 				// TODO
 			}
 		}
