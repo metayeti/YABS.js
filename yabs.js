@@ -308,19 +308,17 @@ yabs.BuildConfig = class {
 						}
 						else if (source_entry.hasOwnProperty('use_header')) {
 							// using header from reference
-							if (json_data.headers) {
-								if (typeof source_entry.use_header === 'string') {
-									if (json_data.headers.hasOwnProperty(source_entry.use_header)) {
-										const header_ref = json_data.headers[source_entry.use_header];
-										if (header_ref instanceof Array) {
-											if (!header_ref.every(element => typeof element === 'string')) {
-												throw 'Every element in "headers" listing has to be a String type!';
-											}
-											source_entry_object.header = header_ref;
+							if (json_data.headers && typeof source_entry.use_header === 'string') {
+								if (json_data.headers.hasOwnProperty(source_entry.use_header)) {
+									const header_ref = json_data.headers[source_entry.use_header];
+									if (header_ref instanceof Array) {
+										if (!header_ref.every(element => typeof element === 'string')) {
+											throw 'Every element in "headers" listing has to be a String type!';
 										}
-										else if (typeof header_ref === 'string') {
-											source_entry_object.header = [ header_ref ];
-										}
+										source_entry_object.header = header_ref;
+									}
+									else if (typeof header_ref === 'string') {
+										source_entry_object.header = [ header_ref ];
 									}
 								}
 							}
@@ -460,8 +458,15 @@ yabs.Builder = class {
 	 * Builder constructor.
 	 * 
 	 * @param {object} build_config
+	 * @param {object} build_params
 	 */
-	constructor(build_config) {
+	constructor(build_config, build_params) {
+	}
+
+	/**
+	 * Start the build.
+	 */
+	build() {
 	}
 };
 
@@ -476,8 +481,15 @@ yabs.BatchBuilder = class {
 	 * BatchBuilder constructor.
 	 * 
 	 * @param {object} build_config
+	 * @param {object} build_params
 	 */
-	constructor(build_config) {
+	constructor(build_config, build_params) {
+	}
+
+	/**
+	 * Start the build.
+	 */
+	build() {
 	}
 };
 
@@ -549,13 +561,11 @@ yabs.App = class {
 			// check if this is a batch build
 			if (build_config.isBatchBuild()) {
 				// this is a batch build
-				const batchBuild = new yabs.BatchBuilder(build_config);
-				// TODO
+				(new yabs.BatchBuilder(build_config, build_params)).build();
 			}	
 			else {
 				// this is a normal build
-				const build = new yabs.Builder(build_config);
-				// TODO
+				(new yabs.Builder(build_config, build_params)).build();
 			}
 		}
 		catch(e) {
