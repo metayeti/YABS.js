@@ -67,6 +67,36 @@ yabs.util.exists = function(source_path) {
 };
 
 /**
+ * Checks whether a given path represents a directory.
+ * 
+ * @function isDirectory
+ * @memberof yabs.util
+ * @instance
+ * 
+ * @param {string} source_path
+ * 
+ * @returns {bool}
+ */
+yabs.util.isDirectory = function(source_path) {
+	return fs.lstatSync(source_path).isDirectory();
+};
+
+/**
+ * Get modified-time of given path.
+ * 
+ * @function getModifiedTime
+ * @memberof yabs.util
+ * @instance
+ * 
+ * @param {string} source_path
+ * 
+ * @returns {number}
+ */
+yabs.util.getModifiedTime = function(source_path) {
+	return fs.statSync(source_path).mtime;
+};
+
+/**
  * Recursively generates a list of files based on given source and destination
  * paths; only adds source items that are newer than destination files.
  * 
@@ -78,13 +108,42 @@ yabs.util.exists = function(source_path) {
  * @param {string} destination_path
  */
 yabs.util.generateFileListRecursively = function(source_path, destination_path, depth = -1) {
-	const list = [];
+	let list = [];
 	if (!yabs.util.exists(source_path)) {
 		throw `Could not locate: ${source_path}`;
 	}
 	const dir_listing = fs.readdirSync(source_path);
 	dir_listing.forEach(item => {
-		//TODO
+		const nested_source_path = path.join(source_path, item);
+		const nested_destination_path = path.join(destination_path, item);
+		const is_source_directory = yabs.util.isDirectory(nested_source_path);
+		if (is_source_directory) { // this is a directory
+			if (depth === 0) {
+				return list;
+			}
+			// continue recursive descent
+			list = list.concat(util.generateFileListRecursively(nested_source_path, nested_destination_path, depth));
+		}
+		else { // this is a file
+			let include_file = false;
+			if (yabs.util.exists(nested_destination_path)) { // destination file exists
+				const time_modified_source = (Date.now() - yabs.util.getModifiedTime(nested_source_path));
+				const time_modified_destination = (Date.now() - yabs.util.getModifiedTime(nested_destination_path));
+				if ((time_modified_source - time_modified_destination) < -1000) {
+					// source file is newer than destination
+					include_file = true;
+				}
+			}
+			else { // destination file does not exist
+				include_file = true;
+			}
+			if (include_file) {
+				list.push({
+					source: nested_source_path,
+					destination: nested_destination_path
+				});
+			}
+		}
 	});
 	// return the compiled list
 	return list;
