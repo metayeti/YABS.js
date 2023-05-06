@@ -42,15 +42,15 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 }
 ```
 
-`source_dir` represents the source directory for the web application that we wish to build. The value `"./"` means the source directory is the same as the root directory where `yabs.js` resides.
+`"source_dir"` represents the source directory for the web application that we wish to build. The value `"./"` means the source directory is the same as the root directory which contains `yabs.js`.
 
-`destination_dir` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist, it will be automatically created.
+`"destination_dir"` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist at build time, it will be created.
 
-`html` lists all HTML files associated with our web application. It can be a plain string or a list of files.
+`"html"` lists all HTML files associated with the web application. It can be a plain string or a list of files.
 
-`sources` lists all associated JavaScript files.
+`"sources"` lists all JavaScript files that we want to build. Those that we don't want to build have to be listed in `files`.
 
-`files` list all other file associated with the web application. Note the use of masks above: `"img/*"` means we wish to fetch all files in the `img/` directory.
+`"files"` list all other file associated with the web application. Note the use of masks above: `"img/*"` means we wish to fetch all files in the `img/` directory.
 
 The hierarchy of files for this minimal build will look like this:
 ```
@@ -80,7 +80,7 @@ There is more that we can accomplish with the build instructions file. Let's loo
 
 Sometimes, we want to add copyright information or other relevant information in the minified output scripts.
 
-To add a custom header to the output script, we can add a `header` entry to individual script files. We need to change the structure slightly, and wrap the listing into another object, where we refer to the script file with a `file` entry:
+To add a custom header to the output script, we can add a `"header"` entry to individual script files. We need to change the structure slightly, and wrap the listing into another object, where we refer to the script file with a `file` entry:
 
 ```JSON
   "sources": [
@@ -106,7 +106,7 @@ We can make the header multiline:
   ]
 ```
 
-If we want to use the same header across many output files, we can add a `headers` entry to the build instructions file:
+If we want to use the same header across many output files, we can add a `"headers"` entry to the build instructions file:
 
 ```JSON
   "headers": {
@@ -116,7 +116,7 @@ If we want to use the same header across many output files, we can add a `header
   }
 ```
 
-Then we can refer to it using `use_header` inside `sources`:
+Then we can refer to it using `"use_header"` inside `"sources"`:
 
 ```JSON
   "sources": [
@@ -173,11 +173,11 @@ The variable names are arbitrary and can be anything, as long as they match the 
 
 `$YEAR$` is a special variable that outputs the current year.
 
-If there is a shared `headers` entry in the build instructions file and we use variables in those, those variables will be related to the individual scripts that use them. This means that every script that uses those headers should include the associated JSDoc tags at the top of the file.
+If there is a shared `"headers"` entry in the build instructions file and we use variables in those, those variables will be related to the individual scripts that use them. This means that every script that uses those headers should include the associated JSDoc tags at the top of the file.
 
 ### 3. Using the preprocessor
 
-To use the preprocessor, first add a `variables` entry to the build instructions JSON, for example:
+To use the preprocessor, first add a `"variables"` entry to the build instructions JSON, for example:
 
  ```JSON
   "variables": {
@@ -190,21 +190,21 @@ To use the preprocessor, first add a `variables` entry to the build instructions
   }
 ```
 
-Now, every time a `-debug` parameter is invoked via the command line, the preprocessor variables listed under the `debug` entry will be used for the build. Any number of variables can be listed and processed this way.
+When the build is now invoked with the `-debug` parameter, the preprocessor variables listed under the `"debug"` entry will be applied to the build. Any number of variables can be listed and processed this way.
 
-In the sourcefile, this might look something like this:
+In the sourcefile, using the preprocessor might look something like this:
 
 ```JS
 // #ifdef DEBUG
 console.log('compiled with -debug');
 // #else
-console.log('compiled with -nodebug');
+console.log('compiled with -nodebug (or omitting -debug)');
 // #endif
 ```
 
 ### 4. Batch building
 
-YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't have to be called like that, but it's a useful convention) and add a single entry named `batch_build`. Inside, list all your build instructions files:
+YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't have to be called like that, but it's a useful convention) and add a single entry named `batch_build`. Inside, list all your build instructions files in order you wish to have them built:
 
 ```JSON
   "batch_build": [
@@ -213,7 +213,7 @@ YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't
   ]
 ```
 
-To start the build, use `node yabs.js build_all.json` (or just `node yabs.js` if you only have `build_all.json`, but not `build.json` in the root directory). This will start the `build_main.json` build first, and then the `build_other.json` build right after. Any number of build instructions files can be bundled into the batch build. Note that if any of the builds fail, all subsequent builds will stop. To prevent this, you can use `--nofail` when starting the build.
+Any number of build instructions files can be bundled into the batch build. Note that if any of the builds in line fail, all subsequent builds will stop. To prevent this, use `--nofail` when invoking the build.
 
 ## License
 
