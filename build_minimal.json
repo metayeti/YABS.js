@@ -1,6 +1,6 @@
 {
-	"source_dir": "tests/minimal",
-	"destination_dir": "build/minimal",
+	"source_dir": "tests/minimal/",
+	"destination_dir": "build/minimal/",
 	"html": "index.html",
 	"sources": [
 		"src/script.js"

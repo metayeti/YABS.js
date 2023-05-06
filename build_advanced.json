@@ -1,6 +1,6 @@
 {
-	"source_dir": "tests/test_advanced",
-	"destination_dir": "build_advanced/",
+	"source_dir": "tests/test_advanced/",
+	"destination_dir": "build/advanced/",
 	"headers": {
 		"src1_header": "/* script, minified */",
 		"src2_header": [

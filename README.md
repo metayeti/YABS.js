@@ -29,7 +29,7 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 
 ```JSON
 {
-  "source_dir": ".",
+  "source_dir": "./",
   "destination_dir": "build/",
   "html": "index.html",
   "sources": [
@@ -42,7 +42,7 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 }
 ```
 
-`source_dir` represents the source directory for the web application that we wish to build. The value `"."` means the source directory is the same as the root directory where `yabs.js` resides.
+`source_dir` represents the source directory for the web application that we wish to build. The value `"./"` means the source directory is the same as the root directory where `yabs.js` resides.
 
 `destination_dir` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist, it will be automatically created.
 
