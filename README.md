@@ -48,7 +48,7 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 
 `"html"` lists all HTML files associated with the web application. It can be a plain string or a list of files.
 
-`"sources"` lists all JavaScript files that we want to build. Those that we don't want to build have to be listed in `files`.
+`"sources"` lists all JavaScript files that we want to build. Those that we don't want to build have to be listed in `"files"` instead.
 
 `"files"` list all other file associated with the web application. Note the use of masks above: `"img/*"` means we wish to fetch all files in the `img/` directory.
 
