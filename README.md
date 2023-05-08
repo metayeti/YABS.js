@@ -46,9 +46,9 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 
 `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist at build time, it will be created.
 
-`"html"` lists all HTML files associated with the web application. It can be a plain string or a list of files.
+`"html"` lists all HTML files associated with the web application. It can be a plain string or a list of files. Files listed in this entry will have their `<source>` tags appropriately matched and transformed to target sourcefiles (if you wish to skip this effect, then list the html file in `"files"` instead).
 
-`"sources"` lists all JavaScript files that we want to build. Those that we don't want to build have to be listed in `"files"` instead.
+`"sources"` lists all JavaScript files that we want to build and process. 
 
 `"files"` list all other file associated with the web application. Note the use of masks above: `"img/*"` means we wish to fetch all files in the `img/` directory.
 
