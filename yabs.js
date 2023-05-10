@@ -37,7 +37,7 @@ const yabs = {};
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.version = '1.0.0'; // YABS.js version
+yabs.version = '0.0.0'; // YABS.js version
 
 // constants
 yabs.DEFAULT_BUILD_FILE = 'build.json';

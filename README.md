@@ -4,11 +4,14 @@
 
 YABS.js is a lightweight JavaScript build system.
 
-Version v1.0.0
+Version v0.0.0
+
+**(WORK IN PROGRESS)**
 
 ---
 
 Please note that this is a "dumb" build system which only deals with individual files. It does not combine source files and it does not understand `import`, `export` or `require`. It does not do any parsing of the sources (except HTML, to an extent). What it does is roughly the following:
+
 ```
 1. Clones the hierarchy of files provided, updating only newer files into the output directory, typically "build/"
 
