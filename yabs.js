@@ -37,7 +37,7 @@ const yabs = {};
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.version = '0.0.5'; // YABS.js version
+yabs.version = '1.0.0'; // YABS.js version
 
 // constants
 yabs.DEFAULT_BUILD_FILE = 'build.json';
@@ -201,6 +201,19 @@ yabs.Logger = class {
 			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_RED}(` +
 			`${this._OUTPUT_RESET}!` +
 			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_RED}) Error: ` +
+			`${this._OUTPUT_RESET}${message}\n`
+		);
+	}
+	/**
+	 * Prints a success message.
+	 * 
+	 * @param {string} message
+	 */
+	success(message) {
+		process.stdout.write(
+			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}(` +
+			`${this._OUTPUT_RESET}!` +
+			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}) Success: ` +
 			`${this._OUTPUT_RESET}${message}\n`
 		);	
 	}
@@ -514,7 +527,7 @@ yabs.App = class {
 		const build_params = {
 			option: [], // --option parameters
 			variable: [], // -variable parameters (used for preprocessor)
-			free: [] // free parameters (should only contain a single item which points to the build instructions file)
+			free: [] // freestanding parameters (should only contain a single item with the build instructions file)
 		};
 		argv.slice(2).forEach(str_value => {
 			if (str_value.startsWith('--')) { // this is an --option parameter
@@ -523,15 +536,15 @@ yabs.App = class {
 			else if (str_value.startsWith('-')) { // this is a -variable parameter
 				build_params.variable.push(str_value.slice(1));
 			}
-			else { // this is a free parameter
+			else { // this is a freestanding parameter
 				build_params.free.push(str_value);
 			}
 		});
 
 		console.log('option parameters:', build_params.option);
 		console.log('variable parameters:', build_params.variable);
-		console.log('free parameters:', build_params.free);
-
+		console.log('freestanding parameters:', build_params.free);
+this._log.success('Build finished!');
 		// print out header
 		this._log.header();
 		try {

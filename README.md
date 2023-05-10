@@ -1,8 +1,23 @@
 ![YABS.js](/logo.png?raw=true)
 
+(Yet-Another-Build-System.js)
+
 YABS.js is a lightweight JavaScript build system.
 
-(  **Currently in development** -- NOT production ready )
+Version v1.0.0
+
+---
+
+Please note that this is a "dumb" build system which only deals with individual files. It does not combine source files and it does not understand `import`, `export` or `require`. It does not do any parsing of the sources (except HTML, to an extent). What it does is roughly the following:
+```
+1. Clones the hierarchy of files provided, updating only newer files into the output directory, typically "build/"
+
+2. Minifies (and optionally, preprocesses) provided JavaScript files, optionally with a custom header
+
+3. Matches the <script src="..."> attributes in the provided HTML files to JS files and update theose entries (to .min.js)
+```
+
+Please double and triple check your requirements to see if this fits your needs. If it does not, then use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does.
 
 ## Dependencies
 
@@ -21,7 +36,9 @@ YABS.js takes a single JSON file containing build instructions as an input. It t
 2) Create a `build.json`
 3) Execute with `node yabs.js`
 
-YABS.js will default to `build.json` or `build_all.json` when no build instructions file is provided. If your build instructions file is named something else, use `node yabs.js mybuildfile.json`.
+YABS.js will default to `build.json` or `build_all.json` if a build instructions file is not explicitly given via a parameter.
+
+To pass a custom build instructions file use a freestanding (not utilizing the `-` or `--` prefixes) parameter. The first such parameter is used as the instructions file, for example: `node yabs.js mybuildfile.json`
 
 ## Minimal example
 
@@ -46,7 +63,7 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 
 `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist at build time, it will be created.
 
-`"html"` lists all HTML files associated with the web application. It can be a plain string or a list of files. Files listed in this entry will have their `<source>` tags appropriately matched and transformed to target sourcefiles (if you wish to skip this effect, then list the html file in `"files"` instead).
+`"html"` lists all HTML files associated with the web application. It can be a plain string or a list of files. Files listed in this entry will have their `<source>` tags appropriately matched and transformed to target sourcefiles (if you wish to skip this effect, then list the html files in `"files"` instead).
 
 `"sources"` lists all JavaScript files that we want to build and process. 
 
@@ -204,7 +221,7 @@ console.log('compiled with -nodebug (or omitting -debug)');
 
 ### 4. Batch building
 
-YABS.js can build in batch mode. To do so, create a `build_all.json` (it doesn't have to be called like that, but it's a useful convention) and add a single entry named `batch_build`. Inside, list all your build instructions files in order you wish to have them built:
+YABS.js can build in batch mode. To do so, create a `build_all.json` (you can name it anything, but this is a useful convention) and add a single entry named `"batch_build"`. Inside, list all your build instructions files in order you wish to have them built:
 
 ```JSON
   "batch_build": [
