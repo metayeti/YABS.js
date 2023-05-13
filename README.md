@@ -1,26 +1,24 @@
 ![YABS.js](/logo.png?raw=true)
 
-(Yet-Another-Build-System.js)
-
 YABS.js is a lightweight JavaScript build system.
 
 Version v0.0.0
 
-**(WORK IN PROGRESS)**
+**(WORK IN PROGRESS - NOT USABLE RIGHT NOW)**
 
 ---
 
 Please note that this is a "dumb" build system which only deals with individual files. It does not combine source files and it does not understand `import`, `export` or `require`. It does not do any parsing of the sources (except HTML, to an extent). What it does is roughly the following:
 
-```
 1. Clones the hierarchy of files provided, updating only newer files into the output directory, typically "build/"
 
 2. Minifies (and optionally, preprocesses) provided JavaScript files, optionally with a custom header
 
-3. Matches the <script src="..."> attributes in the provided HTML files to JS files and update theose entries (to .min.js)
-```
+3. Matches the `<script src="...">` attributes in the provided HTML files to JS files and update theose entries (to .min.js)
 
-Please double and triple check your requirements to see if this fits your needs. If it does not, then use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does.
+---
+
+Please double and triple check your requirements to see if this behavior and featureset fits your needs. If it does not, then use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does, because it is a system specifically tailored to my personal needs. You may use it as you see fit but please don't assume additional functionality to have a high chance of materializing.
 
 ## Dependencies
 
@@ -31,13 +29,13 @@ The preprocessor package is only needed if the build leverages the preprocessor.
 
 ## How it works
 
-YABS.js takes a single JSON file containing build instructions as an input. It then verifies, prepares and invokes the build process.
+YABS.js takes a single JSON file containing build instructions as an input. It then configures, verifies, and invokes the build process.
 
 ## Basic usage
 
-1) Drop `yabs.js` into your project root folder
-2) Create a `build.json`
-3) Execute with `node yabs.js`
+1. Drop `yabs.js` into your project root folder
+2. Create a `build.json`
+3. Execute with `node yabs.js`
 
 YABS.js will default to `build.json` or `build_all.json` if a build instructions file is not explicitly given via a parameter.
 
@@ -62,15 +60,15 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 }
 ```
 
-`"source_dir"` represents the source directory for the web application that we wish to build. The value `"./"` means the source directory is the same as the root directory which contains `yabs.js`.
+- `"source_dir"` represents the source directory for the web application that we wish to build. The value `"./"` means the source directory is the same as the root directory which contains `yabs.js`.
 
-`"destination_dir"` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist at build time, it will be created.
+- `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist at build time, it will be created.
 
-`"html"` lists all HTML files associated with the web application. It can be a plain string or a list of files. Files listed in this entry will have their `<source>` tags appropriately matched and transformed to target sourcefiles (if you wish to skip this effect, then list the html files in `"files"` instead).
+- `"html"` lists all HTML files associated with the web application. It can be a plain string or a list of files. Files listed in this entry will have their `<source>` tags appropriately matched and transformed to target sourcefiles (if you wish to skip this effect, then list the html files in `"files"` instead).
 
-`"sources"` lists all JavaScript files that we want to build and process. 
+- `"sources"` lists all JavaScript files that we want to build and process. 
 
-`"files"` list all other file associated with the web application. Note the use of masks above: `"img/*"` means we wish to fetch all files in the `img/` directory.
+- `"files"` lists all other file associated with the web application. This can be a plain file list, or it can include basic pattern masks. In the example above, `"img/*"` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` would only capture all files within the directory, skipping subdirectories. A `*.txt` would only capture files with `.txt` extension in the directory, skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
 
 The hierarchy of files for this minimal build will look like this:
 ```

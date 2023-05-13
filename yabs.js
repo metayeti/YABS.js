@@ -97,6 +97,73 @@ yabs.util.getModifiedTime = function(source_path) {
 };
 
 /**
+ * Recursively generates a list of files based on given source and destination directories.
+ * Skip source files that are both older than, and have a correlating existing destination file.
+ * (This makes it so that repeated builds don't keep cloning already existing files for which there
+ * is no need to be repeatedly updated.)
+ * 
+ * @param {string} source_dir - Source relative directory.
+ * @param {string} destination_dir - Destination relative directory.
+ * @param {array} mask - Can be one of three states:
+ *                       [*, null] - fetch everything and descent recursively
+ *                       [*, *] - fetch everything, but don't descent recursively
+ *                       [*, .ext] - fetch everything, don't descent recursively, and it has to match extension
+ * 
+ * @returns {array} Array of {source, destination} pairs.
+ */
+yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, mask, depth = 0) {
+	let list = [];
+	if (!yabs.util.exists(source_dir)) {
+		throw `Could not locate path: ${source_dir}`;
+	}
+	//console.log('source_dir:', source_dir);
+	//console.log('destination_dir:', destination_dir);
+	//console.log('=========---------------=======');
+	const source_dir_listing = fs.readdirSync(source_dir);
+	source_dir_listing.forEach(listing_entry => {
+		const nested_source_path = path.join(source_dir, listing_entry);
+		const nested_destination_path = path.join(destination_dir, listing_entry);
+		const is_source_directory = yabs.util.isDirectory(nested_source_path);
+		if (is_source_directory) { // this is a directory
+			if (mask[0] === '*' && mask[1] === null) { // only allow recursive descent with correct mask
+				list = list.concat(yabs.util.getFilesWithRecursiveDescent(
+					nested_source_path, nested_destination_path, mask, depth + 1
+				));
+			}
+		}
+		else { // this is a file
+			//console.log('NESTED SOURCE PATH', nested_source_path);
+			// validate against mask
+			if (mask[0] === '*' && mask[1] !== '*' && mask[1] !== null) {
+				// validate against extension type
+				const parsed_nested_source_path = path.parse(nested_source_path);
+				//console.log(parsed_nested_source_path.ext);
+				if (mask[1] !== parsed_nested_source_path.ext) {
+					return;
+				}
+			}
+			// check timestamps
+			if (yabs.util.exists(nested_destination_path)) { // destination file already exists
+				const dtime_modified_source = (Date.now() - yabs.util.getModifiedTime(nested_source_path));
+				const dtime_modified_destination = (Date.now() - yabs.util.getModifiedTime(nested_destination_path));
+				if ((dtime_modified_destination - dtime_modified_source) < 1000) {
+					// source file is not newer than destination, we can skip this file
+					///include_file = true;
+					return;
+				}
+			}
+			list.push({
+				source: nested_source_path,
+				destination: nested_destination_path
+			});
+		}
+	});
+	//console.log(list);
+	// return the compiled list
+	return list;
+};
+
+/**
  * Recursively generates a list of files based on given source and destination
  * paths; only adds source items that are newer than destination files.
  * 
@@ -122,7 +189,7 @@ yabs.util.generateFileListRecursively = function(source_path, destination_path, 
 				return list;
 			}
 			// continue recursive descent
-			list = list.concat(util.generateFileListRecursively(nested_source_path, nested_destination_path, depth));
+			list = list.concat(util.generateFileListRecursively(nested_source_path, nested_destination_path, depth - 1));
 		}
 		else { // this is a file
 			let include_file = false;
@@ -184,6 +251,14 @@ yabs.Logger = class {
 	 */
 	out_raw(message) {
 		process.stdout.write(message);
+	}
+	/**
+	 * Prints an info message.
+	 * 
+	 * @param {string} message
+	 */
+	info(message) {
+		process.stdout.write(`* ${message}\n\n`);
 	}
 	/**
 	 * Prints a newline.
@@ -263,7 +338,7 @@ yabs.BuildConfig = class {
 			}
 			if (!this._batch_listing) {
 				this._batch_listing = [];
-			}	
+			}
 			return; // since this is a batch build, we are all done here
 		}
 		// extract source_dir
@@ -276,6 +351,10 @@ yabs.BuildConfig = class {
 			throw 'Build instructions file is missing the destination_dir entry!';
 		}
 		this._destination_dir = json_data.destination_dir;
+		// ensure that source and destination directories are unique
+		if (path.resolve(this._source_dir) === path.resolve(this._destination_dir)) {
+			throw 'Source directory cannot be the same as destination directory!';
+		}
 		// extract html listing
 		if (json_data.hasOwnProperty('html')) {
 			if (json_data.html instanceof Array) {
@@ -378,12 +457,14 @@ yabs.BuildConfig = class {
 			}
 		}
 		///debug
-		console.log('source_dir:', this._source_dir);
-		console.log('destination_dir:', this._destination_dir);
-		console.log('html_listing:', this._html_listing);
-		console.log('sources_listing:', this._sources_listing);
-		console.log('files_listing:', this._files_listing);
-		console.log('variables:', this._variables);
+		//console.log('------------------------');
+		//console.log('source_dir:', this._source_dir);
+		//console.log('destination_dir:', this._destination_dir);
+		//console.log('html_listing:', this._html_listing);
+		//console.log('sources_listing:', this._sources_listing);
+		//console.log('files_listing:', this._files_listing);
+		//console.log('variables:', this._variables);
+		//console.log('------------------------');
 		///debug
 			
 	}
@@ -470,16 +551,170 @@ yabs.Builder = class {
 	/**
 	 * Builder constructor.
 	 * 
+	 * @param {object} logger
 	 * @param {object} build_config
 	 * @param {object} build_params
 	 */
-	constructor(build_config, build_params) {
+	constructor(logger, build_config, build_params) {
+		this.logger = logger;
+		// build configuration
+		this._build_config = build_config;
+		// build parameters
+		this._build_params = build_params;
+		// source and destination directories
+		this._source_dir = path.normalize(this._build_config.getSourceDir());
+		this._destination_dir = path.normalize(this._build_config.getDestinationDir());
+		// prebuilt manifest lists
+		this._files_manifest = null;
+		this._sources_manifest = null;
+		this._html_manifest = null;
+	}
+
+	/**
+	 * Creates manifest lists for current build.
+	 */
+	_buildManifests() {
+		function buildFilesManifest() {
+			const files_listing = this._build_config.getFilesListing();
+			///console.log(files_listing);
+			files_listing.forEach(listing_entry => {
+				if (listing_entry.includes('*')) { // path includes mask
+					// use recursive descent to capture all files
+					const full_source_path = path.join(this._source_dir, listing_entry);
+					const parsed_source_path = path.parse(full_source_path);
+					const full_destination_path = path.join(this._destination_dir, listing_entry);
+					const parsed_destination_path = path.parse(full_destination_path);
+					if (!parsed_source_path.dir.includes('*') && parsed_source_path.name === '*') {
+						// only allow masks when they are the last part of path
+						// (disallow masks in dirname because they make no sense)
+						//console.log(parsed_path);
+						const split_base = parsed_source_path.base.split('.');
+						let mask = null;
+						if (parsed_source_path.base === '*') {
+							mask = ['*', null]; // [*, null]
+						}
+						else if (parsed_source_path.base === '*.*') {
+							mask = ['*', '*']; // [*, *]
+						}
+						else if (split_base[0] === '*' && split_base[1] !== '*' && split_base[1] !== '') {
+							mask = ['*', parsed_source_path.ext]; // [*, .ext]
+						}
+						if (mask !== null) {
+							this._files_manifest = this._files_manifest.concat(
+								yabs.util.getFilesWithRecursiveDescent(parsed_source_path.dir, parsed_destination_path.dir, mask)
+							);
+						}
+					}
+				}
+				else { // plain path, just add it to the manifest
+					this._files_manifest.push({
+						source: path.join(this._source_dir, listing_entry),
+						destination: path.join(this._destination_dir, listing_entry)
+					});
+				}
+			});
+			console.log('FILES MANIFEST');
+			console.log(this._files_manifest);
+		}
+
+		function buildSourcesManifest() {
+			const sources_listing = this._build_config.getSourcesListing();
+			sources_listing.forEach(listing_entry => {
+				if (listing_entry.file.includes('*')) {
+					// disallow any masks
+					return;
+				}
+				const has_header = listing_entry.hasOwnProperty('header');
+				const header_data = { has_header: has_header };
+				if (has_header) {
+					// make sure it's an array clone and not a reference
+					// (because we might need to search/replace variables later on)
+					header_data.header = [...listing_entry.header];
+				}
+				// add to manifest
+				this._sources_manifest.push({
+					source: path.join(this._source_dir, listing_entry.file),
+					destination: path.join(this._destination_dir, listing_entry.file),
+					header_data: header_data
+				});
+			});
+			console.log('SOURCES MANIFEST');
+			console.log(this._sources_manifest);
+		}
+
+		function buildHTMLManifest() {
+			const html_listing = this._build_config.getHTMLListing();
+			html_listing.forEach(listing_entry => {
+				if (listing_entry.includes('*')) {
+					// disallow any masks
+					return;
+				}
+				// add to manifest
+				this._html_manifest.push({
+					source: path.join(this._source_dir, listing_entry),
+					destination: path.join(this._destination_dir, listing_entry)
+				});
+			});
+			console.log('HTML MANIFEST');
+			console.log(this._html_manifest);
+		}
+
+		this._files_manifest = [];
+		this._sources_manifest = [];
+		this._html_manifest = [];
+
+		buildFilesManifest.call(this);
+		buildSourcesManifest.call(this);
+		buildHTMLManifest.call(this);
+	}
+
+	/**
+	 * Verifies that source files in the manifest lists exist.
+	 */
+	_verifySourceFiles() {
+		function verifyManifest(manifest_list) {
+			manifest_list.forEach(manifest_entry => {
+				const path_source = manifest_entry.source;
+				const path_resolved = path.resolve(path_source);
+				//console.log(path_resolved);
+				if (!yabs.util.exists(path_resolved)) {
+					throw `Could not find file: ${path_source}`;
+				}
+			});
+		}
+		verifyManifest.call(this, this._files_manifest);
+		verifyManifest.call(this, this._sources_manifest);
+		verifyManifest.call(this, this._html_manifest);
+	}
+
+	_buildStep_I_UpdateFiles() {
+	}
+
+	_buildStep_II_a_PreprocessSources() {
+	}
+
+	_buildStep_II_b_CompileSources() {
+	}
+
+	_buildStep_III_BakeHTMLFiles() {
 	}
 
 	/**
 	 * Start the build.
 	 */
 	build() {
+		// build the file manifests. this creates three arrays with unified structures that
+		// have "source" and "destination" entries for each file. it also clones the
+		// header data into fresh arrays so they can be used for variable substitution
+		// on a per-source basis
+		this._buildManifests();
+
+		// now we have to verify the existence of all the files listed in manifests
+		// as sources, to make sure we don't have missing or unreadable source files
+		this._verifySourceFiles();
+
+		// TODO recreate the directory structure on the build end
+
 	}
 };
 
@@ -497,6 +732,13 @@ yabs.BatchBuilder = class {
 	 * @param {object} build_params
 	 */
 	constructor(build_config, build_params) {
+		this.build_config = build_config;
+		this.build_params = build_params;
+		this._expanded_file_listing = {
+			files_listing: [],
+			sources_listing: [],
+			html_listing: []
+		};
 	}
 
 	/**
@@ -517,7 +759,7 @@ yabs.App = class {
 	 * App constructor.
 	 */
 	constructor() {
-		this._log = new yabs.Logger();
+		this._logger = new yabs.Logger();
 	}
 	/**
 	 * Program entry point.
@@ -541,13 +783,14 @@ yabs.App = class {
 			}
 		});
 
-		console.log('option parameters:', build_params.option);
-		console.log('variable parameters:', build_params.variable);
-		console.log('freestanding parameters:', build_params.free);
-this._log.success('Build finished!');
+		//console.log('option parameters:', build_params.option);
+		//console.log('variable parameters:', build_params.variable);
+		//console.log('freestanding parameters:', build_params.free);
+		//this._logger.success('Build finished!');
 		// print out header
-		this._log.header();
+		this._logger.header();
 		try {
+			this._logger.info('Configuring build ...');
 			// figure out what we're building first
 			let build_config = null;
 			if (build_params.free.length === 0) { // parametress run
@@ -574,19 +817,19 @@ this._log.success('Build finished!');
 			// check if this is a batch build
 			if (build_config.isBatchBuild()) {
 				// this is a batch build
-				(new yabs.BatchBuilder(build_config, build_params)).build();
+				(new yabs.BatchBuilder(this._logger, build_config, build_params)).build();
 			}	
 			else {
 				// this is a normal build
-				(new yabs.Builder(build_config, build_params)).build();
+				(new yabs.Builder(this._logger, build_config, build_params)).build();
 			}
 		}
 		catch(e) {
-			this._log.error(e);
-			this._log.out('\nBuild aborted.');
+			this._logger.error(e);
+			this._logger.out('\nBuild aborted.');
 		}
 		// print ouf final newline
-		this._log.endl();
+		this._logger.endl();
 	}
 };
 

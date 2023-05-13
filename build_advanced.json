@@ -1,5 +1,5 @@
 {
-	"source_dir": "tests/test_advanced/",
+	"source_dir": "tests/advanced/",
 	"destination_dir": "build/advanced/",
 	"headers": {
 		"src1_header": "/* script, minified */",
@@ -35,7 +35,7 @@
 	],
 	"files": [
 		"some_file.txt",
-		"images/*",
+		"images/*.png",
 		"data/*"
 	],
 	"variables": {
