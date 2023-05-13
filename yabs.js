@@ -105,9 +105,9 @@ yabs.util.getModifiedTime = function(source_path) {
  * @param {string} source_dir - Source relative directory.
  * @param {string} destination_dir - Destination relative directory.
  * @param {array} mask - Can be one of three states:
- *                       [*, null] - fetch everything and descent recursively
- *                       [*, *] - fetch everything, but don't descent recursively
- *                       [*, .ext] - fetch everything, don't descent recursively, and it has to match extension
+ *                       ["*", null] - fetch everything and descent recursively
+ *                       ["*", "*"] - fetch everything, but don't descent recursively
+ *                       ["*", ".ext"] - fetch everything, don't descent recursively, and it has to match extension
  * 
  * @returns {array} Array of {source, destination} pairs.
  */
@@ -116,9 +116,6 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 	if (!yabs.util.exists(source_dir)) {
 		throw `Could not locate path: ${source_dir}`;
 	}
-	//console.log('source_dir:', source_dir);
-	//console.log('destination_dir:', destination_dir);
-	//console.log('=========---------------=======');
 	const source_dir_listing = fs.readdirSync(source_dir);
 	source_dir_listing.forEach(listing_entry => {
 		const nested_source_path = path.join(source_dir, listing_entry);
@@ -132,12 +129,10 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 			}
 		}
 		else { // this is a file
-			//console.log('NESTED SOURCE PATH', nested_source_path);
 			// validate against mask
 			if (mask[0] === '*' && mask[1] !== '*' && mask[1] !== null) {
 				// validate against extension type
 				const parsed_nested_source_path = path.parse(nested_source_path);
-				//console.log(parsed_nested_source_path.ext);
 				if (mask[1] !== parsed_nested_source_path.ext) {
 					return;
 				}
@@ -156,60 +151,6 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 				source: nested_source_path,
 				destination: nested_destination_path
 			});
-		}
-	});
-	//console.log(list);
-	// return the compiled list
-	return list;
-};
-
-/**
- * Recursively generates a list of files based on given source and destination
- * paths; only adds source items that are newer than destination files.
- * 
- * @function generateFileListRecursively
- * @memberof yabs.util
- * @instance
- * 
- * @param {string} source_path
- * @param {string} destination_path
- */
-yabs.util.generateFileListRecursively = function(source_path, destination_path, depth = -1) {
-	let list = [];
-	if (!yabs.util.exists(source_path)) {
-		throw `Could not locate: ${source_path}`;
-	}
-	const dir_listing = fs.readdirSync(source_path);
-	dir_listing.forEach(item => {
-		const nested_source_path = path.join(source_path, item);
-		const nested_destination_path = path.join(destination_path, item);
-		const is_source_directory = yabs.util.isDirectory(nested_source_path);
-		if (is_source_directory) { // this is a directory
-			if (depth === 0) {
-				return list;
-			}
-			// continue recursive descent
-			list = list.concat(util.generateFileListRecursively(nested_source_path, nested_destination_path, depth - 1));
-		}
-		else { // this is a file
-			let include_file = false;
-			if (yabs.util.exists(nested_destination_path)) { // destination file exists
-				const time_modified_source = (Date.now() - yabs.util.getModifiedTime(nested_source_path));
-				const time_modified_destination = (Date.now() - yabs.util.getModifiedTime(nested_destination_path));
-				if ((time_modified_source - time_modified_destination) < -1000) {
-					// source file is newer than destination
-					include_file = true;
-				}
-			}
-			else { // destination file does not exist
-				include_file = true;
-			}
-			if (include_file) {
-				list.push({
-					source: nested_source_path,
-					destination: nested_destination_path
-				});
-			}
 		}
 	});
 	// return the compiled list
@@ -576,7 +517,6 @@ yabs.Builder = class {
 	_buildManifests() {
 		function buildFilesManifest() {
 			const files_listing = this._build_config.getFilesListing();
-			///console.log(files_listing);
 			files_listing.forEach(listing_entry => {
 				if (listing_entry.includes('*')) { // path includes mask
 					// use recursive descent to capture all files
@@ -587,17 +527,16 @@ yabs.Builder = class {
 					if (!parsed_source_path.dir.includes('*') && parsed_source_path.name === '*') {
 						// only allow masks when they are the last part of path
 						// (disallow masks in dirname because they make no sense)
-						//console.log(parsed_path);
 						const split_base = parsed_source_path.base.split('.');
 						let mask = null;
 						if (parsed_source_path.base === '*') {
-							mask = ['*', null]; // [*, null]
+							mask = ['*', null]; // ["*", null]
 						}
 						else if (parsed_source_path.base === '*.*') {
-							mask = ['*', '*']; // [*, *]
+							mask = ['*', '*']; // ["*", "*"]
 						}
 						else if (split_base[0] === '*' && split_base[1] !== '*' && split_base[1] !== '') {
-							mask = ['*', parsed_source_path.ext]; // [*, .ext]
+							mask = ['*', parsed_source_path.ext]; // ["*", ".ext"]
 						}
 						if (mask !== null) {
 							this._files_manifest = this._files_manifest.concat(
@@ -676,7 +615,6 @@ yabs.Builder = class {
 			manifest_list.forEach(manifest_entry => {
 				const path_source = manifest_entry.source;
 				const path_resolved = path.resolve(path_source);
-				//console.log(path_resolved);
 				if (!yabs.util.exists(path_resolved)) {
 					throw `Could not find file: ${path_source}`;
 				}
@@ -734,11 +672,6 @@ yabs.BatchBuilder = class {
 	constructor(build_config, build_params) {
 		this.build_config = build_config;
 		this.build_params = build_params;
-		this._expanded_file_listing = {
-			files_listing: [],
-			sources_listing: [],
-			html_listing: []
-		};
 	}
 
 	/**
@@ -786,7 +719,6 @@ yabs.App = class {
 		//console.log('option parameters:', build_params.option);
 		//console.log('variable parameters:', build_params.variable);
 		//console.log('freestanding parameters:', build_params.free);
-		//this._logger.success('Build finished!');
 		// print out header
 		this._logger.header();
 		try {
