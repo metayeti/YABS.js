@@ -214,9 +214,7 @@ yabs.Logger = class {
 	 */
 	error(message) {
 		process.stdout.write(
-			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_RED}(` +
-			`${this._OUTPUT_RESET}!` +
-			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_RED}) Error: ` +
+			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_RED}Error: ` +
 			`${this._OUTPUT_RESET}${message}\n`
 		);
 	}
@@ -227,9 +225,7 @@ yabs.Logger = class {
 	 */
 	success(message) {
 		process.stdout.write(
-			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}(` +
-			`${this._OUTPUT_RESET}!` +
-			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}) Success: ` +
+			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}Success: ` +
 			`${this._OUTPUT_RESET}${message}\n`
 		);	
 	}
@@ -497,7 +493,7 @@ yabs.Builder = class {
 	 * @param {object} build_params
 	 */
 	constructor(logger, build_config, build_params) {
-		this.logger = logger;
+		this._logger = logger;
 		// build configuration
 		this._build_config = build_config;
 		// build parameters
@@ -651,8 +647,11 @@ yabs.Builder = class {
 		// as sources, to make sure we don't have missing or unreadable source files
 		this._verifySourceFiles();
 
-		// TODO recreate the directory structure on the build end
-
+		// build step I
+		// update files from files manifest; skip if empty
+		if (this._files_manifest.length > 0) {
+			this._logger.info('Updating files ...');
+		}
 	}
 };
 

@@ -33,9 +33,9 @@ YABS.js takes a single JSON file containing build instructions as an input. It t
 
 ## Basic usage
 
-1. Drop `yabs.js` into your project root folder
+1. Drop `build.js` into your project root folder
 2. Create a `build.json`
-3. Execute with `node yabs.js`
+3. Execute with `node build.js`
 
 YABS.js will default to `build.json` or `build_all.json` if a build instructions file is not explicitly given via a parameter.
 
