@@ -2,34 +2,41 @@
 
 YABS.js is a lightweight JavaScript build system.
 
-Version v0.0.0
+Version v0.0.0 (dev)
 
-**(WORK IN PROGRESS - NOT USABLE RIGHT NOW)**
+**⛔ WORK IN PROGRESS - NOT USABLE RIGHT NOW ⛔**
 
----
+```
+PROGRESS TOWARDS 1.0.0
+[========  ] 80%
+```
 
-Please note that this is a "dumb" build system which only deals with individual files. It does not combine source files and it does not understand `import`, `export` or `require`. What it does is, roughly, the following:
-
-1. Clones the hierarchy of files provided, updating only newer files, into the output directory (typically "build/").
-
-2. Minifies (and optionally, preprocesses) provided JavaScript files, optionally with a custom header.
-
-3. Matches the `<script src="...">` attributes in the provided HTML files to JS files and update those entries (from .js to .min.js).
+**⛔ WORK IN PROGRESS - NOT USABLE RIGHT NOW ⛔**
 
 ---
 
-Please double and triple check your requirements to see if this behavior and featureset fits your needs. If it does not, then use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does, because it is a system specifically tailored to my personal needs. (You may use it as you see fit but please don't assume additional functionality to have a high probability of materializing.)
+Please note that this is a "dumb" build system that only deals with individual files. It does not combine source files and it does not understand modules or `import`, `export` and `require` statements. What it does is roughly the following:
+
+1. Clones the hierarchy of files provided, updating with newer files, into the output directory (typically "build/") as specified by the build instructions file.
+
+2. Minifies (also optionally, preprocesses) provided JavaScript files, optionally attaches a custom header.
+
+3. Matches `<script src="...">` attributes in the HTML files to the associated JS files, and updates those entries to match compiled filenames (basically changes extensions in those from .js to .min.js).
+
+---
+
+Please double (and triple) check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded much beyond the scope of what it currently does.
 
 ## Dependencies
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
 - [preprocessor.js](https://www.npmjs.com/package/preprocessor) ( install with "npm -g install preprocessor" )
 
-The preprocessor package is only needed if the build leverages the preprocessor.
+The preprocessor package is only needed if the build leverages the preprocessor in some way.
 
 ## How it works
 
-YABS.js takes a single JSON file containing build instructions as an input. It then configures, verifies, and invokes the build process.
+YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and starts the build process. If the build is successful, you should se a "Build successful!" message at the end of the output.
 
 ## Basic usage
 
@@ -37,9 +44,11 @@ YABS.js takes a single JSON file containing build instructions as an input. It t
 2. Create a `build.json`
 3. Execute with `node build.js`
 
-YABS.js will default to `build.json` or `build_all.json` if a build instructions file is not explicitly given via a parameter.
+YABS.js will default to `build.json` or `build_all.json` if the build instructions file is not explicitly provided as a parameter (meaning you can simply invoke the build with `node build.js`).
 
-To pass a custom build instructions file use a freestanding (not utilizing the `-` or `--` prefixes) parameter. The first such parameter is used as the instructions file, for example: `node build.js mybuildfile.json`
+To pass a custom build instructions file, use a freestanding (not utilizing the `-` or `--` prefixes) parameter. The first such parameter is used as the build instructions file, for example: `node build.js mybuild.json`. Only one such parameter will be accepted - if you wish to build multiple things in one go, you can [use YABS.js in batch mode](#5-batch-building).
+
+You can rename `build.js` to any arbitrary name, or you can use `yabs.js` with the full source instead.
 
 ## Minimal example
 
@@ -193,7 +202,29 @@ The variable names are arbitrary and can be anything, as long as they match the 
 
 If there is a shared `"headers"` entry in the build instructions file and we use variables in those, those variables will be related to the individual scripts that use them. This means that every script that uses those headers should include the associated JSDoc tags at the top of the file.
 
-### 3. Using the preprocessor
+### 3. Using custom output filenames
+
+You can use a custom output filename by adding a `"output_file"` entry into the `"sources"` listing. The `build_yabs.json` build instructions file demonstrates the use:
+
+```JS
+{
+  "source_dir": "./",
+  "destination_dir": "./",
+  "sources": [
+    {
+      "file": "yabs.js",
+      "output_file": "build.js",
+      "header": [
+        "/* YABS.js %version% (c) $YEAR$ %author%",
+        " * https://github.com/pulzed/yabs.js",
+        " */"
+      ]
+    }
+  ]
+}
+```
+
+### 4. Using the preprocessor
 
 To use preprocessor variables, first add a `"variables"` entry to the build instructions JSON, for example:
 
@@ -201,9 +232,6 @@ To use preprocessor variables, first add a `"variables"` entry to the build inst
   "variables": {
     "debug": [
       "DEBUG=true"
-    ],
-    "nodebug": [
-      "DEBUG=false"
     ]
   }
 ```
@@ -216,27 +244,11 @@ In the sourcefile, using the preprocessor might look something like this:
 // #ifdef DEBUG
 console.log('compiled with -debug');
 // #else
-console.log('compiled with -nodebug');
+console.log('not compiled with -debug');
 // #endif
 ```
 
-Now if we build with `-debug`, `compiled with -debug` will be outputted. If we build with `-nodebug`, then `compiled with -nodebug` will be outputted.
-
-Here is the tricky bit. If we build without any single-prefix (`-`) parameters, then YABS.js will skip the preprocessor step entirely and in this case, both `compiled with -debug` and `compiled with -nodebug` will be outputted, because then all the code will be used.
-
-**However** - if we build with another variable, for example `-foo`, then again only `compiled with -nodebug` will be outputted. This is because the preprocessor will be used because `-foo` invokes it, but the preprocessor will use the bit after `// #else`, since `-debug` has not been used.
-
-We can avoid this quirky behavior by specifying the preprocessor directives in a more rigid way:
-
-```JS
-// #if DEBUG==true
-console.log('compiled with -debug');
-// #elif DEBUG==false
-console.log('compiled with -nodebug');
-// #endif
-```
-
-Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` part of the build instructions JSON.
+Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` part of the build instructions JSON. This entry defines the variables and their values used for this build.
 
 Another feature you can use with the preprocessor is includes:
 
@@ -244,9 +256,9 @@ Another feature you can use with the preprocessor is includes:
 // #include "path/to/file.js"
 ```
 
-Sometimes, you may wish to use just includes and don't have any use for variables. By default, YABS.js will skip the preprocessor. If you only use includes and not variables, then you might force the use of preprocessor by using `--preprocess` in the command line. Alternatively, use an unused variable parameter (for example, `-x` or `-i`). This will have the same effect of triggering the use of the preprocessor.
+Sometimes, you may wish to use just includes and don't have any use for variables. By default, YABS.js will skip the preprocessor step. If you only use includes and not variables, then you need to force the use of preprocessor with `--preprocess`. Alternatively, use an unused variable parameter (for example, `-p` for "preprocess"). This will have the same effect of triggering the use of the preprocessor.
 
-### 4. Batch building
+### 5. Batch building
 
 YABS.js can build in batch mode. To do so, create a `build_all.json` (you can name it anything, but this is a useful convention) and add a single entry named `"batch_build"`. Inside, list all your build instructions files in order you wish to have them built:
 
@@ -258,6 +270,18 @@ YABS.js can build in batch mode. To do so, create a `build_all.json` (you can na
 ```
 
 Any number of build instructions files can be bundled into the batch build. Note that if any of the builds in line fail, all subsequent builds will stop. To prevent this, use `--nofail` when invoking the build.
+
+## Command line parameters
+
+Available parameters are:
+
+
+- `--preprocess` - Forces the use of preprocessor.
+- `--nofail` - In a [batch build](#5-batch-building), keep going if one of the builds fails.
+
+## Thanks
+
+The [uglify-js](https://www.npmjs.com/package/uglify-js) and  [preprocessor.js](https://www.npmjs.com/package/preprocessor) packages.
 
 ## License
 

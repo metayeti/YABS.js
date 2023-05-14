@@ -1,0 +1,15 @@
+{
+	"source_dir": "./",
+	"destination_dir": "./",
+	"sources": [
+		{
+			"file": "yabs.js",
+			"output_file": "build.js",
+			"header": [
+				"/* YABS.js %version% (c) $YEAR$ %author%",
+				" * https://github.com/pulzed/yabs.js",
+				" */"
+			]
+		}
+	]
+}
