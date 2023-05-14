@@ -217,7 +217,7 @@ You can use a custom output filename by adding a `"output_file"` entry into the 
       "header": [
         "/* YABS.js %version% (c) $YEAR$ %author%",
         " * https://github.com/pulzed/yabs.js",
-        " */"
+        " * Licensed under the MIT license */"
       ]
     }
   ]
