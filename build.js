@@ -40,8 +40,11 @@ const yabs = {};
 yabs.version = '0.0.0'; // YABS.js version
 
 // constants
+
 yabs.DEFAULT_BUILD_FILE = 'build.json';
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
+
+yabs.TARGET_SOURCE_EXTENSION = '.min.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -621,6 +624,38 @@ yabs.Builder = class {
 		verifyManifest.call(this, this._html_manifest);
 	}
 
+	/**
+	 * Process source files headers, substituting variables with data where applicable.
+	 */
+	_processSourceHeaders() {
+		console.log('%%%%%%%%%%');
+
+		this._sources_manifest.forEach(manifest_entry => {
+			console.log(manifest_entry);
+			const header_data = manifest_entry.header_data;
+			if (!header_data.has_header) { // this entry has no header, safe to skip
+				return;
+			}
+			let has_variables = false;
+			// first determine if the header contains variables
+			header_data.header.every(header_str => {
+				if (/%\S+%/.test(header_str)) {
+					has_variables = true;
+					return false;
+				}
+				return true;
+			});
+			console.log('HAS VARIABLES?', has_variables);
+			if (!has_variables) { // this entry has a header but no variables, so it's safe to skip
+				return;
+			}
+			// now we need to parse sources and extract JSDoc-style tags from it
+			//TODO
+		});
+
+		console.log('%%%%%%%%%%');
+	}
+
 	_buildStep_I_UpdateFiles() {
 	}
 
@@ -637,21 +672,33 @@ yabs.Builder = class {
 	 * Start the build.
 	 */
 	build() {
+		// prepare build step I
 		// build the file manifests. this creates three arrays with unified structures that
 		// have "source" and "destination" entries for each file. it also clones the
 		// header data into fresh arrays so they can be used for variable substitution
 		// on a per-source basis
 		this._buildManifests();
 
+		// prepare build step II
 		// now we have to verify the existence of all the files listed in manifests
 		// as sources, to make sure we don't have missing or unreadable source files
 		this._verifySourceFiles();
+
+		// prepare build step III
+		// process header data for sourcefiles
+		this._processSourceHeaders();
 
 		// build step I
 		// update files from files manifest; skip if empty
 		if (this._files_manifest.length > 0) {
 			this._logger.info('Updating files ...');
 		}
+
+		// build step II
+		// preprocess and compile sources
+
+		// build step III
+		// finally, bake updates into and clone html files
 	}
 };
 
@@ -665,12 +712,14 @@ yabs.BatchBuilder = class {
 	/**
 	 * BatchBuilder constructor.
 	 * 
+	 * @param {object} logger
 	 * @param {object} build_config
 	 * @param {object} build_params
 	 */
-	constructor(build_config, build_params) {
-		this.build_config = build_config;
-		this.build_params = build_params;
+	constructor(logger, build_config, build_params) {
+		this._logger = logger;
+		this._build_config = build_config;
+		this._build_params = build_params;
 	}
 
 	/**

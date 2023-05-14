@@ -8,7 +8,7 @@ Version v0.0.0
 
 ---
 
-Please note that this is a "dumb" build system which only deals with individual files. It does not combine source files and it does not understand `import`, `export` or `require`. It does not do any parsing of the sources (except HTML, to an extent). What it does is roughly the following:
+Please note that this is a "dumb" build system which only deals with individual files. It does not combine source files and it does not understand `import`, `export` or `require`. What it does is, roughly, the following:
 
 1. Clones the hierarchy of files provided, updating only newer files into the output directory, typically "build/"
 
@@ -18,7 +18,7 @@ Please note that this is a "dumb" build system which only deals with individual 
 
 ---
 
-Please double and triple check your requirements to see if this behavior and featureset fits your needs. If it does not, then use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does, because it is a system specifically tailored to my personal needs. You may use it as you see fit but please don't assume additional functionality to have a high chance of materializing.
+Please double and triple check your requirements to see if this behavior and featureset fits your needs. If it does not, then use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does, because it is a system specifically tailored to my personal needs. (You may use it as you see fit but please don't assume additional functionality to have a high chance of materializing.)
 
 ## Dependencies
 
@@ -39,7 +39,7 @@ YABS.js takes a single JSON file containing build instructions as an input. It t
 
 YABS.js will default to `build.json` or `build_all.json` if a build instructions file is not explicitly given via a parameter.
 
-To pass a custom build instructions file use a freestanding (not utilizing the `-` or `--` prefixes) parameter. The first such parameter is used as the instructions file, for example: `node yabs.js mybuildfile.json`
+To pass a custom build instructions file use a freestanding (not utilizing the `-` or `--` prefixes) parameter. The first such parameter is used as the instructions file, for example: `node build.js mybuildfile.json`
 
 ## Minimal example
 
@@ -60,7 +60,7 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 }
 ```
 
-- `"source_dir"` represents the source directory for the web application that we wish to build. The value `"./"` means the source directory is the same as the root directory which contains `yabs.js`.
+- `"source_dir"` represents the source directory for the web application that we wish to build. The value `"./"` means the source directory is the same as the root directory which contains `build.js`.
 
 - `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build` directory. If this directory doesn't exist at build time, it will be created.
 
@@ -68,7 +68,7 @@ To demonstrate basic usage, we will need a structure of a basic web application,
 
 - `"sources"` lists all JavaScript files that we want to build and process. 
 
-- `"files"` lists all other file associated with the web application. This can be a plain file list, or it can include basic pattern masks. In the example above, `"img/*"` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` would only capture all files within the directory, skipping subdirectories. A `*.txt` would only capture files with `.txt` extension in the directory, skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
+- `"files"` lists all other files associated with the web application. This can be a plain file list, or it can include basic pattern masks. In the example above, `"img/*"` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` would only capture all files within the directory, skipping subdirectories. A `*.txt` would only capture files with `.txt` extension in the directory, skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
 
 The hierarchy of files for this minimal build will look like this:
 ```
@@ -86,7 +86,7 @@ The hierarchy of files for this minimal build will look like this:
 
 For now, it doesn't really matter what these files contain. Let's imagine they contain some code.
 
-To build, simply call `node yabs.js` from the root and the build output will appear in the `build` folder. We don't need any additional parameters because YABS.js will default to `build.json` if it exists.
+To build, simply call `node build.js` from the root and the build output will appear in the `build` folder. We don't need any additional parameters because YABS.js will default to `build.json` if it exists.
 
 This is all we need to do to build a simple web application. In the following sections, additional capabilities of the build instructions file will be explained.
 
