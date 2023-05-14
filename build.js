@@ -639,7 +639,7 @@ yabs.Builder = class {
 			let has_variables = false;
 			// first determine if the header contains variables
 			header_data.header.every(header_str => {
-				if (/%\S+%/.test(header_str)) {
+				if (/%\S+%/.test(header_str) || /\$YEAR\$/.test(header_str)) {
 					has_variables = true;
 					return false;
 				}
@@ -649,8 +649,8 @@ yabs.Builder = class {
 			if (!has_variables) { // this entry has a header but no variables, so it's safe to skip
 				return;
 			}
-			// now we need to parse sources and extract JSDoc-style tags from it
-			//TODO
+			// TODO list all variables to extract
+			// TODO parse sources and extract JSDoc-style tags from it
 		});
 
 		console.log('%%%%%%%%%%');

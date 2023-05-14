@@ -10,15 +10,15 @@ Version v0.0.0
 
 Please note that this is a "dumb" build system which only deals with individual files. It does not combine source files and it does not understand `import`, `export` or `require`. What it does is, roughly, the following:
 
-1. Clones the hierarchy of files provided, updating only newer files into the output directory, typically "build/"
+1. Clones the hierarchy of files provided, updating only newer files, into the output directory (typically "build/").
 
-2. Minifies (and optionally, preprocesses) provided JavaScript files, optionally with a custom header
+2. Minifies (and optionally, preprocesses) provided JavaScript files, optionally with a custom header.
 
-3. Matches the `<script src="...">` attributes in the provided HTML files to JS files and update theose entries (to .min.js)
+3. Matches the `<script src="...">` attributes in the provided HTML files to JS files and update those entries (from .js to .min.js).
 
 ---
 
-Please double and triple check your requirements to see if this behavior and featureset fits your needs. If it does not, then use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does, because it is a system specifically tailored to my personal needs. (You may use it as you see fit but please don't assume additional functionality to have a high chance of materializing.)
+Please double and triple check your requirements to see if this behavior and featureset fits your needs. If it does not, then use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does, because it is a system specifically tailored to my personal needs. (You may use it as you see fit but please don't assume additional functionality to have a high probability of materializing.)
 
 ## Dependencies
 
@@ -98,7 +98,7 @@ There is more that we can accomplish with the build instructions file. Let's loo
 
 Sometimes, we want to add copyright information or other relevant information in the minified output scripts.
 
-To add a custom header to the output script, we can add a `"header"` entry to individual script files. We need to change the structure slightly, and wrap the listing into another object, where we refer to the script file with a `file` entry:
+To add a custom header to the output script, we can add a `"header"` entry to individual script files. We need to change the structure slightly, and wrap the listing into another object, where we refer to the script file with a `"file"` entry:
 
 ```JSON
   "sources": [
@@ -153,7 +153,7 @@ Then we can refer to it using `"use_header"` inside `"sources"`:
 
 We can add variables to output sourcefiles' headers. These are extracted from JSDoc tags in the sourcefile:
 
-At the top of the JS file, we will add something like this:
+At the top of the JS file, we will add something like this (it doesn't have to be the very top, but it should be somewhere within the first 200 lines):
 
 ```JS
 /**
@@ -208,7 +208,7 @@ To use the preprocessor, first add a `"variables"` entry to the build instructio
   }
 ```
 
-When the build is now invoked with the `-debug` parameter, the preprocessor variables listed under the `"debug"` entry will be applied to the build. Any number of variables can be listed and processed this way.
+Now, whenever the build is invoked with the `-debug` parameter, the preprocessor variables listed under the `"debug"` entry will be applied to the build. Any number of variables can be listed and processed this way.
 
 In the sourcefile, using the preprocessor might look something like this:
 
