@@ -672,6 +672,8 @@ yabs.Builder = class {
 	 * Start the build.
 	 */
 	build() {
+		this._logger.info('Preparing build ...');
+
 		// prepare build step I
 		// build the file manifests. this creates three arrays with unified structures that
 		// have "source" and "destination" entries for each file. it also clones the
@@ -689,8 +691,8 @@ yabs.Builder = class {
 		this._processSourceHeaders();
 
 		// build step I
-		// update files from files manifest; skip if empty
-		if (this._files_manifest.length > 0) {
+		// update files from files manifest
+		if (this._files_manifest.length > 0) { // skip if empty
 			this._logger.info('Updating files ...');
 		}
 

@@ -151,7 +151,7 @@ Then we can refer to it using `"use_header"` inside `"sources"`:
 
 ### 2. Adding variables to custom headers
 
-We can add variables to output sourcefiles' headers. These are extracted from JSDoc tags in the sourcefile:
+We can add variables to output sourcefiles' headers. These are extracted from JSDoc tags in the sourcefile.
 
 At the top of the JS file, we will add something like this (it doesn't have to be the very top, but it should be somewhere within the first 200 lines):
 
@@ -195,7 +195,7 @@ If there is a shared `"headers"` entry in the build instructions file and we use
 
 ### 3. Using the preprocessor
 
-To use the preprocessor, first add a `"variables"` entry to the build instructions JSON, for example:
+To use preprocessor variables, first add a `"variables"` entry to the build instructions JSON, for example:
 
  ```JSON
   "variables": {
@@ -208,7 +208,7 @@ To use the preprocessor, first add a `"variables"` entry to the build instructio
   }
 ```
 
-Now, whenever the build is invoked with the `-debug` parameter, the preprocessor variables listed under the `"debug"` entry will be applied to the build. Any number of variables can be listed and processed this way.
+Now, whenever the build is invoked with the `-debug` parameter, the preprocessor variables listed under `"debug"` entry will be applied to the build. Any number of variables can be listed and processed this way.
 
 In the sourcefile, using the preprocessor might look something like this:
 
@@ -216,9 +216,35 @@ In the sourcefile, using the preprocessor might look something like this:
 // #ifdef DEBUG
 console.log('compiled with -debug');
 // #else
-console.log('compiled with -nodebug (or omitting -debug)');
+console.log('compiled with -nodebug');
 // #endif
 ```
+
+Now if we build with `-debug`, `compiled with -debug` will be outputted. If we build with `-nodebug`, then `compiled with -nodebug` will be outputted.
+
+Here is the tricky bit. If we build without any single-prefix (`-`) parameters, then YABS.js will skip the preprocessor step entirely and in this case, both `compiled with -debug` and `compiled with -nodebug` will be outputted, because then all the code will be used.
+
+**However** - if we build with another variable, for example `-foo`, then again only `compiled with -nodebug` will be outputted. This is because the preprocessor will be used because `-foo` invokes it, but the preprocessor will use the bit after `// #else`, since `-debug` has not been used.
+
+We can avoid this quirky behavior by specifying the preprocessor directives in a more rigid way:
+
+```JS
+// #if DEBUG==true
+console.log('compiled with -debug');
+// #elif DEBUG==false
+console.log('compiled with -nodebug');
+// #endif
+```
+
+Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` part of the build instructions JSON.
+
+Another feature you can use with the preprocessor is includes:
+
+```JS
+// #include "path/to/file.js"
+```
+
+Sometimes, you may wish to use just includes and don't have any use for variables. By default, YABS.js will skip the preprocessor. If you only use includes and not variables, then you might force the use of preprocessor by using `--preprocess` in the command line. Alternatively, use an unused variable parameter (for example, `-x` or `-i`). This will have the same effect of triggering the use of the preprocessor.
 
 ### 4. Batch building
 
