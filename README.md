@@ -8,7 +8,7 @@ Version v0.0.0 (dev)
 
 ```
 PROGRESS TOWARDS 1.0.0
-[========  ] 80%
+[========= ] 90%
 ```
 
 **⛔ WORK IN PROGRESS - NOT USABLE RIGHT NOW ⛔**
@@ -36,7 +36,7 @@ The preprocessor package is only needed if the build leverages the preprocessor 
 
 ## How it works
 
-YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and starts the build process. If the build is successful, you should se a "Build successful!" message at the end of the output.
+YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and starts the build process. If the build is successful, you should see a "Build successful!" message at the end of the output.
 
 ## Basic usage
 

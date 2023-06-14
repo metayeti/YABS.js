@@ -23,10 +23,8 @@
 
 const path = require('path');
 const fs = require('fs');
-/*
 const { exec } = require('child_process');
 const { EOL } = require('os');
-*/
 
 /**
  * yabs.js namespace
@@ -44,7 +42,7 @@ yabs.version = '0.0.0'; // YABS.js version
 
 yabs.DEFAULT_BUILD_FILE = 'build.json';
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
-yabs.DEFAULT_OUTPUT_EXTENSION = '.min.js';
+yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -134,7 +132,6 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 		throw `Could not locate path: ${source_dir}`;
 	}
 	const source_dir_listing = fs.readdirSync(source_dir);
-	console.log('?????', source_dir);
 	source_dir_listing.forEach(listing_entry => {
 		const nested_source_path = path.join(source_dir, listing_entry);
 		const nested_destination_path = path.join(destination_dir, listing_entry);
@@ -632,10 +629,12 @@ yabs.Builder = class {
 					// (because we need to search/replace variables later on)
 					header_data.header = [...listing_entry.header];
 				}
-				// add to manifest
+				// add file to manifest
+				const parsed_file_entry = path.parse(listing_entry.file);
+				const output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
 				this._sources_manifest.push({
 					source: path.join(this._source_dir, listing_entry.file),
-					destination: path.join(this._destination_dir, listing_entry.file),
+					destination: path.join(this._destination_dir, output_filename),
 					header_data: header_data
 				});
 			});
@@ -718,10 +717,9 @@ yabs.Builder = class {
 	}
 
 	_buildStep_I_UpdateFiles() {
-		this._logger.info('Updating files ...');
 		this._files_manifest.forEach(manifest_entry => {
 			this._logger.out_raw(`${manifest_entry.destination} ...`);
-			// check if directory exists
+			// check if destination directory exists
 			const dir = path.dirname(manifest_entry.destination);
 			if (!yabs.util.exists(dir)) {
 				// directory doesn't exist yet, create it
@@ -738,7 +736,43 @@ yabs.Builder = class {
 	_buildStep_II_a_PreprocessSources() {
 	}
 
-	_buildStep_II_b_CompileSources() {
+	async _buildStep_II_b_CompileSources() {
+		function compileOneSource(input_file, output_file) {
+			return new Promise((resolve, reject) => {
+				exec(`uglifyjs ${input_file} --compress --mangle -o ${output_file}`, (err) => {
+					if (err) {
+						this._logger.out_raw('\n\n');
+						reject(err);
+					}
+					else {
+						resolve();
+					}
+				});
+			});
+			/*
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					resolve();
+				}, 1000);
+			});
+			*/
+		}
+
+		//this._sources_manifest.forEach(manifest_entry => {
+		for (const manifest_entry of this._sources_manifest) {
+			this._logger.out_raw(`${manifest_entry.destination} ...`);
+			// check if destination directory exists
+			const dir = path.dirname(manifest_entry.destination);
+			if (!yabs.util.exists(dir)) {
+				// directory doesn't exist yet, create it
+				fs.mkdirSync(dir, { recursive: true });
+			}
+			// compile source
+			await compileOneSource.call(this, manifest_entry.source, manifest_entry.destination);
+			this._logger.ok();
+			this._n_files_updated += 1;
+		};
+		this._logger.endl();
 	}
 
 	_buildStep_III_BakeHTMLFiles() {
@@ -747,7 +781,7 @@ yabs.Builder = class {
 	/**
 	 * Start the build.
 	 */
-	build() {
+	async build() {
 		this._logger.info('Preparing build ...');
 
 		// prepare build step I
@@ -766,7 +800,7 @@ yabs.Builder = class {
 		// process header data for sourcefiles
 		this._processSourceHeaders();
 
-
+/*
 		console.log('FILES MANIFEST');
 		console.log(this._files_manifest);
 
@@ -775,10 +809,12 @@ yabs.Builder = class {
 
 		console.log('HTML MANIFEST');
 		console.log(this._html_manifest);
+*/
 
 		// build step I
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty
+			this._logger.info('Updating files ...');
 			this._buildStep_I_UpdateFiles();
 		}
 
@@ -786,6 +822,12 @@ yabs.Builder = class {
 		// preprocess and compile sources
 		if (this._sources_manifest.length > 0) { // skip if empty
 			this._logger.info('Compiling sources ...');
+
+			const use_preprocessor = false;
+
+			await this._buildStep_II_b_CompileSources();
+
+			console.log('(compile step done)');
 		}
 
 		// build step III
@@ -839,7 +881,7 @@ yabs.App = class {
 	/**
 	 * Program entry point.
 	 */
-	main(argv) {
+	async main(argv) {
 		// parse build parameters
 		const build_params = {
 			option: [], // --option parameters
@@ -891,11 +933,13 @@ yabs.App = class {
 			// check if this is a batch build
 			if (build_config.isBatchBuild()) {
 				// this is a batch build
-				(new yabs.BatchBuilder(this._logger, build_config, build_params)).build();
+				const builder = new yabs.BatchBuilder(this._logger, build_config, build_params);
+				await builder.build();
 			}	
 			else {
 				// this is a normal build
-				(new yabs.Builder(this._logger, build_config, build_params)).build();
+				const builder = new yabs.Builder(this._logger, build_config, build_params);
+				await builder.build();
 			}
 		}
 		catch(e) {
