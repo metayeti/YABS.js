@@ -1,0 +1,7 @@
+body {
+	background-color: #F0E68C;
+	overflow: hidden;
+}
+#cat, #dog {
+	position: absolute;
+}

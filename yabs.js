@@ -370,6 +370,11 @@ yabs.BuildConfig = class {
 								source_entry_object.file = source_entry.file;
 							}
 						}
+						if (source_entry.hasOwnProperty('output_file')) {
+							if (typeof source_entry.output_file === 'string') {
+								source_entry_object.output_file = source_entry.output_file;
+							}
+						}
 						if (source_entry.hasOwnProperty('header')) {
 							if (source_entry.header instanceof Array) {
 								if (!source_entry.header.every(element => typeof element === 'string')) {
@@ -394,6 +399,23 @@ yabs.BuildConfig = class {
 									}
 									else if (typeof header_ref === 'string') {
 										source_entry_object.header = [ header_ref ];
+									}
+								}
+							}
+						}
+						if (source_entry.hasOwnProperty('variables')) {
+							source_entry_object.variables = {};
+							if (typeof source_entry.variables === 'object' &&
+								!(source_entry.variables instanceof Array) &&
+								source_entry.variables !== null) {
+
+								for (const variable_key in source_entry.variables) {
+									const variable_data = source_entry.variables[variable_key];
+									if (variable_data instanceof Array) {
+										if (!variable_data.every(element => typeof element === 'string')) {
+											throw 'Every element in "variables" listing has to be a String type!';
+										}
+										source_entry_object.variables[variable_key] = variable_data;
 									}
 								}
 							}
@@ -427,6 +449,7 @@ yabs.BuildConfig = class {
 			this._files_listing = [];
 		}
 		// extract variables
+		/*
 		this._variables = {};
 		if (json_data.hasOwnProperty('variables')) {
 			for (const variable_key in json_data.variables) {
@@ -439,6 +462,7 @@ yabs.BuildConfig = class {
 				}
 			}
 		}
+		*/
 		///debug
 		//console.log('------------------------');
 		//console.log('source_dir:', this._source_dir);
@@ -518,9 +542,11 @@ yabs.BuildConfig = class {
 	 * 
 	 * @returns {object}
 	 */
+	/*
 	getVariables() {
 		return this._variables;
 	}
+	*/
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -623,20 +649,36 @@ yabs.Builder = class {
 					// disallow any masks
 					return;
 				}
+				// process header
 				const has_header = listing_entry.hasOwnProperty('header');
 				const header_data = { has_header: has_header };
 				if (has_header) {
 					// make sure to clone the array and not use a reference
-					// (because we need to search/replace variables later on)
+					// (because we may need to search/replace variables later on)
 					header_data.header = [...listing_entry.header];
 				}
+				// process variables
+				const has_variables = listing_entry.hasOwnProperty('variables');
+				const variables_data = { has_variables: has_variables };
+				if (has_variables) {
+					variables_data.variables = listing_entry.variables;
+					console.log('VARIABLES', variables_data.variables);
+				}
 				// add file to manifest
+				let output_filename;
 				const parsed_file_entry = path.parse(listing_entry.file);
-				const output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
+				if (listing_entry.output_file) {
+					const parsed_output_file = path.parse(listing_entry.output_file);
+					output_filename = path.join(parsed_file_entry.dir, parsed_output_file.base);
+				}
+				else {
+					output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
+				}
 				this._sources_manifest.push({
 					source: path.join(this._source_dir, listing_entry.file),
 					destination: path.join(this._destination_dir, output_filename),
-					header_data: header_data
+					header_data: header_data,
+					variables_data: variables_data
 				});
 			});
 		}
@@ -751,8 +793,6 @@ yabs.Builder = class {
 				});
 			});
 		}
-
-		//this._sources_manifest.forEach(manifest_entry => {
 		for (const manifest_entry of this._sources_manifest) {
 			this._logger.out_raw(`${manifest_entry.destination} ...`);
 			// check if destination directory exists
@@ -805,7 +845,6 @@ yabs.Builder = class {
 		// process header data for sourcefiles
 		this._processSourceHeaders();
 
-/*
 		console.log('FILES MANIFEST');
 		console.log(this._files_manifest);
 
@@ -815,7 +854,6 @@ yabs.Builder = class {
 		console.log('HTML MANIFEST');
 		console.log(this._html_manifest);
 return;
-*/
 		// build step I
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty

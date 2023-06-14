@@ -8,7 +8,7 @@ Version v0.0.0 (dev)
 
 ```
 PROGRESS TOWARDS 1.0.0
-[========= ] 90%
+[========= ] 92%
 ```
 
 **⛔ WORK IN PROGRESS - NOT USABLE RIGHT NOW ⛔**
@@ -226,17 +226,22 @@ You can use a custom output filename by adding a `"output_file"` entry into the 
 
 ### 4. Using the preprocessor
 
-To use preprocessor variables, first add a `"variables"` entry to the build instructions JSON, for example:
+To use preprocessor variables, first add a `"variables"` entry to individual sources in the build instructions JSON, for example:
 
  ```JSON
-  "variables": {
-    "debug": [
-      "DEBUG=true"
-    ]
-  }
+  "sources": [
+    {
+      "file": "src/script.js",
+      "variables": {
+        "debug": [
+          "DEBUG=true"
+        ]
+      }
+    }
+  ]
 ```
 
-Now, whenever the build is invoked with the `-debug` parameter, the preprocessor variables listed under `"debug"` entry will be applied to the build. Any number of variables can be listed and processed this way.
+Now, whenever the build is invoked with the `-debug` parameter, the preprocessor variables listed under `"debug"` entry will be applied when compiling `src/script1.js`. Any number of variables can be listed and processed this way. Same variables can be used across multiple source entries, in that case you can invoke the preprocessor for many sources at once with a single parameter.
 
 In the sourcefile, using the preprocessor might look something like this:
 
@@ -248,15 +253,15 @@ console.log('not compiled with -debug');
 // #endif
 ```
 
-Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` part of the build instructions JSON. This entry defines the variables and their values used for this build.
+Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` entry inside sources listing of the build instructions JSON. This entry defines the variables and their values used for this build.
 
-Another feature you can use with the preprocessor is includes:
+Another feature you can use with the preprocessor are external file includes:
 
 ```JS
 // #include "path/to/file.js"
 ```
 
-Sometimes, you may wish to use just includes and don't have any use for variables. By default, YABS.js will skip the preprocessor step. If you only use includes and not variables, then you need to force the use of preprocessor with `--preprocess`. Alternatively, use an unused variable parameter (for example, `-p` for "preprocess"). This will have the same effect of triggering the use of the preprocessor.
+If you want to use just includes without variables, you have to invoke the preprocessor manually. (By default, YABS.js will skip the preprocessor step unless variables are invoked.) You can force the use of preprocessor with `--preprocess`. Alternatively, use an unused variable parameter (for example, `-p` for "preprocess"). This will have the same effect of triggering the use of the preprocessor.
 
 ### 5. Batch building
 
@@ -274,7 +279,6 @@ Any number of build instructions files can be bundled into the batch build. Note
 ## Command line parameters
 
 Available parameters are:
-
 
 - `--preprocess` - Forces the use of preprocessor.
 - `--nofail` - In a [batch build](#5-batch-building), keep going if one of the builds fails.

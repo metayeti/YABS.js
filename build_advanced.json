@@ -17,11 +17,21 @@
 	"sources": [
 		{
 			"file": "src/script1.js",
+			"output_file": "script1_renamed.min.js",
 			"use_header": "src1_header"
 		},
 		{
 			"file": "src/script2.js",
-			"use_header": "src2_header"
+			"use_header": "src2_header",
+			"variables": {
+				"debug": [
+					"DEBUG=true"
+				],
+				"test": [
+					"TESTVAR1=true",
+					"TESTVAR2=false"
+				]
+			}
 		},
 		"src/script3.js",
 		{
@@ -37,14 +47,5 @@
 		"some_file.txt",
 		"images/*.png",
 		"data/*"
-	],
-	"variables": {
-		"debug": [
-			"DEBUG=true"
-		],
-		"test": [
-			"TESTVAR1=true",
-			"TESTVAR2=false"
-		]
-	}
+	]
 }
