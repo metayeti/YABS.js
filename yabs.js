@@ -43,6 +43,7 @@ yabs.version = '0.0.0'; // YABS.js version
 yabs.DEFAULT_BUILD_FILE = 'build.json';
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
+yabs.TEMP_FILE_EXTENSION = '.tmp';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -749,13 +750,6 @@ yabs.Builder = class {
 					}
 				});
 			});
-			/*
-			return new Promise((resolve, reject) => {
-				setTimeout(() => {
-					resolve();
-				}, 1000);
-			});
-			*/
 		}
 
 		//this._sources_manifest.forEach(manifest_entry => {
@@ -767,8 +761,19 @@ yabs.Builder = class {
 				// directory doesn't exist yet, create it
 				fs.mkdirSync(dir, { recursive: true });
 			}
-			// compile source
-			await compileOneSource.call(this, manifest_entry.source, manifest_entry.destination);
+			// compile source into temp file
+			const source_file = manifest_entry.source;
+			const destination_file = manifest_entry.destination;
+			const destination_temp_file = destination_file + yabs.TEMP_FILE_EXTENSION;
+			await compileOneSource.call(this, source_file, destination_temp_file);
+			// output header + compiled source into destination file
+			const header_data = manifest_entry.header_data;
+			const compiled_file_data = fs.readFileSync(destination_temp_file, { encoding: 'utf8', flag: 'r' });
+			const output_file_data = (header_data.has_header) ? header_data.header.join(EOL) + EOL + compiled_file_data : compiled_file_data;
+			fs.writeFileSync(destination_file, output_file_data, { encoding: 'utf8', flag: 'w' });
+			// remove temp file
+			fs.rmSync(destination_temp_file, { force: true });
+			// all done
 			this._logger.ok();
 			this._n_files_updated += 1;
 		};
@@ -809,8 +814,8 @@ yabs.Builder = class {
 
 		console.log('HTML MANIFEST');
 		console.log(this._html_manifest);
+return;
 */
-
 		// build step I
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty
