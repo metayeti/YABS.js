@@ -162,7 +162,7 @@ Then we can refer to it using `"use_header"` inside `"sources"`:
 
 We can add variables to output sourcefiles' headers. These are extracted from JSDoc tags in the sourcefile.
 
-At the top of the JS file, we will add something like this (it doesn't have to be the very top, but it should be somewhere within the first 200 lines):
+At the top of the JS file, we will add something like this:
 
 ```JS
 /**

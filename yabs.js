@@ -23,8 +23,10 @@
 
 const path = require('path');
 const fs = require('fs');
+/*
 const { exec } = require('child_process');
 const { EOL } = require('os');
+*/
 
 /**
  * yabs.js namespace
@@ -98,10 +100,24 @@ yabs.util.getModifiedTime = function(source_path) {
 };
 
 /**
+ * Determines whether or not source filename is newer than destination filename.
+ *
+ * @param {string} source_path
+ * @param {string} destination_path
+ *
+ * @returns {bool}
+ */
+yabs.util.isSourceNewer = function(source_path, destination_path) {
+	const dtime_modified_source = (Date.now() - yabs.util.getModifiedTime(source_path));
+	const dtime_modified_destination = (Date.now() - yabs.util.getModifiedTime(destination_path));
+	return (dtime_modified_destination - dtime_modified_source) >= 1000;
+};
+
+/**
  * Recursively generates a list of files based on given source and destination directories.
  * Skip source files that are both older than, and have a correlating existing destination file.
- * (This makes it so that repeated builds don't keep cloning already existing files for which there
- * is no need to be repeatedly updated.)
+ * (This makes it so that repeated builds don't keep cloning already existing files for which
+ * there is no need to be repeatedly updated.)
  * 
  * @param {string} source_dir - Source relative directory.
  * @param {string} destination_dir - Destination relative directory.
@@ -118,6 +134,7 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 		throw `Could not locate path: ${source_dir}`;
 	}
 	const source_dir_listing = fs.readdirSync(source_dir);
+	console.log('?????', source_dir);
 	source_dir_listing.forEach(listing_entry => {
 		const nested_source_path = path.join(source_dir, listing_entry);
 		const nested_destination_path = path.join(destination_dir, listing_entry);
@@ -138,13 +155,10 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 					return;
 				}
 			}
-			// check timestamps
 			if (yabs.util.exists(nested_destination_path)) { // destination file already exists
-				const dtime_modified_source = (Date.now() - yabs.util.getModifiedTime(nested_source_path));
-				const dtime_modified_destination = (Date.now() - yabs.util.getModifiedTime(nested_destination_path));
-				if ((dtime_modified_destination - dtime_modified_source) < 1000) {
-					// source file is not newer than destination, we can skip this file
-					///include_file = true;
+				// check file timestamps
+				if (!yabs.util.isSourceNewer(nested_source_path, nested_destination_path)) {
+					// source file is not newer than destination, skip this file
 					return;
 				}
 			}
@@ -156,6 +170,30 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 	});
 	// return the compiled list
 	return list;
+};
+
+/**
+ * Parses JSDoc-style tags from a source file.
+ *
+ * @returns {array} Array of [key, value] pairs.
+ */
+yabs.util.parseJSDocTagsFromFile = function(source_file) {
+	const kvs = [];
+	const jsdoc_regex = /\/\*\*(.*?)\*\//gs;
+	const tag_regex = /\*\s*@(\w+)\s+(.+)/g;
+	const file_content = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
+	const jsdoc_regex_matches = file_content.match(jsdoc_regex);
+	if (jsdoc_regex_matches) {
+		jsdoc_regex_matches.forEach(match => {
+			let tag_match;
+			while ((tag_match = tag_regex.exec(match)) !== null) {
+				const tag_key = tag_match[1];
+				const tag_value = tag_match[2];
+				kvs.push([tag_key, tag_value]);
+			}
+		});
+	}
+	return kvs;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,6 +231,15 @@ yabs.Logger = class {
 	 */
 	out_raw(message) {
 		process.stdout.write(message);
+	}
+	/**
+	 * Ends output with 'ok'.
+	 */
+	ok() {
+		process.stdout.write(
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}` +
+			`ok${this._OUTPUT_RESET}\n`
+		);
 	}
 	/**
 	 * Prints an info message.
@@ -263,7 +310,7 @@ yabs.BuildConfig = class {
 	 */
 	constructor(source_file) {
 		// parse source JSON
-		const file_data = fs.readFileSync(source_file);
+		const file_data = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
 		const json_data = JSON.parse(file_data);
 		// check if this is a batch build
 		if (json_data.hasOwnProperty('batch_build')) {
@@ -404,7 +451,6 @@ yabs.BuildConfig = class {
 		//console.log('variables:', this._variables);
 		//console.log('------------------------');
 		///debug
-			
 	}
 	/**
 	 * Returns whether or not this is a batch build.
@@ -506,6 +552,8 @@ yabs.Builder = class {
 		this._files_manifest = null;
 		this._sources_manifest = null;
 		this._html_manifest = null;
+		// build statistics
+		this._n_files_updated = 0;
 	}
 
 	/**
@@ -542,15 +590,32 @@ yabs.Builder = class {
 						}
 					}
 				}
-				else { // plain path, just add it to the manifest
-					this._files_manifest.push({
-						source: path.join(this._source_dir, listing_entry),
-						destination: path.join(this._destination_dir, listing_entry)
-					});
+				else { // plain path
+					const plain_file_source = path.join(this._source_dir, listing_entry);
+					const plain_file_destination = path.join(this._destination_dir, listing_entry);
+					if (yabs.util.isDirectory(plain_file_source)) {
+						// this is a directory
+						return;
+					}
+					let include_plain_file = false;
+					if (!yabs.util.exists(plain_file_destination)) {
+						// destination file does not exist yet
+						include_plain_file = true;
+					}
+					else {
+						// check if source is newer than destination
+						if (yabs.util.isSourceNewer(plain_file_source, plain_file_destination)) {
+							include_plain_file = true;
+						}
+					}
+					if (include_plain_file) {
+						this._files_manifest.push({
+							source: plain_file_source,
+							destination: plain_file_destination
+						});
+					}
 				}
 			});
-			console.log('FILES MANIFEST');
-			console.log(this._files_manifest);
 		}
 
 		function buildSourcesManifest() {
@@ -563,8 +628,8 @@ yabs.Builder = class {
 				const has_header = listing_entry.hasOwnProperty('header');
 				const header_data = { has_header: has_header };
 				if (has_header) {
-					// make sure it's an array clone and not a reference
-					// (because we might need to search/replace variables later on)
+					// make sure to clone the array and not use a reference
+					// (because we need to search/replace variables later on)
 					header_data.header = [...listing_entry.header];
 				}
 				// add to manifest
@@ -574,8 +639,6 @@ yabs.Builder = class {
 					header_data: header_data
 				});
 			});
-			console.log('SOURCES MANIFEST');
-			console.log(this._sources_manifest);
 		}
 
 		function buildHTMLManifest() {
@@ -591,8 +654,6 @@ yabs.Builder = class {
 					destination: path.join(this._destination_dir, listing_entry)
 				});
 			});
-			console.log('HTML MANIFEST');
-			console.log(this._html_manifest);
 		}
 
 		this._files_manifest = [];
@@ -626,16 +687,13 @@ yabs.Builder = class {
 	 * Process source files headers, substituting variables with data where applicable.
 	 */
 	_processSourceHeaders() {
-		console.log('%%%%%%%%%%');
-
 		this._sources_manifest.forEach(manifest_entry => {
-			console.log(manifest_entry);
 			const header_data = manifest_entry.header_data;
 			if (!header_data.has_header) { // this entry has no header, safe to skip
 				return;
 			}
 			let has_variables = false;
-			// first determine if the header contains variables
+			// determine if the header contains variables
 			header_data.header.every(header_str => {
 				if (/%\S+%/.test(header_str) || /\$YEAR\$/.test(header_str)) {
 					has_variables = true;
@@ -643,18 +701,38 @@ yabs.Builder = class {
 				}
 				return true;
 			});
-			console.log('HAS VARIABLES?', has_variables);
 			if (!has_variables) { // this entry has a header but no variables, so it's safe to skip
 				return;
 			}
-			// TODO list all variables to extract
-			// TODO parse sources and extract JSDoc-style tags from it
+			// extract JSDoc-style tags from sourcefile
+			const source_file = manifest_entry.source;
+			const parsed_variables = yabs.util.parseJSDocTagsFromFile(source_file);
+			// subtitute variables in header with extracted tags
+			for (let i = 0; i < header_data.header.length; ++i) {
+				for (let j = 0; j < parsed_variables.length; j++) {
+					const variable_entry = parsed_variables[j];
+					header_data.header[i] = header_data.header[i].replace(new RegExp(`%${variable_entry[0]}%`, 'g'), variable_entry[1]);
+				}
+			}
 		});
-
-		console.log('%%%%%%%%%%');
 	}
 
 	_buildStep_I_UpdateFiles() {
+		this._logger.info('Updating files ...');
+		this._files_manifest.forEach(manifest_entry => {
+			this._logger.out_raw(`${manifest_entry.destination} ...`);
+			// check if directory exists
+			const dir = path.dirname(manifest_entry.destination);
+			if (!yabs.util.exists(dir)) {
+				// directory doesn't exist yet, create it
+				fs.mkdirSync(dir, { recursive: true });
+			}
+			// copy file
+			fs.copyFileSync(manifest_entry.source, manifest_entry.destination);
+			this._logger.ok();
+			this._n_files_updated += 1;
+		});
+		this._logger.endl();
 	}
 
 	_buildStep_II_a_PreprocessSources() {
@@ -688,17 +766,33 @@ yabs.Builder = class {
 		// process header data for sourcefiles
 		this._processSourceHeaders();
 
+
+		console.log('FILES MANIFEST');
+		console.log(this._files_manifest);
+
+		console.log('SOURCES MANIFEST');
+		console.log(this._sources_manifest);
+
+		console.log('HTML MANIFEST');
+		console.log(this._html_manifest);
+
 		// build step I
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty
-			this._logger.info('Updating files ...');
+			this._buildStep_I_UpdateFiles();
 		}
 
 		// build step II
 		// preprocess and compile sources
+		if (this._sources_manifest.length > 0) { // skip if empty
+			this._logger.info('Compiling sources ...');
+		}
 
 		// build step III
 		// finally, bake updates into and clone html files
+		if (this._html_manifest.length > 0) { // skip if empty
+			this._logger.info('todo');
+		}
 	}
 };
 
