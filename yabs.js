@@ -473,21 +473,6 @@ yabs.BuildConfig = class {
 		if (!this._files_listing) {
 			this._files_listing = [];
 		}
-		// extract variables
-		/*
-		this._variables = {};
-		if (json_data.hasOwnProperty('variables')) {
-			for (const variable_key in json_data.variables) {
-				const variable_data = json_data.variables[variable_key];
-				if (variable_data instanceof Array) {
-					if (!variable_data.every(element => typeof element === 'string')) {
-						throw 'Every element in "variables" entry listing has to be a String type!';
-					}
-					this._variables[variable_key] = variable_data;
-				}
-			}
-		}
-		*/
 		///debug
 		//console.log('------------------------');
 		//console.log('source_dir:', this._source_dir);
@@ -561,17 +546,6 @@ yabs.BuildConfig = class {
 	getFilesListing() {
 		return this._files_listing;
 	}
-
-	/**
-	 * Returns the variables collection.
-	 * 
-	 * @returns {object}
-	 */
-	/*
-	getVariables() {
-		return this._variables;
-	}
-	*/
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -688,7 +662,7 @@ yabs.Builder = class {
 				if (has_variables) {
 					variables_data.variables = listing_entry.variables;
 				}
-				// add file to manifest
+				// process output filename
 				let output_filename;
 				const parsed_file_entry = path.parse(listing_entry.file);
 				if (listing_entry.output_file) {
@@ -698,9 +672,16 @@ yabs.Builder = class {
 				else {
 					output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
 				}
+				const source_full_path = path.join(this._source_dir, listing_entry.file);
+				const destination_full_path = path.join(this._destination_dir, output_filename);
+				// make sure source is not the same as destination
+				if (source_full_path === destination_full_path) {
+					throw `Source file: "${source_full_path}" cannot be the same as the destination!`;
+				}
+				// add file to manifest
 				this._sources_manifest.push({
-					source: path.join(this._source_dir, listing_entry.file),
-					destination: path.join(this._destination_dir, output_filename),
+					source: source_full_path,
+					destination: destination_full_path,
 					header_data: header_data,
 					variables_data: variables_data
 				});

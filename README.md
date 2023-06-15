@@ -60,7 +60,7 @@ To demonstrate basic usage, we will need a structure of a basic web application,
   "destination_dir": "build/",
   "html": "index.html",
   "sources": [
-    "src/srcipt.js"
+    "src/script.js"
   ],
   "files": [
     "css/style.css",
@@ -251,7 +251,7 @@ Similarly to how the `"headers"` entry works, we can also add a global `"variabl
       "debug": [
         "DEBUG=true"
       ]
-	}
+    }
   }
 ```
 
@@ -284,7 +284,18 @@ Another feature you can use with the preprocessor are external file includes:
 // #include "path/to/file.js"
 ```
 
-If you want to use just includes without variables, you have to invoke the preprocessor manually. (By default, YABS.js will skip the preprocessor step unless variables are invoked.) You can force the use of preprocessor with `--preprocess`. Alternatively, use an unused variable parameter (for example, `-p` for "preprocess"). This will have the same effect of triggering the use of the preprocessor.
+By default, YABS.js will only run the preprocessor step whenever a variable group is both associated with a script file and invoked via the command line. If we want to leverage the preprocessor for includes only, we have to force the use of the preprocessor. We can do so by adding a `"preprocess"` entry to our source listing, and setting it to `true`:
+
+```JS
+  "sources": [
+    {
+      "file": "src/script.js",
+      "preprocess": true
+    }
+  ]
+```
+
+This will force the compilation step for this particular source to always use the preprocessor.
 
 ### 5. Batch building
 
@@ -303,7 +314,6 @@ Any number of build instructions files can be bundled into the batch build. Note
 
 Available parameters are:
 
-- `--preprocess` - Forces the use of preprocessor.
 - `--nofail` - In a [batch build](#5-batch-building), keep going if one of the builds fails.
 
 ## Thanks
