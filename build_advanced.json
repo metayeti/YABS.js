@@ -6,8 +6,16 @@
 		"src2_header": [
 			"/* script2, minified",
 			" * version: %version%",
-			" * author: %author% */"
+			" * author: %author% (c) $YEAR$ */"
 		]
+	},
+	"variables": {
+		"src1_variables": {
+			"testvars": [
+				"TESTVAR1=true",
+				"TESTVAR2=false"
+			]
+		}
 	},
 	"html": [
 		"index.html",
@@ -18,7 +26,8 @@
 		{
 			"file": "src/script1.js",
 			"output_file": "script1_renamed.min.js",
-			"use_header": "src1_header"
+			"use_header": "src1_header",
+			"use_variables": "src1_variables"
 		},
 		{
 			"file": "src/script2.js",

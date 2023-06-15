@@ -334,10 +334,12 @@ yabs.BuildConfig = class {
 			throw 'Build instructions file is missing the destination_dir entry!';
 		}
 		this._destination_dir = json_data.destination_dir;
+		/*
 		// ensure that source and destination directories are unique
 		if (path.resolve(this._source_dir) === path.resolve(this._destination_dir)) {
 			throw 'Source directory cannot be the same as destination directory!';
 		}
+		*/
 		// extract html listing
 		if (json_data.hasOwnProperty('html')) {
 			if (json_data.html instanceof Array) {
@@ -404,11 +406,11 @@ yabs.BuildConfig = class {
 							}
 						}
 						if (source_entry.hasOwnProperty('variables')) {
-							source_entry_object.variables = {};
 							if (typeof source_entry.variables === 'object' &&
 								!(source_entry.variables instanceof Array) &&
 								source_entry.variables !== null) {
 
+								source_entry_object.variables = {};
 								for (const variable_key in source_entry.variables) {
 									const variable_data = source_entry.variables[variable_key];
 									if (variable_data instanceof Array) {
@@ -416,6 +418,29 @@ yabs.BuildConfig = class {
 											throw 'Every element in "variables" listing has to be a String type!';
 										}
 										source_entry_object.variables[variable_key] = variable_data;
+									}
+								}
+							}
+						}
+						else if (source_entry.hasOwnProperty('use_variables')) {
+							// using variables from reference
+							if (json_data.variables && typeof source_entry.use_variables === 'string') {
+								if (json_data.variables.hasOwnProperty(source_entry.use_variables)) {
+									const variables_ref = json_data.variables[source_entry.use_variables];
+									if (typeof variables_ref === 'object' &&
+										!(variables_ref instanceof Array) &&
+										variables_ref !== null) {
+
+										source_entry_object.variables = {};
+										for (const variable_key in variables_ref) {
+											const variable_data = variables_ref[variable_key];
+											if (variable_data instanceof Array) {
+												if (!variable_data.every(element => typeof element === 'string')) {
+													throw 'Every element in "variables" listing has to be a String type!';
+												}
+												source_entry_object.variables[variable_key] = variable_data;
+											}
+										}
 									}
 								}
 							}
@@ -662,7 +687,6 @@ yabs.Builder = class {
 				const variables_data = { has_variables: has_variables };
 				if (has_variables) {
 					variables_data.variables = listing_entry.variables;
-					console.log('VARIABLES', variables_data.variables);
 				}
 				// add file to manifest
 				let output_filename;
@@ -749,12 +773,15 @@ yabs.Builder = class {
 			// extract JSDoc-style tags from sourcefile
 			const source_file = manifest_entry.source;
 			const parsed_variables = yabs.util.parseJSDocTagsFromFile(source_file);
-			// subtitute variables in header with extracted tags
+			// subtitute variables in header
 			for (let i = 0; i < header_data.header.length; ++i) {
+				// subtitute variables with extracted tags
 				for (let j = 0; j < parsed_variables.length; j++) {
 					const variable_entry = parsed_variables[j];
 					header_data.header[i] = header_data.header[i].replace(new RegExp(`%${variable_entry[0]}%`, 'g'), variable_entry[1]);
 				}
+				// special variable
+				header_data.header[i] = header_data.header[i].replace(/\$YEAR\$/g, new Date().getFullYear());
 			}
 		});
 	}
@@ -845,6 +872,7 @@ yabs.Builder = class {
 		// process header data for sourcefiles
 		this._processSourceHeaders();
 
+/*
 		console.log('FILES MANIFEST');
 		console.log(this._files_manifest);
 
@@ -853,7 +881,8 @@ yabs.Builder = class {
 
 		console.log('HTML MANIFEST');
 		console.log(this._html_manifest);
-return;
+		*/
+///return;
 		// build step I
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty

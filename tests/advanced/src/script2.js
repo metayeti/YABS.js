@@ -5,7 +5,7 @@
 // random comment
 
 /**
- * @author Scooby Doo
+ * @author Scooby
  * @version 2.0.5
  */
 

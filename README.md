@@ -23,9 +23,9 @@ Please note that this is a "dumb" build system that only deals with individual f
 
 3. Matches `<script src="...">` attributes in the HTML files to the associated JS files, and updates those entries to match compiled filenames (basically changes extensions in those from .js to .min.js).
 
----
+Please double (and triple) check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does.
 
-Please double (and triple) check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded much beyond the scope of what it currently does.
+---
 
 ## Dependencies
 
@@ -107,7 +107,7 @@ There is more that we can accomplish with the build instructions file. Let's loo
 
 Sometimes, we want to add copyright information or other relevant information in the minified output scripts.
 
-To add a custom header to the output script, we can add a `"header"` entry to individual script files. We need to change the structure slightly, and wrap the listing into another object, where we refer to the script file with a `"file"` entry:
+To add a custom header to the output script, we can add a `"header"` entry to individual `"sources"` entries. We need to change the structure slightly, and wrap the listing into another object, where we refer to the script file with a `"file"` entry:
 
 ```JSON
   "sources": [
@@ -226,7 +226,7 @@ You can use a custom output filename by adding a `"output_file"` entry into the 
 
 ### 4. Using the preprocessor
 
-To use preprocessor variables, first add a `"variables"` entry to individual sources in the build instructions JSON, for example:
+To use preprocessor variables, first add a `"variables"` entry to individual `"sources"` entries in the build instructions JSON, for example:
 
  ```JSON
   "sources": [
@@ -242,6 +242,29 @@ To use preprocessor variables, first add a `"variables"` entry to individual sou
 ```
 
 Now, whenever the build is invoked with the `-debug` parameter, the preprocessor variables listed under `"debug"` entry will be applied when compiling `src/script1.js`. Any number of variables can be listed and processed this way. Same variables can be used across multiple source entries, in that case you can invoke the preprocessor for many sources at once with a single parameter.
+
+Similarly to how the `"headers"` entry works, we can also add a global `"variables"` entry to the build instructions file that we can use across many different `"sources"` entries:
+
+```JSON
+  "variables": {
+    "some_variables_key": {
+      "debug": [
+        "DEBUG=true"
+      ]
+	}
+  }
+```
+
+Now we can refer to it using `"use_variables"` inside `"sources"`:
+
+ ```JSON
+  "sources": [
+    {
+      "file": "src/script.js",
+      "use_variables": "some_variables_key"
+    }
+  ]
+```
 
 In the sourcefile, using the preprocessor might look something like this:
 
