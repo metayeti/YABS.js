@@ -445,6 +445,11 @@ yabs.BuildConfig = class {
 								}
 							}
 						}
+						if (source_entry.hasOwnProperty('preprocess')) {
+							if (source_entry.preprocess === true) {
+								source_entry_object.preprocess = true;
+							}
+						}
 						if (source_entry_object.file) {
 							this._sources_listing.push(source_entry_object);
 						}
@@ -662,6 +667,8 @@ yabs.Builder = class {
 				if (has_variables) {
 					variables_data.variables = listing_entry.variables;
 				}
+				// process additional flags
+				const force_preprocessor = listing_entry.preprocess === true;
 				// process output filename
 				let output_filename;
 				const parsed_file_entry = path.parse(listing_entry.file);
@@ -683,7 +690,8 @@ yabs.Builder = class {
 					source: source_full_path,
 					destination: destination_full_path,
 					header_data: header_data,
-					variables_data: variables_data
+					variables_data: variables_data,
+					force_preprocessor: force_preprocessor
 				});
 			});
 		}
@@ -853,7 +861,6 @@ yabs.Builder = class {
 		// process header data for sourcefiles
 		this._processSourceHeaders();
 
-/*
 		console.log('FILES MANIFEST');
 		console.log(this._files_manifest);
 
@@ -862,8 +869,7 @@ yabs.Builder = class {
 
 		console.log('HTML MANIFEST');
 		console.log(this._html_manifest);
-		*/
-///return;
+
 		// build step I
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty
