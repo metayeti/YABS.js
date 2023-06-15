@@ -182,9 +182,9 @@ yabs.util.parseJSDocTagsFromFile = function(source_file) {
 	const file_content = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
 	const jsdoc_regex_matches = file_content.match(jsdoc_regex);
 	if (jsdoc_regex_matches) {
-		jsdoc_regex_matches.forEach(match => {
+		jsdoc_regex_matches.forEach(regex_match => {
 			let tag_match;
-			while ((tag_match = tag_regex.exec(match)) !== null) {
+			while ((tag_match = tag_regex.exec(regex_match)) !== null) {
 				const tag_key = tag_match[1];
 				const tag_value = tag_match[2];
 				kvs.push([tag_key, tag_value]);
@@ -334,12 +334,6 @@ yabs.BuildConfig = class {
 			throw 'Build instructions file is missing the destination_dir entry!';
 		}
 		this._destination_dir = json_data.destination_dir;
-		/*
-		// ensure that source and destination directories are unique
-		if (path.resolve(this._source_dir) === path.resolve(this._destination_dir)) {
-			throw 'Source directory cannot be the same as destination directory!';
-		}
-		*/
 		// extract html listing
 		if (json_data.hasOwnProperty('html')) {
 			if (json_data.html instanceof Array) {
@@ -637,6 +631,11 @@ yabs.Builder = class {
 						}
 					}
 					if (include_plain_file) {
+						// make sure source is not the same as destination
+						if (plain_file_source === plain_file_destination) {
+							throw `Source file: "${plain_file_source}" cannot be the same as the destination!`;
+						}
+						// add to manifest
 						this._files_manifest.push({
 							source: plain_file_source,
 							destination: plain_file_destination
@@ -703,10 +702,16 @@ yabs.Builder = class {
 					// disallow any masks
 					return;
 				}
+				const html_file_source = path.join(this._source_dir, listing_entry);
+				const html_file_destination = path.join(this._destination_dir, listing_entry);
+				// make sure source is not the same as destination
+				if (html_file_source === html_file_destination) {
+					throw `Source file: "${html_file_source}" cannot be the same as the destination!`;
+				}
 				// add to manifest
 				this._html_manifest.push({
-					source: path.join(this._source_dir, listing_entry),
-					destination: path.join(this._destination_dir, listing_entry)
+					source: html_file_source,
+					destination: html_file_destination
 				});
 			});
 		}
@@ -792,10 +797,10 @@ yabs.Builder = class {
 		this._logger.endl();
 	}
 
-	_buildStep_II_a_PreprocessSources() {
-	}
-
-	async _buildStep_II_b_CompileSources() {
+	async _buildStep_II_CompileSources() {
+		function preprocessOneSource(input_file, output_file, variables) {
+			// TODO
+		}
 		function compileOneSource(input_file, output_file) {
 			return new Promise((resolve, reject) => {
 				exec(`uglifyjs ${input_file} --compress --mangle -o ${output_file}`, (err) => {
@@ -809,6 +814,7 @@ yabs.Builder = class {
 				});
 			});
 		}
+		// compile each source
 		for (const manifest_entry of this._sources_manifest) {
 			this._logger.out_raw(`${manifest_entry.destination} ...`);
 			// check if destination directory exists
@@ -836,7 +842,60 @@ yabs.Builder = class {
 		this._logger.endl();
 	}
 
-	_buildStep_III_BakeHTMLFiles() {
+	_buildStep_III_WriteHTMLFiles() {
+		// bake each file
+		const script_src_regex = /<script\b[^>]*\bsrc=(["'])(.*?)(\1).*?>/;
+		this._html_manifest.forEach(manifest_entry => {
+			this._logger.out_raw(`${manifest_entry.destination} ...`);
+			// check if destination directory exists
+			const dir = path.dirname(manifest_entry.destination);
+			if (!yabs.util.exists(dir)) {
+				// directory doesn't exist yet, create it
+				fs.mkdirSync(dir, { recursive: true });
+			}
+			// write each HTML
+			const html_file_data = fs.readFileSync(manifest_entry.source, { encoding: 'utf8', flag: 'r' });
+			const html_line_data = html_file_data.split(/\r?\n/);
+			let html_file_output_lines = [];
+			html_line_data.forEach(line_str => {
+				const src_regex_match = line_str.match(script_src_regex);
+				let substitute_line = false;
+				let substitute_line_str;
+				if (src_regex_match) {
+					const extracted_src = src_regex_match[2];
+					const src_parsed = path.parse(extracted_src);
+					const src_joined = path.join(this._source_dir, src_parsed.dir, src_parsed.base);
+					// now that we have the parsed src path, we need to find the matching source in the manifest
+					// (so we don't end up changing a path that wasn't referenced in build instructions)
+					let matches_sources_manifest = false;
+					let destination_src;
+					this._sources_manifest.every(sources_manifest_entry => {
+						if (sources_manifest_entry.source === src_joined) {
+							matches_sources_manifest = true;
+							const destination_src_parsed = path.parse(sources_manifest_entry.destination);
+							destination_src = src_parsed.dir + '/' + destination_src_parsed.base;
+							return false;
+						}
+						return true;
+					});
+					if (!matches_sources_manifest) {
+						// this <script> tag does not match any of our compiled sources, skip it
+						return;
+					}
+					// now that we have a match, change the src attribute to our destination file
+					substitute_line = true;
+					substitute_line_str = line_str.replace(extracted_src, destination_src);
+				}
+				// append next line to output
+				html_file_output_lines.push((substitute_line) ? substitute_line_str : line_str);
+			});
+			// write output file
+			const html_file_output_data = html_file_output_lines.join(EOL);
+			fs.writeFileSync(manifest_entry.destination, html_file_output_data, { encoding: 'utf8', flag: 'w' });
+			this._logger.ok();
+			this._n_files_updated += 1;
+		});
+		this._logger.endl();
 	}
 
 	/**
@@ -861,6 +920,7 @@ yabs.Builder = class {
 		// process header data for sourcefiles
 		this._processSourceHeaders();
 
+/*
 		console.log('FILES MANIFEST');
 		console.log(this._files_manifest);
 
@@ -869,6 +929,7 @@ yabs.Builder = class {
 
 		console.log('HTML MANIFEST');
 		console.log(this._html_manifest);
+		*/
 
 		// build step I
 		// update files from files manifest
@@ -881,18 +942,14 @@ yabs.Builder = class {
 		// preprocess and compile sources
 		if (this._sources_manifest.length > 0) { // skip if empty
 			this._logger.info('Compiling sources ...');
-
-			const use_preprocessor = false;
-
-			await this._buildStep_II_b_CompileSources();
-
-			console.log('(compile step done)');
+			await this._buildStep_II_CompileSources();
 		}
 
 		// build step III
 		// finally, bake updates into and clone html files
 		if (this._html_manifest.length > 0) { // skip if empty
-			this._logger.info('todo');
+			this._logger.info('Writing HTML files ...');
+			this._buildStep_III_WriteHTMLFiles();
 		}
 	}
 };
