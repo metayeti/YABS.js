@@ -307,6 +307,7 @@ yabs.BuildConfig = class {
 	 * @param {string} source_file - Build instructions JSON file.
 	 */
 	constructor(source_file) {
+		this._source_file = source_file;
 		// parse source JSON
 		const file_data = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
 		const json_data = JSON.parse(file_data);
@@ -484,6 +485,12 @@ yabs.BuildConfig = class {
 		///debug
 	}
 	/**
+	 * Returns the input build instructions filename.
+	 */
+	getSourceFile() {
+		return this._source_file;
+	}
+	/**
 	 * Returns whether or not this is a batch build.
 	 * 
 	 * @returns {bool}
@@ -576,6 +583,7 @@ yabs.Builder = class {
 		this._html_manifest = null;
 		// build statistics
 		this._n_files_updated = 0;
+		this._build_start_time = Date.now();
 	}
 
 	/**
@@ -902,6 +910,8 @@ yabs.Builder = class {
 	 * Start the build.
 	 */
 	async build() {
+		this._logger.info(`Starting build: ${this._build_config.getSourceFile()}`);
+
 		this._logger.info('Preparing build ...');
 
 		// prepare build step I
@@ -951,6 +961,12 @@ yabs.Builder = class {
 			this._logger.info('Writing HTML files ...');
 			this._buildStep_III_WriteHTMLFiles();
 		}
+
+		// build finished
+		const build_time = ((Date.now() - this._build_start_time) / 1000).toFixed(2);
+		this._logger.success('Build finished!\n');
+		this._logger.out(`Updated ${this._n_files_updated} files.`);
+		this._logger.out(`Build completed in ${build_time}s.`);
 	}
 };
 
