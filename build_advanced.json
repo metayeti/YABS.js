@@ -33,12 +33,16 @@
 			"file": "src/script2.js",
 			"use_header": "src2_header",
 			"variables": {
-				"debug": [
-					"DEBUG=true"
+				"nodebug": [
+					"NODEBUG=true"
 				],
 				"test": [
-					"TESTVAR1=true",
-					"TESTVAR2=false"
+					"TESTVAR1=1",
+					"TESTVAR2=2"
+				],
+				"test2": [
+					"TESTVAR1=2",
+					"TESTVAR2=1"
 				]
 			}
 		},
@@ -54,8 +58,10 @@
 		}
 	],
 	"files": [
+		"css/*.css",
 		"some_file.txt",
 		"images/*.png",
-		"data/*"
+		"data/*",
+		"src/script5.js"
 	]
 }

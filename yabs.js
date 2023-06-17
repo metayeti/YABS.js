@@ -44,6 +44,7 @@ yabs.DEFAULT_BUILD_FILE = 'build.json';
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
 yabs.TEMP_FILE_EXTENSION = '.tmp';
+yabs.PREPROCESS_FILE_EXTENSION = '.pre';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -806,8 +807,18 @@ yabs.Builder = class {
 	}
 
 	async _buildStep_II_CompileSources() {
-		function preprocessOneSource(input_file, output_file, variables) {
-			// TODO
+		function preprocessOneSource(input_file, output_file, params) {
+			return new Promise((resolve, reject) => {
+				exec(`preprocess ${input_file} . ${params} > ${output_file}`, (err) => {
+					if (err) {
+						this._logger.out_raw('\n\n');
+						reject(err);
+					}
+					else {
+						resolve();
+					}
+				});
+			});
 		}
 		function compileOneSource(input_file, output_file) {
 			return new Promise((resolve, reject) => {
@@ -831,8 +842,55 @@ yabs.Builder = class {
 				// directory doesn't exist yet, create it
 				fs.mkdirSync(dir, { recursive: true });
 			}
+			// check if we should use the preprocessor or not
+			let use_preprocessor = false;
+			const variable_params = this._build_params.variable;
+			const variables_data = manifest_entry.variables_data;
+			const has_variables = variables_data.has_variables;
+			const variables_listing = variables_data.variables;
+			if (manifest_entry.force_preprocessor) {
+				use_preprocessor = true;
+			}
+			else {
+				if (has_variables) {
+					// check if any entry in variables_list matches a provided -variable parameter
+					variable_params.every(variable_param => {
+						if (variables_listing.hasOwnProperty(variable_param)) {
+							use_preprocessor = true;
+						}
+						return !use_preprocessor;
+					});
+				}
+			}
+			let preprocess_destination_file;
+			if (use_preprocessor) { // we are using the preprocessor
+				// create the list of preprocessor parameters
+				const preprocessor_params_list = [];
+				if (has_variables) { // skip listing without variables (might only have "preprocess" set)
+					variable_params.forEach(variable_param => {
+						// make sure the variable listing is defined
+						if (variables_listing.hasOwnProperty(variable_param)) {
+							const variables_listing_list = variables_listing[variable_param];
+							variables_listing_list.forEach(variable_entry => {
+								const variable_split = variable_entry.split('=');
+								const variable_key = variable_split[0].trim();
+								const variable_value = variable_split[1].trim();
+								if (variable_key.length && variable_value.length) {
+									preprocessor_params_list.push(`-${variable_key}=${variable_value}`);
+								}
+							});
+						}
+					});
+				}
+				const preprocessor_params = preprocessor_params_list.join(' ');
+				//console.log('PREPROCESSOR PARAMS: ', preprocessor_params);
+				// now we are ready to run the file through the preprocessor
+				const preprocess_source_file = manifest_entry.source;
+				preprocess_destination_file = manifest_entry.destination + yabs.PREPROCESS_FILE_EXTENSION;
+				await preprocessOneSource.call(this, preprocess_source_file, preprocess_destination_file, preprocessor_params);
+			}
 			// compile source into temp file
-			const source_file = manifest_entry.source;
+			const source_file = (use_preprocessor) ? preprocess_destination_file : manifest_entry.source;
 			const destination_file = manifest_entry.destination;
 			const destination_temp_file = destination_file + yabs.TEMP_FILE_EXTENSION;
 			await compileOneSource.call(this, source_file, destination_temp_file);
@@ -841,8 +899,11 @@ yabs.Builder = class {
 			const compiled_file_data = fs.readFileSync(destination_temp_file, { encoding: 'utf8', flag: 'r' });
 			const output_file_data = (header_data.has_header) ? header_data.header.join(EOL) + EOL + compiled_file_data : compiled_file_data;
 			fs.writeFileSync(destination_file, output_file_data, { encoding: 'utf8', flag: 'w' });
-			// remove temp file
+			// remove temp file(s)
 			fs.rmSync(destination_temp_file, { force: true });
+			if (use_preprocessor) {
+				fs.rmSync(preprocess_destination_file, { force: true });
+			}
 			// all done
 			this._logger.ok();
 			this._n_files_updated += 1;

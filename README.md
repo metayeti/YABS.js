@@ -8,7 +8,7 @@ Version v0.0.0 (dev)
 
 ```
 PROGRESS TOWARDS 1.0.0
-[========= ] 95%
+[========= ] 97%
 ```
 
 **⛔ WORK IN PROGRESS - NOT USABLE RIGHT NOW ⛔**

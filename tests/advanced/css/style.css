@@ -1,0 +1,13 @@
+body {
+	background-color: pink;
+	color: #000;
+	font-family: sans-serif;
+	font-size: 18pt;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+p, a {
+	margin: 0;
+	padding: 50px 0 25px 50px;
+}
