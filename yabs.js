@@ -43,8 +43,8 @@ yabs.version = '0.0.0'; // YABS.js version
 yabs.DEFAULT_BUILD_FILE = 'build.json';
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
-yabs.TEMP_FILE_EXTENSION = '.tmp';
 yabs.PREPROCESS_FILE_EXTENSION = '.pre';
+yabs.COMPILE_FILE_EXTENSION = '.cmp';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -808,8 +808,9 @@ yabs.Builder = class {
 
 	async _buildStep_II_CompileSources() {
 		function preprocessOneSource(input_file, output_file, params) {
+			const input_base_dir = path.parse(input_file).dir;
 			return new Promise((resolve, reject) => {
-				exec(`preprocess ${input_file} . ${params} > ${output_file}`, (err) => {
+				exec(`preprocess ${input_file} ${input_base_dir} ${params} > ${output_file}`, (err) => {
 					if (err) {
 						this._logger.out_raw('\n\n');
 						reject(err);
@@ -883,24 +884,23 @@ yabs.Builder = class {
 					});
 				}
 				const preprocessor_params = preprocessor_params_list.join(' ');
-				//console.log('PREPROCESSOR PARAMS: ', preprocessor_params);
-				// now we are ready to run the file through the preprocessor
+				// we are ready to run the file through the preprocessor
 				const preprocess_source_file = manifest_entry.source;
 				preprocess_destination_file = manifest_entry.destination + yabs.PREPROCESS_FILE_EXTENSION;
 				await preprocessOneSource.call(this, preprocess_source_file, preprocess_destination_file, preprocessor_params);
 			}
 			// compile source into temp file
 			const source_file = (use_preprocessor) ? preprocess_destination_file : manifest_entry.source;
-			const destination_file = manifest_entry.destination;
-			const destination_temp_file = destination_file + yabs.TEMP_FILE_EXTENSION;
-			await compileOneSource.call(this, source_file, destination_temp_file);
+			const build_destination_file = manifest_entry.destination;
+			const compile_destination_file = build_destination_file + yabs.COMPILE_FILE_EXTENSION;
+			await compileOneSource.call(this, source_file, compile_destination_file);
 			// output header + compiled source into destination file
 			const header_data = manifest_entry.header_data;
-			const compiled_file_data = fs.readFileSync(destination_temp_file, { encoding: 'utf8', flag: 'r' });
+			const compiled_file_data = fs.readFileSync(compile_destination_file, { encoding: 'utf8', flag: 'r' });
 			const output_file_data = (header_data.has_header) ? header_data.header.join(EOL) + EOL + compiled_file_data : compiled_file_data;
-			fs.writeFileSync(destination_file, output_file_data, { encoding: 'utf8', flag: 'w' });
+			fs.writeFileSync(build_destination_file, output_file_data, { encoding: 'utf8', flag: 'w' });
 			// remove temp file(s)
-			fs.rmSync(destination_temp_file, { force: true });
+			fs.rmSync(compile_destination_file, { force: true });
 			if (use_preprocessor) {
 				fs.rmSync(preprocess_destination_file, { force: true });
 			}
@@ -947,13 +947,11 @@ yabs.Builder = class {
 						}
 						return true;
 					});
-					if (!matches_sources_manifest) {
-						// this <script> tag does not match any of our compiled sources, skip it
-						return;
+					if (matches_sources_manifest) {
+						// now that we have a match, change the src attribute to our destination file
+						substitute_line = true;
+						substitute_line_str = line_str.replace(extracted_src, destination_src);
 					}
-					// now that we have a match, change the src attribute to our destination file
-					substitute_line = true;
-					substitute_line_str = line_str.replace(extracted_src, destination_src);
 				}
 				// append next line to output
 				html_file_output_lines.push((substitute_line) ? substitute_line_str : line_str);

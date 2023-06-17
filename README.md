@@ -278,6 +278,8 @@ console.log('not compiled with -debug');
 
 Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` entry inside sources listing of the build instructions JSON. This entry defines the variables and their values used for this build.
 
+Note that the preprocessor can be a little finicky, for example it will fail when encountering undefined variables.
+
 Another feature you can use with the preprocessor are external file includes:
 
 ```JS
