@@ -259,6 +259,9 @@ Similarly to how the `"headers"` entry works, we can also add a global `"variabl
     "some_variables_key": {
       "debug": [
         "DEBUG=true"
+      ],
+      "nodebug": [
+        "DEBUG=false"
       ]
     }
   }
@@ -278,14 +281,16 @@ Now we can refer to it by adding `"use_variables"` to a `"sources"` entry:
 In the sourcefile, using the preprocessor might look something like this:
 
 ```JS
-//? if (typeof DEBUG !== 'undefined') {
+//? if (DEBUG) {
 console.log('compiled with -debug');
 //? } else {
-console.log('compiled without -debug');
+console.log('compiled with -nodebug');
 //? }
 ```
 
-Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` entry inside sources listing of the build instructions JSON. This entry defines the variables and their values used for this build. The preprocessor can be a little finicky when it comes to variables - for example, it will fail when encountering undefined variables. Special care should be exercised when setting up preprocessor conditions.
+Of course you can rearrange this scheme any way you see fit and use any other [MetaScript](https://github.com/dcodeIO/MetaScript) features. The preprocessor can be a little finicky when it comes to variables - for example, it will fail when encountering undefined variables. Special care should be exercised when setting up preprocessor conditions.
+
+Note that `-debug` and `-nodebug` are not the actual variables used by the preprocessor, but an entry defined in the `"variables"` entry inside sources listing of the build instructions JSON. This entry defines the variables and their values used for this build. 
 
 Another feature you can use with the preprocessor are external file includes:
 
