@@ -1,5 +1,5 @@
 {
-	"source_dir": "tests/minimal/",
+	"source_dir": "minimal/",
 	"destination_dir": "build/minimal/",
 	"html": "index.html",
 	"sources": [

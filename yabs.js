@@ -1282,7 +1282,7 @@ yabs.Application = class {
 			this._logger.error(e);
 			this._logger.out('\nBuild aborted.');
 		}
-		// print ouf final newline
+		// print out final newline
 		this._logger.endl();
 	}
 };

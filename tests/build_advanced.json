@@ -1,5 +1,5 @@
 {
-	"source_dir": "tests/advanced/",
+	"source_dir": "advanced/",
 	"destination_dir": "build/advanced/",
 	"headers": {
 		"src1_header": "/* script, minified */",
