@@ -280,11 +280,13 @@ yabs.Logger = class {
 	 * Prints the YABS.js header.
 	 */
 	header() {
+		this.out_raw(`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}`);
 		this.out('  __ __ _____ _____ _____     _');
 		this.out(' |  |  |  _  |  _  |   __|   |_|___');
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
 		this.out('                           |___|');
+		this.out_raw(`${this._OUTPUT_RESET}`);
 		this.out(' Yet');
 		this.out(' Another' + ' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]');
 		this.out(' Build      https://github.com/pulzed/yabs.js');
@@ -315,16 +317,36 @@ yabs.BuildConfig = class {
 		// check if this is a batch build
 		if (json_data.hasOwnProperty('batch_build')) {
 			this._is_batch = true;
+			this._batch_listing = [];
 			if (json_data.batch_build instanceof Array) {
-				if (!json_data.batch_build.every(element => typeof element === 'string')) {
-					throw 'Every element in "batch_build" entry listing has to be a String type!';
-				}
-				this._batch_listing = json_data.batch_build;
+				json_data.batch_build.forEach(batch_entry => {
+					if (typeof batch_entry === 'string') {
+						this._batch_listing.push({
+							file: batch_entry
+						});
+					}
+					else if (typeof batch_entry === 'object' && batch_entry !== null) {
+						const batch_entry_object = {};
+						if (batch_entry.hasOwnProperty('file')) {
+							if (typeof batch_entry.file === 'string') {
+								batch_entry_object.file = batch_entry.file;
+							}
+						}
+						if (batch_entry.hasOwnProperty('options')) {
+							if (typeof batch_entry.options === 'string') {
+								batch_entry_object.options = batch_entry.options;
+							}
+						}
+						if (batch_entry_object.file) {
+							this._batch_listing.push(batch_entry_object);
+						}
+					}
+				});
 			}
-			if (!this._batch_listing) {
-				this._batch_listing = [];
+			else {
+				throw 'The "batch_build" entry in build instructions file has to be an Array type!';
 			}
-			return; // since this is a batch build, we are all done here
+			return; // this is a batch build, we are all done here
 		}
 		// extract source_dir
 		if (!json_data.hasOwnProperty('source_dir')) {
@@ -969,7 +991,8 @@ yabs.Builder = class {
 	 * Start the build.
 	 */
 	async build() {
-		this._logger.info(`Starting build: ${this._build_config.getSourceFile()}`);
+		const build_instructions_file = this._build_config.getSourceFile();
+		this._logger.info(`Starting build: ${build_instructions_file}`);
 
 		this._logger.info('Preparing build ...');
 
@@ -1045,14 +1068,121 @@ yabs.BatchBuilder = class {
 	 */
 	constructor(logger, build_config, build_params) {
 		this._logger = logger;
+		// build configuration
 		this._build_config = build_config;
+		// build parameters
 		this._build_params = build_params;
+		// build manifest
+		this._batch_manifest = null;
+		// build statistics
+		this._batch_build_start_time = Date.now();
+	}
+
+	_buildBatchManifest() {
+		const batch_listing = this._build_config.getBatchListing();
+		this._batch_manifest = [];
+		batch_listing.forEach(listing_entry => {
+			const file = listing_entry.file;
+			if (!file.length) {
+				return;
+			}
+			let options;
+			if (listing_entry.options) {
+				options = [];
+				const split_options = listing_entry.options.trim().split(/\s+/);
+				split_options.forEach(options_item => {
+					if (options_item.length >= 2 && options_item[0] === '-') {
+						options.push(options_item.substring(1));
+					}
+				});
+			}
+			else {
+				options = this._build_params.variable;
+			}
+			this._batch_manifest.push({
+				file: file,
+				options: options
+			});
+		});
+	}
+
+	async _buildOne(build_index) {
+		const build_listing = this._batch_manifest[build_index]
+		const build_instr_file = build_listing.file;
+		let build_config = null;
+		if (yabs.util.exists(build_instr_file)) {
+			build_config = new yabs.BuildConfig(build_instr_file);
+		}
+		else {
+			throw 'Cannot find file: ' + build_instr_file;
+		}
+		if (build_config.isBatchBuild()) {
+			throw 'Cannot have nested batch builds: ${build_instr_file}!';
+		}
+		const build_params = { variable: build_listing.options };
+		const builder = new yabs.Builder(this._logger, build_config, build_params);
+		await builder.build();
 	}
 
 	/**
 	 * Start the build.
 	 */
-	build() {
+	async build() {
+		const nofail_flag = this._build_params.option.includes('nofail');
+
+		const build_instructions_file = this._build_config.getSourceFile();
+		this._logger.info(
+			`Starting ${this._logger._OUTPUT_BRIGHT}${this._logger._OUTPUT_FG_GREEN}<batch build>` +
+			`${this._logger._OUTPUT_RESET}: ${build_instructions_file}`
+		);
+
+		// build the batch manifest
+		this._buildBatchManifest();
+
+		let build_index = 0;
+		const n_builds = this._batch_manifest.length;
+		let n_successful_builds = 0;
+		let n_failed_builds = 0;
+
+		while (build_index < n_builds) {
+			this._logger.out(
+				`=== ${this._logger._OUTPUT_BRIGHT}${this._logger._OUTPUT_FG_GREEN}<batch build>` +
+				`${this._logger._OUTPUT_RESET} ${build_index + 1}/${n_builds} ===\n`
+			);
+			try {
+				// build this item
+				await this._buildOne(build_index++);
+				// increment successful builds counter
+				n_successful_builds++;
+			}
+			catch (e) {
+				if (nofail_flag) {
+					// we have --nofail
+					// print the error, but keep going
+					this._logger.error(e);
+					// increment failed builds counter
+					n_failed_builds++;
+				}
+				else {
+					// pass exception to main try/catch block
+					throw e;
+				}
+			}
+			this._logger.endl();
+		}
+
+		// all done
+		const batch_build_time = ((Date.now() - this._batch_build_start_time) / 1000).toFixed(2);
+		this._logger.out(
+			`=== ${this._logger._OUTPUT_BRIGHT}${this._logger._OUTPUT_FG_GREEN}<batch build>` +
+			`${this._logger._OUTPUT_RESET} finished! ===\n`
+		);
+		if (nofail_flag) {
+			this._logger.out(`${n_successful_builds} builds finished, ${n_failed_builds} failed in ${batch_build_time}s.`);
+		}
+		else {
+			this._logger.out(`${n_successful_builds} builds finished in ${batch_build_time}s.`);
+		}
 	}
 };
 
@@ -1062,7 +1192,7 @@ yabs.BatchBuilder = class {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.App = class {
+yabs.Application = class {
 	/**
 	 * App constructor.
 	 */
@@ -1101,11 +1231,11 @@ yabs.App = class {
 			// figure out what we're building first
 			let build_config = null;
 			if (build_params.free.length === 0) { // parametress run
-				if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
-					build_config = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
-				}
-				else if (yabs.util.exists(yabs.DEFAULT_BUILD_ALL_FILE)) {
+				if (yabs.util.exists(yabs.DEFAULT_BUILD_ALL_FILE)) {
 					build_config = new yabs.BuildConfig(yabs.DEFAULT_BUILD_ALL_FILE);
+				}
+				else if (yabs.util.exists(yabs.DEFAULT_BUILD_FILE)) {
+					build_config = new yabs.BuildConfig(yabs.DEFAULT_BUILD_FILE);
 				}
 			}
 			else {
@@ -1142,4 +1272,4 @@ yabs.App = class {
 	}
 };
 
-(new yabs.App()).main(process.argv); // run yabs.js
+(new yabs.Application()).main(process.argv); // run yabs.js

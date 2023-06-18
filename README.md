@@ -8,7 +8,7 @@ Version v0.0.0 (dev)
 
 ```
 PROGRESS TOWARDS 1.0.0
-[========= ] 97%
+[==========] 99%
 ```
 
 **⛔ WORK IN PROGRESS - NOT USABLE RIGHT NOW ⛔**
@@ -21,7 +21,7 @@ Please note that this is a "dumb" build system that only deals with individual f
 
 2. Minifies (also optionally, preprocesses) provided JavaScript files, optionally attaches a custom header.
 
-3. Matches `<script src="...">` attributes in the HTML files to the associated JS files, and updates those entries to match compiled filenames (basically changes extensions in those from .js to .min.js).
+3. Matches `<script src="...">` attributes in the HTML files to the associated JS files, and updates those entries to match compiled filenames (by default, it changes extensions in those from .js to .min.js).
 
 Please double (and triple) check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does.
 
@@ -36,7 +36,7 @@ The preprocessor package is only needed if the build leverages the preprocessor 
 
 ## How it works
 
-YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and starts the build process. If the build is successful, you should see a "Build successful!" message at the end of the output.
+YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and starts the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
 
 ## Basic usage
 
@@ -272,13 +272,11 @@ In the sourcefile, using the preprocessor might look something like this:
 // #ifdef DEBUG
 console.log('compiled with -debug');
 // #else
-console.log('not compiled with -debug');
+console.log('compiled without -debug');
 // #endif
 ```
 
-Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` entry inside sources listing of the build instructions JSON. This entry defines the variables and their values used for this build.
-
-Note that the preprocessor can be a little finicky, for example it will fail when encountering undefined variables.
+Note that `-debug` is not the actual variable, but an entry defined in the `"variables"` entry inside sources listing of the build instructions JSON. This entry defines the variables and their values used for this build. The preprocessor can be a little finicky when it comes to variables - for example, it will fail when encountering undefined variables. Special care should be exercised when setting up preprocessor conditions.
 
 Another feature you can use with the preprocessor are external file includes:
 
@@ -310,7 +308,19 @@ YABS.js can build in batch mode. To do so, create a `build_all.json` (you can na
   ]
 ```
 
-Any number of build instructions files can be bundled into the batch build. Note that if any of the builds in line fail, all subsequent builds will stop. To prevent this, use `--nofail` when invoking the build.
+Any number of build instructions files can be bundled into the batch build. Note that if any of the builds in line fail, all subsequent builds will stop. To prevent this, you can use `--nofail` when running the build.
+
+When invoking preprocessor parameters via the command line, they will be applied to all builds in the batch build - this may be undesirable in certain circumstances. To avoid this, we can restructure the batch build instructions and add an `"options"` parameter to each entry. These options will override the command line options and be used when running that specific build:
+
+```JSON
+  "batch_build": [
+    {
+      file: "build_main.json",
+	  options: "-debug -otherparam"
+	},
+    "build_other.json",
+  ]
+```
 
 ## Command line parameters
 
