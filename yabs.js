@@ -1050,7 +1050,7 @@ yabs.Builder = class {
 		}
 
 		// build step III
-		// finally, bake updates into and clone html files
+		// finally, write updates into and clone HTML files
 		if (this._html_manifest.length > 0) { // skip if empty
 			this._logger.info('Writing HTML files ...');
 			this._buildStep_III_WriteHTMLFiles();

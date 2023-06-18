@@ -19,8 +19,7 @@
 	},
 	"html": [
 		"index.html",
-		"index2.html",
-		"nested/some.html"
+		"index2.html"
 	],
 	"sources": [
 		{
