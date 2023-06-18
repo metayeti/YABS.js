@@ -1,0 +1,16 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/nested/",
+	"html": "index.html",
+	"sources": [
+		"src/script.js",
+		{
+			"file": "src/script2.js",
+			"preprocess": true
+		}
+	],
+	"files": [
+		"css/style.css",
+		"img/*"
+	]
+}

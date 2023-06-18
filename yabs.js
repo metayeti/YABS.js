@@ -310,7 +310,9 @@ yabs.BuildConfig = class {
 	 * @param {string} source_file - Build instructions JSON file.
 	 */
 	constructor(source_file) {
-		this._source_file = source_file;
+		const parsed_source_file = path.parse(source_file);
+		this._source_file = parsed_source_file.base;
+		this._base_dir = parsed_source_file.dir;
 		// parse source JSON
 		const file_data = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
 		const json_data = JSON.parse(file_data);
@@ -514,6 +516,12 @@ yabs.BuildConfig = class {
 		return this._source_file;
 	}
 	/**
+	 * Returns the base directory of the build instructions filename.
+	 */
+	getBaseDir() {
+		return this._base_dir;
+	}
+	/**
 	 * Returns whether or not this is a batch build.
 	 * 
 	 * @returns {bool}
@@ -597,6 +605,8 @@ yabs.Builder = class {
 		this._build_config = build_config;
 		// build parameters
 		this._build_params = build_params;
+		// base directory
+		this._base_dir = this._build_config.getBaseDir();
 		// source and destination directories
 		this._source_dir = path.normalize(this._build_config.getSourceDir());
 		this._destination_dir = path.normalize(this._build_config.getDestinationDir());
@@ -618,7 +628,7 @@ yabs.Builder = class {
 			files_listing.forEach(listing_entry => {
 				if (listing_entry.includes('*')) { // path includes mask
 					// use recursive descent to capture all files
-					const full_source_path = path.join(this._source_dir, listing_entry);
+					const full_source_path = path.join(this._base_dir, this._source_dir, listing_entry);
 					const parsed_source_path = path.parse(full_source_path);
 					const full_destination_path = path.join(this._destination_dir, listing_entry);
 					const parsed_destination_path = path.parse(full_destination_path);
@@ -644,7 +654,7 @@ yabs.Builder = class {
 					}
 				}
 				else { // plain path
-					const plain_file_source = path.join(this._source_dir, listing_entry);
+					const plain_file_source = path.join(this._base_dir, this._source_dir, listing_entry);
 					const plain_file_destination = path.join(this._destination_dir, listing_entry);
 					if (yabs.util.isDirectory(plain_file_source)) {
 						// this is a directory
@@ -709,7 +719,8 @@ yabs.Builder = class {
 				else {
 					output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
 				}
-				const source_full_path = path.join(this._source_dir, listing_entry.file);
+				const source_full_path = path.join(this._base_dir, this._source_dir, listing_entry.file);
+				const source_original_path = path.join(this._source_dir, listing_entry.file);
 				const destination_full_path = path.join(this._destination_dir, output_filename);
 				// make sure source is not the same as destination
 				if (source_full_path === destination_full_path) {
@@ -718,6 +729,7 @@ yabs.Builder = class {
 				// add file to manifest
 				this._sources_manifest.push({
 					source: source_full_path,
+					original_source: source_original_path,
 					destination: destination_full_path,
 					header_data: header_data,
 					variables_data: variables_data,
@@ -733,7 +745,7 @@ yabs.Builder = class {
 					// disallow any masks
 					return;
 				}
-				const html_file_source = path.join(this._source_dir, listing_entry);
+				const html_file_source = path.join(this._base_dir, this._source_dir, listing_entry);
 				const html_file_destination = path.join(this._destination_dir, listing_entry);
 				// make sure source is not the same as destination
 				if (html_file_source === html_file_destination) {
@@ -961,7 +973,7 @@ yabs.Builder = class {
 					let matches_sources_manifest = false;
 					let destination_src;
 					this._sources_manifest.every(sources_manifest_entry => {
-						if (sources_manifest_entry.source === src_joined) {
+						if (sources_manifest_entry.original_source === src_joined) {
 							matches_sources_manifest = true;
 							const destination_src_parsed = path.parse(sources_manifest_entry.destination);
 							destination_src = src_parsed.dir + '/' + destination_src_parsed.base;
@@ -1072,6 +1084,8 @@ yabs.BatchBuilder = class {
 		this._build_config = build_config;
 		// build parameters
 		this._build_params = build_params;
+		// base directory
+		this._base_dir = this._build_config.getBaseDir();
 		// build manifest
 		this._batch_manifest = null;
 		// build statistics
@@ -1082,8 +1096,8 @@ yabs.BatchBuilder = class {
 		const batch_listing = this._build_config.getBatchListing();
 		this._batch_manifest = [];
 		batch_listing.forEach(listing_entry => {
-			const file = listing_entry.file;
-			if (!file.length) {
+			const build_instr_file = listing_entry.file;
+			if (!build_instr_file.length) {
 				return;
 			}
 			let options;
@@ -1099,8 +1113,9 @@ yabs.BatchBuilder = class {
 			else {
 				options = this._build_params.variable;
 			}
+			const build_instr_file_full = path.join(this._base_dir, build_instr_file);
 			this._batch_manifest.push({
-				file: file,
+				file: build_instr_file_full,
 				options: options
 			});
 		});
@@ -1194,7 +1209,7 @@ yabs.BatchBuilder = class {
 
 yabs.Application = class {
 	/**
-	 * App constructor.
+	 * Application constructor.
 	 */
 	constructor() {
 		this._logger = new yabs.Logger();

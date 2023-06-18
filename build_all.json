@@ -2,6 +2,7 @@
 	"batch_build": [
 		"build_minimal.json",
 		"build_advanced.json",
-		"build_yabs.json"
+		"build_yabs.json",
+		"tests/nested/build_nested.json"
 	]
 }
