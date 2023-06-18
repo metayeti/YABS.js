@@ -13,7 +13,7 @@
  *
  */
 
-/*jshint esversion:6*/
+/*jshint esversion:9*/
 
 /**
  * @file yabs.js
@@ -40,8 +40,8 @@ yabs.version = '0.0.0'; // YABS.js version
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.DEFAULT_BUILD_FILE = 'build.json';
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
+yabs.DEFAULT_BUILD_FILE = 'build.json';
 yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
 yabs.PREPROCESS_FILE_EXTENSION = '.pre';
 yabs.COMPILE_FILE_EXTENSION = '.cmp';
@@ -177,7 +177,7 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
  * @returns {array} Array of [key, value] pairs.
  */
 yabs.util.parseJSDocTagsFromFile = function(source_file) {
-	const kvs = [];
+	const output = [];
 	const jsdoc_regex = /\/\*\*(.*?)\*\//gs;
 	const tag_regex = /\*\s*@(\w+)\s+(.+)/g;
 	const file_content = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
@@ -188,11 +188,11 @@ yabs.util.parseJSDocTagsFromFile = function(source_file) {
 			while ((tag_match = tag_regex.exec(regex_match)) !== null) {
 				const tag_key = tag_match[1];
 				const tag_value = tag_match[2];
-				kvs.push([tag_key, tag_value]);
+				output.push([tag_key, tag_value]);
 			}
 		});
 	}
-	return kvs;
+	return output;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -929,7 +929,7 @@ yabs.Builder = class {
 			// all done
 			this._logger.ok();
 			this._n_files_updated += 1;
-		};
+		}
 		this._logger.endl();
 	}
 
@@ -1107,7 +1107,7 @@ yabs.BatchBuilder = class {
 	}
 
 	async _buildOne(build_index) {
-		const build_listing = this._batch_manifest[build_index]
+		const build_listing = this._batch_manifest[build_index];
 		const build_instr_file = build_listing.file;
 		let build_config = null;
 		if (yabs.util.exists(build_instr_file)) {

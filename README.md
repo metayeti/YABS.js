@@ -204,7 +204,7 @@ If there is a shared `"headers"` entry in the build instructions file and we use
 
 ### 3. Using custom output filenames
 
-You can use a custom output filename by adding a `"output_file"` entry into the `"sources"` listing. The `build_yabs.json` build instructions file demonstrates the use:
+You can use a custom output filename by adding an `"output_file"` entry into the `"sources"` listing. The `build_yabs.json` build instructions file demonstrates the use:
 
 ```JS
 {
