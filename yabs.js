@@ -842,9 +842,8 @@ yabs.Builder = class {
 
 	async _buildStep_II_CompileSources() {
 		function preprocessOneSource(input_file, output_file, params) {
-			const input_base_dir = path.parse(input_file).dir;
 			return new Promise((resolve, reject) => {
-				exec(`preprocess ${input_file} ${input_base_dir} ${params} > ${output_file}`, (err) => {
+				exec(`metascript ${input_file} ${params} > ${output_file}`, (err) => {
 					if (err) {
 						this._logger.out_raw('\n\n');
 						reject(err);
@@ -889,12 +888,12 @@ yabs.Builder = class {
 			else {
 				if (has_variables) {
 					// check if any entry in variables_list matches a provided -variable parameter
-					variable_params.every(variable_param => {
-						if (variables_listing.hasOwnProperty(variable_param)) {
+					for (let i = 0; i < variable_params.length; ++i) {
+						if (variables_listing.hasOwnProperty(variable_params[i])) {
 							use_preprocessor = true;
+							break;
 						}
-						return !use_preprocessor;
-					});
+					}
 				}
 			}
 			let preprocess_destination_file;
@@ -1003,8 +1002,10 @@ yabs.Builder = class {
 	 * Start the build.
 	 */
 	async build() {
-		const build_instructions_file = this._build_config.getSourceFile();
-		this._logger.info(`Starting build: ${build_instructions_file}`);
+		const build_instr_dir = this._build_config.getBaseDir();
+		const build_instr_file = this._build_config.getSourceFile();
+		const build_instr_fullpath = path.join(build_instr_dir, build_instr_file);
+		this._logger.info(`Starting build: ${build_instr_fullpath}`);
 
 		this._logger.info('Preparing build ...');
 
@@ -1145,10 +1146,12 @@ yabs.BatchBuilder = class {
 	async build() {
 		const nofail_flag = this._build_params.option.includes('nofail');
 
-		const build_instructions_file = this._build_config.getSourceFile();
+		const build_instr_dir = this._build_config.getBaseDir();
+		const build_instr_file = this._build_config.getSourceFile();
+		const build_instr_fullpath = path.join(build_instr_dir, build_instr_file);
 		this._logger.info(
 			`Starting ${this._logger._OUTPUT_BRIGHT}${this._logger._OUTPUT_FG_GREEN}<batch build>` +
-			`${this._logger._OUTPUT_RESET}: ${build_instructions_file}`
+			`${this._logger._OUTPUT_RESET}: ${build_instr_fullpath}`
 		);
 
 		// build the batch manifest

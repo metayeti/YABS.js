@@ -11,12 +11,14 @@
 
 console.log('script2');
 
-// #ifndef NODEBUG
+//? if (typeof NODEBUG === 'undefined') {
 console.log('debug included');
-// #endif
+//? }
 
-// #if TESTVAR==1
-console.log('testvar1 = 1');
-// #elif TESTVAR==2
-console.log('testvar1 = 2');
-// #endif
+//? if (typeof TESTVAR === 'undefined') {
+console.log('testvar is undefined');
+//? } else if (TESTVAR == 1) {
+console.log('testvar = 1');
+//? } else if (TESTVAR == 2) {
+console.log('testvar = 2');
+//? }

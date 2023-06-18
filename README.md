@@ -30,9 +30,9 @@ Please double (and triple) check your requirements to see if this featureset fit
 ## Dependencies
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
-- [preprocessor.js](https://www.npmjs.com/package/preprocessor) ( install with "npm -g install preprocessor" )
+- [metascript](https://www.npmjs.com/package/metascript) ( install with "npm -g install metascript" )
 
-The preprocessor package is only needed if the build leverages the preprocessor in some way.
+Metascript package is only needed if the build leverages the preprocessor in some way.
 
 ## How it works
 
@@ -330,7 +330,7 @@ Available parameters are:
 
 ## Thanks
 
-The [uglify-js](https://www.npmjs.com/package/uglify-js) and  [preprocessor.js](https://www.npmjs.com/package/preprocessor) packages.
+The [uglify-js](https://www.npmjs.com/package/uglify-js) and [metascript](https://www.npmjs.com/package/metascript) packages.
 
 ## License
 
