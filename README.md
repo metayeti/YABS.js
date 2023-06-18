@@ -23,16 +23,16 @@ Please note that this is a "dumb" build system that only deals with individual f
 
 3. Matches `<script src="...">` attributes in the HTML files to the associated JS files, and updates those entries to match compiled filenames (by default, it changes extensions in those from .js to .min.js).
 
-Please double (and triple) check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems (like [Babel](https://babeljs.io/)). It is unlikely that this system will be expanded beyond the scope of what it currently does as it is purpose-built for my own projects. In practice this means that unless your needs closely align with mine, you will probably be better off using something else.
+Please double (and triple) check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does.
 
 ---
 
 ## Dependencies
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
-- [MetaScript](https://www.npmjs.com/package/metascript) ( install with "npm -g install metascript" )
+- [metascript](https://www.npmjs.com/package/metascript) ( install with "npm -g install metascript" )
 
-The MetaScript package is only needed if the build leverages the preprocessor in some way.
+Metascript package is only needed if the build leverages the preprocessor in some way.
 
 ## How it works
 
@@ -244,9 +244,6 @@ To use preprocessor variables, first add a `"variables"` entry to individual `"s
       "variables": {
         "debug": [
           "DEBUG=true"
-        ],
-        "nodebug": [
-          "DEBUG=false"
         ]
       }
     }
@@ -347,7 +344,7 @@ Available parameters are:
 
 ## Thanks
 
-The [uglify-js](https://www.npmjs.com/package/uglify-js) and [MetaScript](https://www.npmjs.com/package/metascript) packages.
+The [uglify-js](https://www.npmjs.com/package/uglify-js) and [metascript](https://www.npmjs.com/package/metascript) packages.
 
 ## License
 
