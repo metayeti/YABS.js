@@ -310,14 +310,14 @@ YABS.js can build in batch mode. To do so, create a `build_all.json` (you can na
 
 Any number of build instructions files can be bundled into the batch build. Note that if any of the builds in line fail, all subsequent builds will stop. To prevent this, you can use `--nofail` when running the build.
 
-When invoking preprocessor parameters via the command line, they will be applied to all builds in the batch build - this may be undesirable in certain circumstances. To avoid this, we can restructure the batch build instructions and add an `"options"` parameter to each entry. These options will override the command line options and be used when running that specific build:
+When invoking preprocessor parameters via the command line, they will be applied to all builds in the batch build - this may be undesirable in certain circumstances. To avoid this, we can restructure the batch build instructions, wrapping it in an object, pointing to the build instructions file via a `"file"` entry and adding an `"options"` entry to the object. The options listed there will override command line options and will be used when running that specific build:
 
 ```JSON
   "batch_build": [
     {
-      file: "build_main.json",
-	  options: "-debug -otherparam"
-	},
+      "file": "build_main.json",
+      "options": "-debug -otherparam"
+    },
     "build_other.json",
   ]
 ```
