@@ -1,5 +1,5 @@
 {
-	"source_dir": "advanced/",
+	"source_dir": "./",
 	"destination_dir": "build/advanced/",
 	"headers": {
 		"src1_header": "/* script, minified */",
@@ -36,12 +36,10 @@
 					"NODEBUG=true"
 				],
 				"test": [
-					"TESTVAR1=1",
-					"TESTVAR2=2"
+					"TESTVAR=1"
 				],
 				"test2": [
-					"TESTVAR1=2",
-					"TESTVAR2=1"
+					"TESTVAR=2"
 				]
 			}
 		},

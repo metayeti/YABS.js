@@ -1,7 +1,35 @@
 body {
-	background-color: #F0E68C;
+	background-color: #000;
+	margin: 0;
+	padding: 0;
 	overflow: hidden;
 }
-#cat, #dog {
+.container {
 	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+.container p {
+	padding: 30px;
+	margin: 0;
+	font-family: sans-serif;
+	color: #fff;
+	font-size: 13pt;
+}
+#spiral {
+	position: absolute;
+	display: block;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+}
+.rotate {
+	animation: spin 10s linear infinite;
+}
+@keyframes spin {
+	100% {
+		transform: rotate(360deg);
+	}
 }

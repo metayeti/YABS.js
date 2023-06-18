@@ -1,8 +1,8 @@
 {
 	"batch_build": [
 		"build_yabs.json",
-		"tests/build_minimal.json",
-		"tests/build_advanced.json",
-		"tests/nested/build_nested.json"
+		"tests/minimal/build.json",
+		"tests/advanced/build.json",
+		"tests/none/build.json"
 	]
 }

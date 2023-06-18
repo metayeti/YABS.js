@@ -1,0 +1,407 @@
+  __ __ _____ _____ _____     _
+ |  |  |  _  |  _  |   __|   |_|___
+  \_   |     |  _ -|__   |_  | |_ -|
+   /__/|__|__|_____|_____|_|_| |___|
+                           |___|
+ Yet
+ Another                           [ v0.0.0 ]
+ Build      https://github.com/pulzed/yabs.js
+ System.js         (c) 2023 Danijel Durakovic
+
+---------------------------------------------
+
+* Configuring build ...
+
+* Starting build: build_advanced.json
+
+* Preparing build ...
+
+* Compiling sources ...
+
+build\advanced\src\script1_renamed.min.js ... ok
+build\advanced\src\script2.min.js ... ok
+build\advanced\src\script3.min.js ... ok
+build\advanced\src\script4.min.js ... ok
+
+* Writing HTML files ...
+
+build\advanced\index.html ...#####
+{
+  source: 'tests\\advanced\\src\\script1.js',
+  original_source: 'advanced\\src\\script1.js',
+  destination: 'build\\advanced\\src\\script1_renamed.min.js',
+  header_data: { has_header: true, header: [ '/* script, minified */' ] },
+  variables_data: { has_variables: true, variables: { testvars: [Array] } },
+  force_preprocessor: false
+}
+advanced\src\script1.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script1.js',
+  original_source: 'advanced\\src\\script1.js',
+  destination: 'build\\advanced\\src\\script1_renamed.min.js',
+  header_data: { has_header: true, header: [ '/* script, minified */' ] },
+  variables_data: { has_variables: true, variables: { testvars: [Array] } },
+  force_preprocessor: false
+}
+advanced\src\script2.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script2.js',
+  original_source: 'advanced\\src\\script2.js',
+  destination: 'build\\advanced\\src\\script2.min.js',
+  header_data: {
+    has_header: true,
+    header: [
+      '/* script2, minified',
+      ' * version: 2.0.5',
+      ' * author: Scooby (c) 2023 */'
+    ]
+  },
+  variables_data: {
+    has_variables: true,
+    variables: { nodebug: [Array], test: [Array], test2: [Array] }
+  },
+  force_preprocessor: false
+}
+advanced\src\script2.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script1.js',
+  original_source: 'advanced\\src\\script1.js',
+  destination: 'build\\advanced\\src\\script1_renamed.min.js',
+  header_data: { has_header: true, header: [ '/* script, minified */' ] },
+  variables_data: { has_variables: true, variables: { testvars: [Array] } },
+  force_preprocessor: false
+}
+advanced\src\script3.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script2.js',
+  original_source: 'advanced\\src\\script2.js',
+  destination: 'build\\advanced\\src\\script2.min.js',
+  header_data: {
+    has_header: true,
+    header: [
+      '/* script2, minified',
+      ' * version: 2.0.5',
+      ' * author: Scooby (c) 2023 */'
+    ]
+  },
+  variables_data: {
+    has_variables: true,
+    variables: { nodebug: [Array], test: [Array], test2: [Array] }
+  },
+  force_preprocessor: false
+}
+advanced\src\script3.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script3.js',
+  original_source: 'advanced\\src\\script3.js',
+  destination: 'build\\advanced\\src\\script3.min.js',
+  header_data: { has_header: false },
+  variables_data: { has_variables: false },
+  force_preprocessor: false
+}
+advanced\src\script3.js
+#####
+ ok
+build\advanced\index2.html ...#####
+{
+  source: 'tests\\advanced\\src\\script1.js',
+  original_source: 'advanced\\src\\script1.js',
+  destination: 'build\\advanced\\src\\script1_renamed.min.js',
+  header_data: { has_header: true, header: [ '/* script, minified */' ] },
+  variables_data: { has_variables: true, variables: { testvars: [Array] } },
+  force_preprocessor: false
+}
+advanced\src\script4.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script2.js',
+  original_source: 'advanced\\src\\script2.js',
+  destination: 'build\\advanced\\src\\script2.min.js',
+  header_data: {
+    has_header: true,
+    header: [
+      '/* script2, minified',
+      ' * version: 2.0.5',
+      ' * author: Scooby (c) 2023 */'
+    ]
+  },
+  variables_data: {
+    has_variables: true,
+    variables: { nodebug: [Array], test: [Array], test2: [Array] }
+  },
+  force_preprocessor: false
+}
+advanced\src\script4.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script3.js',
+  original_source: 'advanced\\src\\script3.js',
+  destination: 'build\\advanced\\src\\script3.min.js',
+  header_data: { has_header: false },
+  variables_data: { has_variables: false },
+  force_preprocessor: false
+}
+advanced\src\script4.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script4.js',
+  original_source: 'advanced\\src\\script4.js',
+  destination: 'build\\advanced\\src\\script4.min.js',
+  header_data: {
+    has_header: true,
+    header: [ '/* inline', ' * multiline', ' * header */' ]
+  },
+  variables_data: { has_variables: false },
+  force_preprocessor: true
+}
+advanced\src\script4.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script1.js',
+  original_source: 'advanced\\src\\script1.js',
+  destination: 'build\\advanced\\src\\script1_renamed.min.js',
+  header_data: { has_header: true, header: [ '/* script, minified */' ] },
+  variables_data: { has_variables: true, variables: { testvars: [Array] } },
+  force_preprocessor: false
+}
+advanced\src\script5.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script2.js',
+  original_source: 'advanced\\src\\script2.js',
+  destination: 'build\\advanced\\src\\script2.min.js',
+  header_data: {
+    has_header: true,
+    header: [
+      '/* script2, minified',
+      ' * version: 2.0.5',
+      ' * author: Scooby (c) 2023 */'
+    ]
+  },
+  variables_data: {
+    has_variables: true,
+    variables: { nodebug: [Array], test: [Array], test2: [Array] }
+  },
+  force_preprocessor: false
+}
+advanced\src\script5.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script3.js',
+  original_source: 'advanced\\src\\script3.js',
+  destination: 'build\\advanced\\src\\script3.min.js',
+  header_data: { has_header: false },
+  variables_data: { has_variables: false },
+  force_preprocessor: false
+}
+advanced\src\script5.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script4.js',
+  original_source: 'advanced\\src\\script4.js',
+  destination: 'build\\advanced\\src\\script4.min.js',
+  header_data: {
+    has_header: true,
+    header: [ '/* inline', ' * multiline', ' * header */' ]
+  },
+  variables_data: { has_variables: false },
+  force_preprocessor: true
+}
+advanced\src\script5.js
+#####
+ ok
+build\advanced\nested\some.html ...#####
+{
+  source: 'tests\\advanced\\src\\script1.js',
+  original_source: 'advanced\\src\\script1.js',
+  destination: 'build\\advanced\\src\\script1_renamed.min.js',
+  header_data: { has_header: true, header: [ '/* script, minified */' ] },
+  variables_data: { has_variables: true, variables: { testvars: [Array] } },
+  force_preprocessor: false
+}
+src\script3.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script2.js',
+  original_source: 'advanced\\src\\script2.js',
+  destination: 'build\\advanced\\src\\script2.min.js',
+  header_data: {
+    has_header: true,
+    header: [
+      '/* script2, minified',
+      ' * version: 2.0.5',
+      ' * author: Scooby (c) 2023 */'
+    ]
+  },
+  variables_data: {
+    has_variables: true,
+    variables: { nodebug: [Array], test: [Array], test2: [Array] }
+  },
+  force_preprocessor: false
+}
+src\script3.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script3.js',
+  original_source: 'advanced\\src\\script3.js',
+  destination: 'build\\advanced\\src\\script3.min.js',
+  header_data: { has_header: false },
+  variables_data: { has_variables: false },
+  force_preprocessor: false
+}
+src\script3.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script4.js',
+  original_source: 'advanced\\src\\script4.js',
+  destination: 'build\\advanced\\src\\script4.min.js',
+  header_data: {
+    has_header: true,
+    header: [ '/* inline', ' * multiline', ' * header */' ]
+  },
+  variables_data: { has_variables: false },
+  force_preprocessor: true
+}
+src\script3.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script1.js',
+  original_source: 'advanced\\src\\script1.js',
+  destination: 'build\\advanced\\src\\script1_renamed.min.js',
+  header_data: { has_header: true, header: [ '/* script, minified */' ] },
+  variables_data: { has_variables: true, variables: { testvars: [Array] } },
+  force_preprocessor: false
+}
+src\script4.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script2.js',
+  original_source: 'advanced\\src\\script2.js',
+  destination: 'build\\advanced\\src\\script2.min.js',
+  header_data: {
+    has_header: true,
+    header: [
+      '/* script2, minified',
+      ' * version: 2.0.5',
+      ' * author: Scooby (c) 2023 */'
+    ]
+  },
+  variables_data: {
+    has_variables: true,
+    variables: { nodebug: [Array], test: [Array], test2: [Array] }
+  },
+  force_preprocessor: false
+}
+src\script4.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script3.js',
+  original_source: 'advanced\\src\\script3.js',
+  destination: 'build\\advanced\\src\\script3.min.js',
+  header_data: { has_header: false },
+  variables_data: { has_variables: false },
+  force_preprocessor: false
+}
+src\script4.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script4.js',
+  original_source: 'advanced\\src\\script4.js',
+  destination: 'build\\advanced\\src\\script4.min.js',
+  header_data: {
+    has_header: true,
+    header: [ '/* inline', ' * multiline', ' * header */' ]
+  },
+  variables_data: { has_variables: false },
+  force_preprocessor: true
+}
+src\script4.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script1.js',
+  original_source: 'advanced\\src\\script1.js',
+  destination: 'build\\advanced\\src\\script1_renamed.min.js',
+  header_data: { has_header: true, header: [ '/* script, minified */' ] },
+  variables_data: { has_variables: true, variables: { testvars: [Array] } },
+  force_preprocessor: false
+}
+src\script5.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script2.js',
+  original_source: 'advanced\\src\\script2.js',
+  destination: 'build\\advanced\\src\\script2.min.js',
+  header_data: {
+    has_header: true,
+    header: [
+      '/* script2, minified',
+      ' * version: 2.0.5',
+      ' * author: Scooby (c) 2023 */'
+    ]
+  },
+  variables_data: {
+    has_variables: true,
+    variables: { nodebug: [Array], test: [Array], test2: [Array] }
+  },
+  force_preprocessor: false
+}
+src\script5.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script3.js',
+  original_source: 'advanced\\src\\script3.js',
+  destination: 'build\\advanced\\src\\script3.min.js',
+  header_data: { has_header: false },
+  variables_data: { has_variables: false },
+  force_preprocessor: false
+}
+src\script5.js
+#####
+#####
+{
+  source: 'tests\\advanced\\src\\script4.js',
+  original_source: 'advanced\\src\\script4.js',
+  destination: 'build\\advanced\\src\\script4.min.js',
+  header_data: {
+    has_header: true,
+    header: [ '/* inline', ' * multiline', ' * header */' ]
+  },
+  variables_data: { has_variables: false },
+  force_preprocessor: true
+}
+src\script5.js
+#####
+ ok
+
+Success: Build finished!
+
+Updated 7 files.
+Build completed in 0.70s.
+
