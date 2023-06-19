@@ -5,6 +5,7 @@
 		{
 			"file": "yabs.js",
 			"output_file": "build.js",
+			"compile_options": "--beautify",
 			"header": [
 				"/* YABS.js %version% (c) $YEAR$ %author%",
 				" * https://github.com/pulzed/yabs.js",

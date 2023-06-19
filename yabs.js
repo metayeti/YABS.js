@@ -18,7 +18,7 @@
 /**
  * @file yabs.js
  * @author Danijel Durakovic
- * @version 0.0.0
+ * @version 1.0.0
  */
 
 const path = require('path');
@@ -32,7 +32,7 @@ const { EOL } = require('os');
  */
 const yabs = {};
 
-yabs.version = '0.0.0'; // YABS.js version
+yabs.version = '1.0.0'; // YABS.js version
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -397,6 +397,11 @@ yabs.BuildConfig = class {
 								source_entry_object.output_file = source_entry.output_file;
 							}
 						}
+						if (source_entry.hasOwnProperty('compile_options')) {
+							if (typeof source_entry.compile_options === 'string') {
+								source_entry_object.compile_options = source_entry.compile_options;
+							}
+						}
 						if (source_entry.hasOwnProperty('header')) {
 							if (source_entry.header instanceof Array) {
 								if (!source_entry.header.every(element => typeof element === 'string')) {
@@ -498,16 +503,6 @@ yabs.BuildConfig = class {
 		if (!this._files_listing) {
 			this._files_listing = [];
 		}
-		///debug
-		//console.log('------------------------');
-		//console.log('source_dir:', this._source_dir);
-		//console.log('destination_dir:', this._destination_dir);
-		//console.log('html_listing:', this._html_listing);
-		//console.log('sources_listing:', this._sources_listing);
-		//console.log('files_listing:', this._files_listing);
-		//console.log('variables:', this._variables);
-		//console.log('------------------------');
-		///debug
 	}
 	/**
 	 * Returns the input build instructions filename.
@@ -726,11 +721,15 @@ yabs.Builder = class {
 				if (source_full_path === destination_full_path) {
 					throw `Source file: "${source_full_path}" cannot be the same as the destination!`;
 				}
-				// add file to manifest
+				// process compile options
+				const default_compile_options = '--compress --mangle';
+				const compile_options = (listing_entry.hasOwnProperty('compile_options')) ? listing_entry.compile_options : default_compile_options;
+				// add source listing to manifest
 				this._sources_manifest.push({
 					source: source_full_path,
 					original_source: source_original_path,
 					destination: destination_full_path,
+					compile_options: compile_options,
 					header_data: header_data,
 					variables_data: variables_data,
 					force_preprocessor: force_preprocessor
@@ -854,9 +853,9 @@ yabs.Builder = class {
 				});
 			});
 		}
-		function compileOneSource(input_file, output_file) {
+		function compileOneSource(input_file, output_file, params) {
 			return new Promise((resolve, reject) => {
-				exec(`uglifyjs ${input_file} --compress --mangle -o ${output_file}`, (err) => {
+				exec(`uglifyjs ${input_file} ${params} -o ${output_file}`, (err) => {
 					if (err) {
 						this._logger.out_raw('\n\n');
 						reject(err);
@@ -926,7 +925,8 @@ yabs.Builder = class {
 			const source_file = (use_preprocessor) ? preprocess_destination_file : manifest_entry.source;
 			const build_destination_file = manifest_entry.destination;
 			const compile_destination_file = build_destination_file + yabs.COMPILE_FILE_EXTENSION;
-			await compileOneSource.call(this, source_file, compile_destination_file);
+			const compiler_params = manifest_entry.compile_options;
+			await compileOneSource.call(this, source_file, compile_destination_file, compiler_params);
 			// output header + compiled source into destination file
 			const header_data = manifest_entry.header_data;
 			const compiled_file_data = fs.readFileSync(compile_destination_file, { encoding: 'utf8', flag: 'r' });
@@ -1024,17 +1024,6 @@ yabs.Builder = class {
 		// prepare build step III
 		// process header data for sourcefiles
 		this._processSourceHeaders();
-
-/*
-		console.log('FILES MANIFEST');
-		console.log(this._files_manifest);
-
-		console.log('SOURCES MANIFEST');
-		console.log(this._sources_manifest);
-
-		console.log('HTML MANIFEST');
-		console.log(this._html_manifest);
-		*/
 
 		// build step I
 		// update files from files manifest
@@ -1239,9 +1228,6 @@ yabs.Application = class {
 			}
 		});
 
-		//console.log('option parameters:', build_params.option);
-		//console.log('variable parameters:', build_params.variable);
-		//console.log('freestanding parameters:', build_params.free);
 		// print out header
 		this._logger.header();
 		try {

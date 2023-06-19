@@ -6,6 +6,6 @@
 			"file": "tests/advanced/build.json",
 			"options": "-nodebug -test"
 		},
-		"tests/none/build.json"
+		"tests/empty/build.json"
 	]
 }
