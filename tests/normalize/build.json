@@ -1,0 +1,19 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/normalize/",
+	"html": [
+		"index.html",
+		"nested/index.html",
+		"nested/folder/index1.html",
+		"nested/folder/index2.html",
+		"nested/folder/index3.html"
+	],
+	"sources": [
+		"backref_script1.js",
+		"nested/backref_script2.js",
+		"nested/folder/frontref_script.js"
+	],
+	"files": [
+		"css/style.css"
+	]
+}
