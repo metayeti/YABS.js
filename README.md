@@ -218,7 +218,7 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
     {
       "file": "yabs.js",
       "output_file": "build.js",
-      "compile_options": "--beautify",
+      "compile_options": "--compress",
       "header": [
         "/* YABS.js %version% (c) $YEAR$ %author%",
         " * https://github.com/pulzed/yabs.js",
@@ -229,7 +229,7 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
 }
 ```
 
-The above build instructions file generates a "build.js" file (rather than yabs.min.js if the `"output_file"` entry was omitted), and it uses the "--beautify" compiler option to just remove comments while keeping the source code readable.
+The above build instructions file generates a "build.js" file (rather than yabs.min.js if the `"output_file"` entry was omitted), and it uses the "--compress" compiler option.
 
 ### 4. Using the preprocessor
 
