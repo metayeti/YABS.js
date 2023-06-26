@@ -39,7 +39,7 @@ You can rename `build.js` to any arbitrary name, or you can use `yabs.js` with t
 
 ## Future plans
 
- - [ ] Script bundles (planned for 1.1.0)
+ - Script bundles (planned for 1.1.0)
 
 ## Minimal example
 
