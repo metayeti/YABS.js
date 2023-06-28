@@ -1,3 +1,0 @@
--bundles
--build when given path only (attach build.json)
--properly working relative paths in html

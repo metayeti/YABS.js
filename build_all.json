@@ -1,12 +1,12 @@
 {
 	"batch_build": [
 		"build_yabs.json",
-		"tests/minimal/build.json",
+		"tests/minimal/",
 		{
-			"file": "tests/advanced/build.json",
+			"file": "tests/advanced/",
 			"options": "-nodebug -test"
 		},
-		"tests/empty/build.json",
-		"tests/html/build.json"
+		"tests/empty/",
+		"tests/html/"
 	]
 }
