@@ -3,7 +3,7 @@
 		"build_yabs.json",
 		"tests/minimal/",
 		{
-			"file": "tests/advanced/",
+			"build": "tests/advanced/build.json",
 			"options": "-nodebug -test"
 		},
 		"tests/empty/",

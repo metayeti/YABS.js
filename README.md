@@ -2,20 +2,20 @@
 
 YABS.js is a lightweight JavaScript build system.
 
-Version v1.1.0
+v1.1.0
 
 ## Dependencies
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
 - [MetaScript](https://www.npmjs.com/package/metascript) ( install with "npm -g install metascript" )
 
-The MetaScript package is only needed if the build leverages the preprocessor in some way, otherwise you can ignore it.
+The MetaScript package is only needed if the build leverages the preprocessor in some way.
 
 ## How it works
 
 YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and starts the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
 
-Please note that this is a "dumb" build system that only deals with files and not source code (apart from the mangling and compressing capacity provided by uglify-js). This system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
+Please note that this is a "dumb" (not content-aware) build system that only deals with files and not source code (apart from the mangling and compressing capacity provided by uglify-js). This system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
 
 1. Clones the hierarchy of files provided, updating with newer files, into the output directory (typically "build/") as specified by the build instructions file.
 
@@ -225,7 +225,7 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
 }
 ```
 
-The above build instructions file generates a "build.js" file (rather than yabs.min.js if the `"output_file"` entry was omitted), and it uses the "--compress" compiler option.
+The above build instructions file generates a "build.js" file (rather than the default "yabs.min.js" if the `"output_file"` entry was omitted), and it uses the "--compress" compiler option (rather than the default "--mangle --compress").
 
 ### 4. Bundling
 
@@ -351,12 +351,12 @@ If your build targets reside in a nested folder hierarchy and each of the target
   ]
 ```
 
-When invoking preprocessor parameters via the command line, they will be applied to all builds in the batch build which may be undesirable in certain circumstances. To avoid this, we can restructure the batch build instructions, wrapping it in an object, pointing to the build instructions file via a `"file"` entry and adding an `"options"` entry to the object. The options listed there will override command line options and will be used when running that specific build:
+When invoking preprocessor parameters via the command line, they will be applied to all builds in the batch build which may be undesirable in certain circumstances. To avoid this, we can restructure the batch build instructions, wrapping it in an object, pointing to the build instructions file via a `"build"` entry and adding an `"options"` entry to the object. The options listed there will override command line options and will be used when running that specific build:
 
 ```JSON
   "batch_build": [
     {
-      "file": "build_main.json",
+      "build": "build_main.json",
       "options": "-debug -another_param"
     },
     "build_other.json"
@@ -367,9 +367,9 @@ When invoking preprocessor parameters via the command line, they will be applied
 
 Available parameters are:
 
-- `--nofail` In a [batch build](#5-batch-building), keep going if one of the builds fails.
 - `--version` Displays version info.
 - `--help` Opens online help.
+- `--nofail` In a [batch build](#5-batch-building), keep going when one of the builds fails.
 
 ## Thanks
 

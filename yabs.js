@@ -333,14 +333,14 @@ yabs.BuildConfig = class {
 				json_data.batch_build.forEach(batch_entry => {
 					if (typeof batch_entry === 'string') {
 						this._batch_listing.push({
-							file: batch_entry
+							build: batch_entry
 						});
 					}
 					else if (typeof batch_entry === 'object' && batch_entry !== null) {
 						const batch_entry_object = {};
-						if (batch_entry.hasOwnProperty('file')) {
-							if (typeof batch_entry.file === 'string') {
-								batch_entry_object.file = batch_entry.file;
+						if (batch_entry.hasOwnProperty('build')) {
+							if (typeof batch_entry.build === 'string') {
+								batch_entry_object.build = batch_entry.build;
 							}
 						}
 						if (batch_entry.hasOwnProperty('options')) {
@@ -348,7 +348,7 @@ yabs.BuildConfig = class {
 								batch_entry_object.options = batch_entry.options;
 							}
 						}
-						if (batch_entry_object.file) {
+						if (batch_entry_object.build) {
 							this._batch_listing.push(batch_entry_object);
 						}
 					}
@@ -1102,8 +1102,8 @@ yabs.BatchBuilder = class {
 		const batch_listing = this._build_config.getBatchListing();
 		this._batch_manifest = [];
 		batch_listing.forEach(listing_entry => {
-			const build_instr_file = listing_entry.file;
-			if (!build_instr_file.length) {
+			const build_instr_path = listing_entry.build;
+			if (!build_instr_path.length) {
 				return;
 			}
 			let options;
@@ -1119,9 +1119,9 @@ yabs.BatchBuilder = class {
 			else {
 				options = this._build_params.variable;
 			}
-			const build_instr_file_full = path.join(this._base_dir, build_instr_file);
+			const build_instr_path_full = path.join(this._base_dir, build_instr_path);
 			this._batch_manifest.push({
-				file: build_instr_file_full,
+				build: build_instr_path_full,
 				options: options
 			});
 		});
@@ -1129,18 +1129,8 @@ yabs.BatchBuilder = class {
 
 	async _buildOne(build_index) {
 		const build_listing = this._batch_manifest[build_index];
-		/*
-		const build_instr_file = build_listing.file;
 		let build_config = null;
-		if (yabs.util.exists(build_instr_file)) {
-			build_config = new yabs.BuildConfig(build_instr_file);
-		}
-		else {
-			throw 'Cannot find file: ' + build_instr_file;
-		}
-		*/
-		let build_config = null;
-		const build_param_input = build_listing.file;
+		const build_param_input = build_listing.build;
 		if (!yabs.util.exists(build_param_input)) {
 			throw 'Cannot find path or file: ' + build_param_input;
 		}
