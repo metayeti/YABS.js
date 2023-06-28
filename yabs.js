@@ -18,7 +18,7 @@
 /**
  * @file yabs.js
  * @author Danijel Durakovic
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 const path = require('path');
@@ -32,7 +32,7 @@ const { EOL } = require('os');
  */
 const yabs = {};
 
-yabs.version = '1.0.0'; // YABS.js version
+yabs.version = '1.1.0'; // YABS.js version
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -346,7 +346,7 @@ yabs.BuildConfig = class {
 				});
 			}
 			else {
-				throw 'The "batch_build" entry in build instructions file has to be an Array type!';
+				throw 'The "batch_build" entry in the build instructions file has to be an Array type!';
 			}
 			return; // this is a batch build, we are all done here
 		}
@@ -387,11 +387,6 @@ yabs.BuildConfig = class {
 					}
 					else if (typeof source_entry === 'object' && source_entry !== null) {
 						const source_entry_object = {};
-						if (source_entry.hasOwnProperty('file')) {
-							if (typeof source_entry.file === 'string') {
-								source_entry_object.file = source_entry.file;
-							}
-						}
 						if (source_entry.hasOwnProperty('output_file')) {
 							if (typeof source_entry.output_file === 'string') {
 								source_entry_object.output_file = source_entry.output_file;
@@ -400,6 +395,18 @@ yabs.BuildConfig = class {
 						if (source_entry.hasOwnProperty('compile_options')) {
 							if (typeof source_entry.compile_options === 'string') {
 								source_entry_object.compile_options = source_entry.compile_options;
+							}
+						}
+						// TODO implement bundles
+						if (source_entry.hasOwnProperty('bundle')) {
+							if (source_entry_object.output_file === undefined) {
+								// we are missing an output_file
+								throw 'Bundled scripts require an "output_field" entry!';
+							}
+						}
+						else if (source_entry.hasOwnProperty('file')) {
+							if (typeof source_entry.file === 'string') {
+								source_entry_object.file = source_entry.file;
 							}
 						}
 						if (source_entry.hasOwnProperty('header')) {
@@ -1244,6 +1251,7 @@ yabs.Application = class {
 			}
 			else {
 				const build_instr_file = build_params.free[0];
+				// TODO append build.json if param is path
 				if (yabs.util.exists(build_instr_file)) {
 					build_config = new yabs.BuildConfig(build_instr_file);
 				}

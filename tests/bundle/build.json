@@ -1,0 +1,21 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/bundle/",
+	"html": [
+		"index.html",
+		"nested/nested_index.html"
+	],
+	"sources": [
+		{
+			"bundle": [
+				"script1.js",
+				"script2.js",
+				"script3.js"
+			],
+			"output_file": "script.min.js",
+			"header": "/* a bundle of scripts */"
+		},
+		{
+		}
+	]
+}

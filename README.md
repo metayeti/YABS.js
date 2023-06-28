@@ -2,28 +2,28 @@
 
 YABS.js is a lightweight JavaScript build system.
 
-Version v1.0.0
+Version v1.1.0
 
 ## Dependencies
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
 - [MetaScript](https://www.npmjs.com/package/metascript) ( install with "npm -g install metascript" )
 
-The MetaScript package is only needed if the build leverages the preprocessor in some way.
+The MetaScript package is only needed if the build leverages the preprocessor in some way, otherwise you can ignore it.
 
 ## How it works
 
 YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and starts the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
 
-Please note that this is a "dumb" build system that only deals with individual files. It does not combine source files and it does not understand modules or `import`, `export` and `require` statements. What it does is roughly the following:
+Please note that this is a "dumb" build system that only deals with files and not source code (apart from the mangling and compressing capacity provided by uglify-js). This system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
 
 1. Clones the hierarchy of files provided, updating with newer files, into the output directory (typically "build/") as specified by the build instructions file.
 
-2. Minifies (also optionally, preprocesses) provided JavaScript files, optionally attaches a custom header.
+2. Minifies (also optionally, preprocesses) provided JavaScript files and optionally attaches a custom header to minified outputs.
 
-3. Matches `<script src="...">` attributes in the HTML files to the associated JS files, and updates those entries to match compiled filenames (by default, it changes extensions in those from .js to .min.js).
+3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled filenames (in practice this usually means the extensions .js get converted to .min.js, but you can also specify custom output filenames or bundle multiple scripts into one).
 
-Please double (and triple) check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems (like [Babel](https://babeljs.io/)). It is unlikely that this system will be expanded much beyond the scope of what it currently does as it is purpose-built for my own projects. In practice this means that unless your needs closely align with mine, you will probably be better off using something else. This software is provided as-is as free and open source software, but it is not open for contribution. If you need to extend the featureset consider forking this project.
+Please double check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of what it currently does as it is purpose-built for my own projects. This software is provided as-is and as free and open source, but it is not currently open for contributions (mainly because the author considers it feature-complete and would rather spend time working on other projects). If you need to extend or modify the featureset that this software provides, consider forking this project.
 
 ## Basic usage
 
@@ -31,15 +31,11 @@ Please double (and triple) check your requirements to see if this featureset fit
 2. Create a `build.json`
 3. Execute with `node build.js`
 
-YABS.js will default to `build_all.json` or `build.json` if the build instructions file is not explicitly provided as a parameter (meaning you can simply invoke the build with `node build.js`).
+YABS.js will default to `build_all.json` or `build.json` whenever the build instructions file is not explicitly provided as a parameter.
 
 To pass a custom build instructions file, use a freestanding (not utilizing the `-` or `--` prefixes) parameter. The first such parameter is used as the build instructions file, for example: `node build.js mybuild.json`. Only one such parameter will be accepted. If you wish to build multiple things in one go, you can [use YABS.js in batch mode](#5-batch-building).
 
 You can rename `build.js` to any arbitrary name, or you can use `yabs.js` with the full source instead.
-
-## Future plans
-
- - Script bundles (planned for 1.1.0)
 
 ## Minimal example
 
@@ -81,7 +77,7 @@ The hierarchy of files for this minimal build will look like this:
    📄 script.js
 📄 build.json
 📄 index.html
-📄 yabs.js
+📄 build.js
 ```
 
 For now, it doesn't really matter what these files contain. Let's imagine they contain some code and some data.
@@ -231,7 +227,26 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
 
 The above build instructions file generates a "build.js" file (rather than yabs.min.js if the `"output_file"` entry was omitted), and it uses the "--compress" compiler option.
 
-### 4. Using the preprocessor
+### 4. Bundling
+
+YABS.js can bundle multiple script files into one single output file. To do so, add a `"bundle"` (rather than a `"file"`) entry inside a `"sources"` item:
+
+```JSON
+  "sources": [
+    {
+      "bundle": [
+        "src/script1.js",
+        "src/script2.js"
+      ],
+      "output_file": "script_combined.js",
+      "header": "/* This is a combined script! */"
+    }
+  ]
+```
+
+When using bundles, the `"output_file"` parameter is required.
+
+### 5. Using the preprocessor
 
 The preprocessor adds a layer of metaprogramming that we can use when compiling sourcefiles.
 
@@ -314,18 +329,27 @@ By default, YABS.js will only run the preprocessor step whenever a variable grou
 
 This will force the compilation step for this particular source to always use the preprocessor.
 
-### 5. Batch building
+### 6. Batch building
 
 YABS.js can build in batch mode. To do so, create a `build_all.json` (you can name it anything, but this is a useful convention) and add a single entry named `"batch_build"`. Inside, list all your build instructions files in order you wish to have them built:
 
 ```JSON
   "batch_build": [
     "build_main.json",
-    "build_other.json",
+    "build_other.json"
   ]
 ```
 
 Any number of build instructions files can be bundled into the batch build. Note that if any of the builds in line fail, all subsequent builds will stop. To prevent this, you can use `--nofail` when running the build.
+
+If your build targets reside in a nested folder hierarchy and each of the targets contains a `build.json` file at the appropriate level, you can shorten the syntax and just point to the directory:
+
+```JSON
+  "batch_build": [
+    "some/subfolder/",
+    "another/subfolder/"
+  ]
+```
 
 When invoking preprocessor parameters via the command line, they will be applied to all builds in the batch build which may be undesirable in certain circumstances. To avoid this, we can restructure the batch build instructions, wrapping it in an object, pointing to the build instructions file via a `"file"` entry and adding an `"options"` entry to the object. The options listed there will override command line options and will be used when running that specific build:
 
@@ -333,9 +357,9 @@ When invoking preprocessor parameters via the command line, they will be applied
   "batch_build": [
     {
       "file": "build_main.json",
-      "options": "-debug -otherparam"
+      "options": "-debug -another_param"
     },
-    "build_other.json",
+    "build_other.json"
   ]
 ```
 
@@ -343,7 +367,9 @@ When invoking preprocessor parameters via the command line, they will be applied
 
 Available parameters are:
 
-- `--nofail` - In a [batch build](#5-batch-building), keep going if one of the builds fails.
+- `--nofail` In a [batch build](#5-batch-building), keep going if one of the builds fails.
+- `--version` Displays version info.
+- `--help` Opens online help.
 
 ## Thanks
 
