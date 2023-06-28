@@ -195,6 +195,17 @@ yabs.util.parseJSDocTagsFromFile = function(source_file) {
 	return output;
 };
 
+yabs.util.openURLWithBrowser = function(url) {
+	const start_cmd = (function() {
+		switch (process.platform) {
+			case 'darwin': return 'open';
+			case 'win32': return 'start';
+			default: return 'xdg-open';
+		}
+	}());
+	require('child_process').exec(start_cmd + ' ' + url);
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Logger
@@ -291,8 +302,6 @@ yabs.Logger = class {
 		this.out(' Another' + ' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]');
 		this.out(' Build      https://github.com/pulzed/yabs.js');
 		this.out(' System.js         (c) 2023 Danijel Durakovic');
-		this.endl();
-		this.out('---------------------------------------------');
 		this.endl();
 	}
 };
@@ -1235,8 +1244,23 @@ yabs.Application = class {
 			}
 		});
 
+		if (build_params.free.length === 0) {
+			if (build_params.option.length > 0) {
+				if (build_params.option.includes('version')) {
+					this._logger.header();
+					return;
+				}
+				else if (build_params.option.includes('help')) {
+					yabs.util.openURLWithBrowser('https://github.com/pulzed/YABS.js');
+					return;
+				}
+			}
+		}
+
 		// print out header
 		this._logger.header();
+		this._logger.out('---------------------------------------------');
+		this._logger.endl();
 		try {
 			this._logger.info('Configuring build ...');
 			// figure out what we're building first
