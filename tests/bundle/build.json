@@ -16,6 +16,39 @@
 			"header": "/* a bundle of scripts */"
 		},
 		{
+			"bundle": [
+				"nested/nested_script1.js",
+				"nested/nested_script2.js",
+				"nested/nested_script3.js"
+			],
+			"output_file": "nested_script.min.js",
+			"header": "/* another bundle of scripts */"
+		},
+		{
+			"file": "normal.js",
+			"header": "/* normal script */"
+		},
+		{
+			"file": "nested/nested_normal.js",
+			"header": "/* another normal script */"
+		},
+		{
+			"bundle": [
+				"nested/src/src_a.js",
+				"nested/src/src_b.js",
+				"nested/src/src_c.js"
+			],
+			"output_file": "../nested_src.min.js",
+			"header": "/* bundled nested scripts */"
+		},
+		{
+			"bundle": [
+				"nested/src2/src2_a.js",
+				"nested/src2/src2_b.js",
+				"nested/src2/src2_c.js"
+			],
+			"output_file": "nested_src2.min.js",
+			"header": "/* another bundled nested scripts */"
 		}
 	]
 }

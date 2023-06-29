@@ -42,6 +42,7 @@ yabs.version = '1.1.0'; // YABS.js version
 
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
+yabs.DEFAULT_COMPILE_OPTIONS = '--compress --mangle';
 yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
 yabs.PREPROCESS_FILE_EXTENSION = '.pre';
 yabs.COMPILE_FILE_EXTENSION = '.cmp';
@@ -225,6 +226,7 @@ yabs.Logger = class {
 		this._OUTPUT_BRIGHT    = (is_tty) ? '\x1b[1m'  : '';
 		this._OUTPUT_FG_RED    = (is_tty) ? '\x1b[31m' : '';
 		this._OUTPUT_FG_GREEN  = (is_tty) ? '\x1b[32m' : '';
+		this._OUTPUT_FG_YELLOW = (is_tty) ? "\x1b[33m" : '';
 	}
 	/**
 	 * Prints a message, followed by newline.
@@ -291,7 +293,7 @@ yabs.Logger = class {
 	 * Prints the YABS.js header.
 	 */
 	header() {
-		this.out_raw(`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}`);
+		this.out_raw(`${this._OUTPUT_FG_YELLOW}`);
 		this.out('  __ __ _____ _____ _____     _');
 		this.out(' |  |  |  _  |  _  |   __|   |_|___');
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
@@ -319,6 +321,7 @@ yabs.BuildConfig = class {
 	 * @param {string} source_file - Build instructions JSON file.
 	 */
 	constructor(source_file) {
+		// TODO: shorten error messages
 		const parsed_source_file = path.parse(source_file);
 		this._source_file = parsed_source_file.base;
 		this._base_dir = parsed_source_file.dir;
@@ -406,12 +409,19 @@ yabs.BuildConfig = class {
 								source_entry_object.compile_options = source_entry.compile_options;
 							}
 						}
-						// TODO implement bundles
 						if (source_entry.hasOwnProperty('bundle')) {
 							if (source_entry_object.output_file === undefined) {
-								// we are missing an output_file
+								// we are missing output_file
 								throw 'Bundled scripts require an "output_field" entry!';
 							}
+							if (!(source_entry.bundle instanceof Array)) {
+								throw 'The "bundle" entry has to be an Array type!';
+							}
+							if (!source_entry.bundle.every(element => typeof element === 'string')) {
+								throw 'Every element in "bundle" entry has to be a String type!';
+							}
+							source_entry_object.is_bundle = true;
+							source_entry_object.bundle_files = source_entry.bundle;
 						}
 						else if (source_entry.hasOwnProperty('file')) {
 							if (typeof source_entry.file === 'string') {
@@ -491,7 +501,7 @@ yabs.BuildConfig = class {
 								source_entry_object.preprocess = true;
 							}
 						}
-						if (source_entry_object.file) {
+						if (source_entry_object.file || source_entry_object.is_bundle) {
 							this._sources_listing.push(source_entry_object);
 						}
 					}
@@ -700,6 +710,17 @@ yabs.Builder = class {
 		function buildSourcesManifest() {
 			const sources_listing = this._build_config.getSourcesListing();
 			sources_listing.forEach(listing_entry => {
+				//TODO: rewrite code and process listing_entry.bundle
+				/*
+				const sources_list = [];
+
+				if (listing_entry.is_bundle) {
+					console.log('listing is bundle');	
+				}
+				else {
+					console.log('listing is file');
+				}
+				*/
 				if (listing_entry.file.includes('*')) {
 					// disallow any masks
 					return;
@@ -738,8 +759,7 @@ yabs.Builder = class {
 					throw `Source file: "${source_full_path}" cannot be the same as the destination!`;
 				}
 				// process compile options
-				const default_compile_options = '--compress --mangle';
-				const compile_options = (listing_entry.hasOwnProperty('compile_options')) ? listing_entry.compile_options : default_compile_options;
+				const compile_options = (listing_entry.hasOwnProperty('compile_options')) ? listing_entry.compile_options : yabs.DEFAULT_COMPILE_OPTIONS;
 				// add source listing to manifest
 				this._sources_manifest.push({
 					source: source_full_path,
