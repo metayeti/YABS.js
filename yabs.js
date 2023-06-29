@@ -18,7 +18,7 @@
 /**
  * @file yabs.js
  * @author Danijel Durakovic
- * @version 1.1.0
+ * @version 1.1.0 dev
  */
 
 const path = require('path');
@@ -32,7 +32,7 @@ const { EOL } = require('os');
  */
 const yabs = {};
 
-yabs.version = '1.1.0'; // YABS.js version
+yabs.version = '1.1.0 dev'; // YABS.js version
 
 ////////////////////////////////////////////////////////////////////////////////
 //
