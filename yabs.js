@@ -293,7 +293,7 @@ yabs.Logger = class {
 	 * Prints the YABS.js header.
 	 */
 	header() {
-		this.out_raw(`${this._OUTPUT_FG_YELLOW}`);
+		this.out_raw(`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}`);
 		this.out('  __ __ _____ _____ _____     _');
 		this.out(' |  |  |  _  |  _  |   __|   |_|___');
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
@@ -336,14 +336,14 @@ yabs.BuildConfig = class {
 				json_data.batch_build.forEach(batch_entry => {
 					if (typeof batch_entry === 'string') {
 						this._batch_listing.push({
-							build: batch_entry
+							target: batch_entry
 						});
 					}
 					else if (typeof batch_entry === 'object' && batch_entry !== null) {
 						const batch_entry_object = {};
-						if (batch_entry.hasOwnProperty('build')) {
-							if (typeof batch_entry.build === 'string') {
-								batch_entry_object.build = batch_entry.build;
+						if (batch_entry.hasOwnProperty('target')) {
+							if (typeof batch_entry.target === 'string') {
+								batch_entry_object.target = batch_entry.target;
 							}
 						}
 						if (batch_entry.hasOwnProperty('options')) {
@@ -351,7 +351,7 @@ yabs.BuildConfig = class {
 								batch_entry_object.options = batch_entry.options;
 							}
 						}
-						if (batch_entry_object.build) {
+						if (batch_entry_object.target) {
 							this._batch_listing.push(batch_entry_object);
 						}
 					}
@@ -1122,7 +1122,7 @@ yabs.BatchBuilder = class {
 		const batch_listing = this._build_config.getBatchListing();
 		this._batch_manifest = [];
 		batch_listing.forEach(listing_entry => {
-			const build_instr_path = listing_entry.build;
+			const build_instr_path = listing_entry.target;
 			if (!build_instr_path.length) {
 				return;
 			}
@@ -1141,7 +1141,7 @@ yabs.BatchBuilder = class {
 			}
 			const build_instr_path_full = path.join(this._base_dir, build_instr_path);
 			this._batch_manifest.push({
-				build: build_instr_path_full,
+				build_target: build_instr_path_full,
 				options: options
 			});
 		});
@@ -1150,7 +1150,7 @@ yabs.BatchBuilder = class {
 	async _buildOne(build_index) {
 		const build_listing = this._batch_manifest[build_index];
 		let build_config = null;
-		const build_param_input = build_listing.build;
+		const build_param_input = build_listing.build_target;
 		if (!yabs.util.exists(build_param_input)) {
 			throw 'Cannot find path or file: ' + build_param_input;
 		}
