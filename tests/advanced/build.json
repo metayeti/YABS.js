@@ -24,7 +24,7 @@
 	"sources": [
 		{
 			"file": "src/script1.js",
-			"output_file": "script1_renamed.min.js",
+			"output_file": "src/script1_renamed.min.js",
 			"use_header": "src1_header",
 			"use_variables": "src1_variables"
 		},

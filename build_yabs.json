@@ -9,7 +9,7 @@
 			"header": [
 				"/* YABS.js %version% (c) $YEAR$ %author%",
 				" * https://github.com/pulzed/yabs.js",
-				" * Licensed under the MIT license */"
+				" * Licensed under %license% */"
 			]
 		}
 	]

@@ -202,11 +202,28 @@ If there is a shared `"headers"` entry in the build instructions file and we use
 
 You can use a custom output source filename by adding the `"output_file"` entry into a `"sources"` entry.
 
+Note that `"output_file"` has to always also include the relative directory you want it to be in. A good rule of thumb is that if your `"file"` entry includes relative paths, so should the `"output_file"` entry. For example:
+
+```JSON
+{
+  "source_dir": "./",
+  "destination_dir": "build/",
+  "sources": [
+    {
+      "file": "src/script.js",
+      "output_file": "src/script-compiled.min.js",
+    }
+  ]
+}
+```
+
+This will take the source file at "/src/script.js" and compile it into "build/src/script-compiled.min.js".
+
 You can also control compile options by adding a `"compile_options"` entry. These options will be passed to the compiler directly. Default value for compile options is `"--mangle --compress"`. (See the [uglify-js](https://github.com/mishoo/UglifyJS) documentation for more options.)
 
 The `build_yabs.json` build instructions file demonstrates the use of these features:
 
-```JS
+```JSON
 {
   "source_dir": "./",
   "destination_dir": "./",

@@ -9,7 +9,7 @@
  *  https://github.com/pulzed/YABS.js
  *  ---
  *  (c) 2023 Danijel Durakovic
- *  MIT License
+ *  Licensed under GPLv3
  *
  */
 
@@ -19,6 +19,7 @@
  * @file yabs.js
  * @author Danijel Durakovic
  * @version 1.1.0 dev
+ * @license GPLv3
  */
 
 const path = require('path');
@@ -712,15 +713,66 @@ yabs.Builder = class {
 			sources_listing.forEach(listing_entry => {
 				//TODO: rewrite code and process listing_entry.bundle
 				/*
-				const sources_list = [];
+				let sources_list = [];
 
 				if (listing_entry.is_bundle) {
-					console.log('listing is bundle');	
+					console.log('listing is bundle');
+					sources_list = listing_entry.bundle_files;
 				}
 				else {
 					console.log('listing is file');
+					sources_list = [ listing_entry.file ];
 				}
+console.log(sources_list);
+				if (sources_list.some(element => element.includes('*'))) {
+					throw 'Sources may not have masks!';
+				}
+				// configure the output filename
+				let output_filename;
+				if (listing_entry.output_file) {
+					output_filename = path.normalize(listing_entry.output_file);	
+				}
+				else {
+					const parsed_file_entry = path.parse(sources_list[0]);
+					output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
+				}
+
+				console.log('OUTPUT FILENAME: ', output_filename);
+
+				// process header
+				const has_header = listing_entry.hasOwnProperty('header');
+				const header_data = { has_header: has_header };
+				if (has_header) {
+					// make sure to clone the array and not use a reference
+					// (because we may need to search/replace variables later on)
+					header_data.header = [...listing_entry.header];
+				}
+				// process variables
+				const has_variables = listing_entry.hasOwnProperty('variables');
+				const variables_data = { has_variables: has_variables };
+				if (has_variables) {
+					variables_data.variables = listing_entry.variables;
+				}
+				// process compile options
+				const compile_options = (listing_entry.hasOwnProperty('compile_options'))
+					? listing_entry.compile_options
+					: yabs.DEFAULT_COMPILE_OPTIONS;
+				// process additional flags
+				const force_preprocessor = listing_entry.preprocess === true;
+
+				// add to manifest
+				this._sources_manifest.push({
+					sources: sources_list, //todo
+					original_source: source_original_path, //todo(skip with bundle?)
+					destination: destination_full_path, //todo
+					compile_options: compile_options,
+					header_data: header_data,
+					variables_data: variables_data,
+					force_preprocessor: force_preprocessor
+				});
 				*/
+
+				/***************************************************/
 				if (listing_entry.file.includes('*')) {
 					// disallow any masks
 					return;
@@ -1060,7 +1112,7 @@ yabs.Builder = class {
 		// prepare build step III
 		// process header data for sourcefiles
 		this._processSourceHeaders();
-
+//return; // TODO remove
 		// build step I
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty

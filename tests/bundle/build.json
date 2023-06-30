@@ -21,7 +21,7 @@
 				"nested/nested_script2.js",
 				"nested/nested_script3.js"
 			],
-			"output_file": "nested_script.min.js",
+			"output_file": "nested/nested_script.min.js",
 			"header": "/* another bundle of scripts */"
 		},
 		{
