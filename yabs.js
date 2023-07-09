@@ -299,7 +299,7 @@ yabs.Logger = class {
 		process.stdout.write(
 			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_GREEN}Success: ` +
 			`${this._OUTPUT_RESET}${message}\n`
-		);	
+		);
 	}
 	/**
 	 * Prints the YABS.js header.
@@ -311,12 +311,25 @@ yabs.Logger = class {
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
 		this.out('                           |___|');
-		//this.out_raw(`${this._OUTPUT_RESET}`);
 		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`);
-		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` + ' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]');
-		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/yabs.js`);
-		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem.js         (c) 2023 Danijel Durakovic`);
+		this.out(
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
+			' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]'
+		);
+		this.out(
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/yabs.js`
+		);
+		this.out(
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW} .js` +
+			`${this._OUTPUT_RESET}        (c) 2023 Danijel Durakovic`
+		);
 		this.endl();
+	}
+	/**
+	 * Prints a long line.
+	 */
+	line() {
+		this.out('---------------------------------------------');
 	}
 };
 
@@ -1405,7 +1418,7 @@ yabs.Application = class {
 
 		// print out header
 		this._logger.header();
-		this._logger.out('---------------------------------------------');
+		this._logger.line();
 		this._logger.endl();
 		try {
 			this._logger.info('Configuring build');

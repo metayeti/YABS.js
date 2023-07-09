@@ -263,7 +263,7 @@ To use preprocessor variables, first add a `"variables"` entry to any individual
           "DEBUG=true"
         ],
         "release": [
-          "DEBUG=false"
+          "RELEASE=true"
         ]
       }
     }
@@ -281,7 +281,7 @@ Similarly to how a global `"headers"` entry works, we can add a global `"variabl
         "DEBUG=true"
       ],
       "release": [
-        "DEBUG=false"
+        "RELEASE=true"
       ]
     }
   }
@@ -305,7 +305,7 @@ Inside the sourcefile, using the preprocessor might look something like this:
 ```JS
 //? if (DEBUG) {
 console.log('compiled with -debug');
-//? } else {
+//? } else if (RELEASE) {
 console.log('compiled with -release');
 //? }
 ```
