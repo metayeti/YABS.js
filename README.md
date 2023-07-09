@@ -4,26 +4,44 @@ YABS.js is a lightweight JavaScript build system.
 
 v1.1.0 dev
 
+## Table of contents
+
+- [How it works](#how-it-works)
+- [Dependencies](#dependencies)
+- [Basic usage](#basic-usage)
+- [Minimal example](#minimal-example)
+- [Build instructions file](#build-instructions-file)
+   - [1. Adding custom headers to scripts](#1-adding-custom-headers-to-scripts)
+   - [2. Adding variables to custom headers](#2-adding-variables-to-custom-headers)
+   - [3. Additional options (custom output filenames and compile options)](#3-additional-options-custom-output-filenames-and-compile-options)
+   - [4. Using the preprocessor](#4-using-the-preprocessor)
+   - [5. Bundling scripts](#5-bundling-scripts)
+   - [6. Batch building](#6-batch-building)
+- [Command line parameters](#command-line-parameters)
+- [Possible future features](#possible-future-features)
+- [Thanks](#thanks)
+- [License](#license)
+
+## How it works
+
+YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and runs the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
+
+Please note that this is a simplistic and content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capacity provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript)). This build system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
+
+1. Clones the hierarchy of files provided, updating with newer files (skipping files that have not changed since the last build), into the output directory (typically "build/") as specified by the build instructions file.
+
+2. Minifies (also optionally, preprocesses or bundles) provided JavaScript files and optionally attaches a custom header to minified outputs.
+
+3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled filenames (in practice this usually means the extensions .js get converted to .min.js, but you can also specify custom output filenames or bundle multiple scripts into one).
+
+Please double check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems It is unlikely that this system will be expanded beyond the scope of its current capabilities. This software is provided as-is as free and open source software, but it is not currently open for contributions (mainly because the author considers it feature-complete and would rather spend time working on other projects). If you need to extend or modify the featureset that this software provides, consider forking this project.
+
 ## Dependencies
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
 - [MetaScript](https://www.npmjs.com/package/metascript) ( install with "npm -g install metascript" )
 
 The MetaScript package is only needed if the build leverages the preprocessor in some way.
-
-## How it works
-
-YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and starts the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
-
-Please note that this is a not a content-aware build system and that it only deals with files and not source code (apart from the mangling and compressing capacity provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript)). This build system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
-
-1. Clones the hierarchy of files provided, updating with newer files, into the output directory (typically "build/") as specified by the build instructions file.
-
-2. Minifies (also optionally, preprocesses) provided JavaScript files and optionally attaches a custom header to minified outputs.
-
-3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled filenames (in practice this usually means the extensions .js get converted to .min.js, but you can also specify custom output filenames or bundle multiple scripts into one).
-
-Please double check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems It is unlikely that this system will be expanded beyond the scope of its current capabilities. This software is provided as-is as free and open source software, but it is not currently open for contributions (mainly because the author considers it feature-complete and would rather spend time working on other projects). If you need to extend or modify the featureset that this software provides, consider forking this project.
 
 ## Basic usage
 
@@ -333,7 +351,7 @@ This will force the compilation step for this particular source to always use th
 
 You are free to utilize any other [MetaScript](https://github.com/dcodeIO/MetaScript) features available - sky is the limit here.
 
-### 5. Bundling
+### 5. Bundling scripts
 
 YABS.js can bundle multiple script files into one single output file. To do so, add a `"bundle"` (rather than a `"file"`) entry inside a `"sources"` item:
 
@@ -402,7 +420,9 @@ Available parameters are:
 - `--help` Opens online help.
 - `--nofail` In a [batch build](#5-batch-building), keep going when one of the builds fails.
 
-## Possible (but questionably likely) future features:
+## Possible future features
+
+This is a wishlist of features that might at some point be implemented.
 
 - Running custom scripts pre- and post- build.
 

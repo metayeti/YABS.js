@@ -1048,10 +1048,10 @@ yabs.Builder = class {
 
 			let next_source, temp_files = [];
 
-			if (skip_glue) { // glue files substep
+			if (skip_glue) {
 				next_source = manifest_entry.sources[0];
 			}
-			else {
+			else { // glue files substep
 				temp_files.push(next_source = substep_I_glue.call(
 					this,
 					manifest_entry.sources,
