@@ -43,10 +43,14 @@ yabs.version = '1.1.0 dev'; // YABS.js version
 
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
+
 yabs.DEFAULT_COMPILE_OPTIONS = '--compress --mangle';
-yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
+
+yabs.GLUE_FILE_EXTENSION = '.glw';
 yabs.PREPROCESS_FILE_EXTENSION = '.pre';
 yabs.COMPILE_FILE_EXTENSION = '.cmp';
+
+yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -176,10 +180,10 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 /**
  * Parses JSDoc-style tags from a source file.
  *
- * @returns {array} Array of [key, value] pairs.
+ * @param {string} source_file - Source filename.
+ * @param {object} output - Reference to output object.
  */
-yabs.util.parseJSDocTagsFromFile = function(source_file) {
-	const output = [];
+yabs.util.parseJSDocTagsFromFile = function(source_file, output) {
 	const jsdoc_regex = /\/\*\*(.*?)\*\//gs;
 	const tag_regex = /\*\s*@(\w+)\s+(.+)/g;
 	const file_content = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
@@ -190,13 +194,17 @@ yabs.util.parseJSDocTagsFromFile = function(source_file) {
 			while ((tag_match = tag_regex.exec(regex_match)) !== null) {
 				const tag_key = tag_match[1];
 				const tag_value = tag_match[2];
-				output.push([tag_key, tag_value]);
+				output[tag_key] = tag_value;
 			}
 		});
 	}
-	return output;
 };
 
+/**
+ * Attempts to resolve the given URL in a native browser.
+ *
+ * @param {string} url - URL to resolve.
+ */
 yabs.util.openURLWithBrowser = function(url) {
 	const start_cmd = (function() {
 		switch (process.platform) {
@@ -219,8 +227,8 @@ yabs.Logger = class {
 	 * Logger constructor.
 	 */
 	constructor() {
-		// detect whether output is a terminal or not
-		// (so we can strip color code output if output is redirected)
+		// detect if output is a terminal or not
+		// (so we can strip color codes if output is redirected)
 		const is_tty = process.stdout.isTTY;
 		// output constants and color codes
 		this._OUTPUT_RESET     = (is_tty) ? '\x1b[0m'  : '';
@@ -260,7 +268,10 @@ yabs.Logger = class {
 	 * @param {string} message
 	 */
 	info(message) {
-		process.stdout.write(`* ${message}\n\n`);
+		process.stdout.write(
+			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}*` +
+			`${this._OUTPUT_RESET} ${message}\n\n`
+		);
 	}
 	/**
 	 * Prints a newline.
@@ -300,11 +311,11 @@ yabs.Logger = class {
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
 		this.out('                           |___|');
-		this.out_raw(`${this._OUTPUT_RESET}`);
-		this.out(' Yet');
-		this.out(' Another' + ' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]');
-		this.out(' Build      https://github.com/pulzed/yabs.js');
-		this.out(' System.js         (c) 2023 Danijel Durakovic');
+		//this.out_raw(`${this._OUTPUT_RESET}`);
+		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`);
+		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` + ' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]');
+		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/yabs.js`);
+		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem.js         (c) 2023 Danijel Durakovic`);
 		this.endl();
 	}
 };
@@ -322,7 +333,6 @@ yabs.BuildConfig = class {
 	 * @param {string} source_file - Build instructions JSON file.
 	 */
 	constructor(source_file) {
-		// TODO: shorten error messages
 		const parsed_source_file = path.parse(source_file);
 		this._source_file = parsed_source_file.base;
 		this._base_dir = parsed_source_file.dir;
@@ -711,33 +721,42 @@ yabs.Builder = class {
 		function buildSourcesManifest() {
 			const sources_listing = this._build_config.getSourcesListing();
 			sources_listing.forEach(listing_entry => {
-				//TODO: rewrite code and process listing_entry.bundle
-				/*
+				// configure source filename (or filenames if bundle)
 				let sources_list = [];
-
 				if (listing_entry.is_bundle) {
-					console.log('listing is bundle');
 					sources_list = listing_entry.bundle_files;
 				}
 				else {
-					console.log('listing is file');
 					sources_list = [ listing_entry.file ];
 				}
-console.log(sources_list);
 				if (sources_list.some(element => element.includes('*'))) {
 					throw 'Sources may not have masks!';
 				}
+				// process sources list into full source paths
+				const source_full_path_list = [];
+				sources_list.forEach((source_path) => {
+					const source_full_path = path.join(this._base_dir, this._source_dir, source_path);
+					source_full_path_list.push(source_full_path);
+				});
+
+			// ~ TODO temporary? ~
+				let source_original_path;
+				if (!listing_entry.is_bundle) {
+					source_original_path = path.join(this._source_dir, sources_list[0]);
+				}
+			// ~ TODO temporary? ~
+
 				// configure the output filename
 				let output_filename;
 				if (listing_entry.output_file) {
-					output_filename = path.normalize(listing_entry.output_file);	
+					output_filename = path.normalize(listing_entry.output_file);
 				}
 				else {
 					const parsed_file_entry = path.parse(sources_list[0]);
 					output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
 				}
-
-				console.log('OUTPUT FILENAME: ', output_filename);
+				// configure full destination path
+				const destination_full_path = path.join(this._destination_dir, output_filename);
 
 				// process header
 				const has_header = listing_entry.hasOwnProperty('header');
@@ -762,66 +781,19 @@ console.log(sources_list);
 
 				// add to manifest
 				this._sources_manifest.push({
-					sources: sources_list, //todo
-					original_source: source_original_path, //todo(skip with bundle?)
-					destination: destination_full_path, //todo
-					compile_options: compile_options,
-					header_data: header_data,
-					variables_data: variables_data,
-					force_preprocessor: force_preprocessor
-				});
-				*/
+					sources: source_full_path_list,
 
-				/***************************************************/
-				if (listing_entry.file.includes('*')) {
-					// disallow any masks
-					return;
-				}
-				// process header
-				const has_header = listing_entry.hasOwnProperty('header');
-				const header_data = { has_header: has_header };
-				if (has_header) {
-					// make sure to clone the array and not use a reference
-					// (because we may need to search/replace variables later on)
-					header_data.header = [...listing_entry.header];
-				}
-				// process variables
-				const has_variables = listing_entry.hasOwnProperty('variables');
-				const variables_data = { has_variables: has_variables };
-				if (has_variables) {
-					variables_data.variables = listing_entry.variables;
-				}
-				// process additional flags
-				const force_preprocessor = listing_entry.preprocess === true;
-				// process output filename
-				let output_filename;
-				const parsed_file_entry = path.parse(listing_entry.file);
-				if (listing_entry.output_file) {
-					const parsed_output_file = path.parse(listing_entry.output_file);
-					output_filename = path.join(parsed_file_entry.dir, parsed_output_file.base);
-				}
-				else {
-					output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
-				}
-				const source_full_path = path.join(this._base_dir, this._source_dir, listing_entry.file);
-				const source_original_path = path.join(this._source_dir, listing_entry.file);
-				const destination_full_path = path.join(this._destination_dir, output_filename);
-				// make sure source is not the same as destination
-				if (source_full_path === destination_full_path) {
-					throw `Source file: "${source_full_path}" cannot be the same as the destination!`;
-				}
-				// process compile options
-				const compile_options = (listing_entry.hasOwnProperty('compile_options')) ? listing_entry.compile_options : yabs.DEFAULT_COMPILE_OPTIONS;
-				// add source listing to manifest
-				this._sources_manifest.push({
-					source: source_full_path,
+				// ~ TODO temporary? ~
 					original_source: source_original_path,
+				// ~ TODO temporary? ~
+
 					destination: destination_full_path,
 					compile_options: compile_options,
 					header_data: header_data,
 					variables_data: variables_data,
 					force_preprocessor: force_preprocessor
 				});
+
 			});
 		}
 
@@ -853,6 +825,19 @@ console.log(sources_list);
 		buildFilesManifest.call(this);
 		buildSourcesManifest.call(this);
 		buildHTMLManifest.call(this);
+
+		/*
+		console.log('----------------------------------');
+		console.log('FILES MANIFEST');
+		console.log(this._files_manifest);
+		console.log('----------------------------------');
+		console.log('SOURCES MANIFEST:');
+		console.log(this._sources_manifest);
+		console.log('----------------------------------');
+		console.log('HTML MANIFEST');
+		console.log(this._html_manifest);
+		console.log('----------------------------------');
+		*/
 	}
 
 	/**
@@ -860,11 +845,18 @@ console.log(sources_list);
 	 */
 	_verifySourceFiles() {
 		function verifyManifest(manifest_list) {
-			manifest_list.forEach(manifest_entry => {
-				const path_source = manifest_entry.source;
+			function verifyOne(path_source) {
 				const path_resolved = path.resolve(path_source);
 				if (!yabs.util.exists(path_resolved)) {
 					throw `Could not find file: ${path_source}`;
+				}
+			}
+			manifest_list.forEach(manifest_entry => {
+				if (manifest_entry.sources instanceof Array) { // we have a list of sources
+					manifest_entry.sources.forEach(verifyOne);
+				}
+				else if (typeof manifest_entry.source === 'string') { // we have a single source
+					verifyOne(manifest_entry.source);
 				}
 			});
 		}
@@ -895,16 +887,18 @@ console.log(sources_list);
 				return;
 			}
 			// extract JSDoc-style tags from sourcefile
-			const source_file = manifest_entry.source;
-			const parsed_variables = yabs.util.parseJSDocTagsFromFile(source_file);
-			// subtitute variables in header
+			const parsed_variables = {};
+			manifest_entry.sources.forEach(source_file => {
+				yabs.util.parseJSDocTagsFromFile(source_file, parsed_variables);
+			});
+			// update header variables
 			for (let i = 0; i < header_data.header.length; ++i) {
-				// subtitute variables with extracted tags
-				for (let j = 0; j < parsed_variables.length; j++) {
-					const variable_entry = parsed_variables[j];
-					header_data.header[i] = header_data.header[i].replace(new RegExp(`%${variable_entry[0]}%`, 'g'), variable_entry[1]);
-				}
-				// special variable
+				// from JSDoc tags
+				Object.keys(parsed_variables).forEach(variable_key => {
+					const variable_value = parsed_variables[variable_key];
+					header_data.header[i] = header_data.header[i].replace(new RegExp(`%${variable_key}%`, 'g'), variable_value);
+				});
+				// special $YEAR$ variable
 				header_data.header[i] = header_data.header[i].replace(/\$YEAR\$/g, new Date().getFullYear());
 			}
 		});
@@ -928,7 +922,9 @@ console.log(sources_list);
 	}
 
 	async _buildStep_II_CompileSources() {
+
 		function preprocessOneSource(input_file, output_file, params) {
+			// invoke the preprocessor
 			return new Promise((resolve, reject) => {
 				exec(`metascript ${input_file} ${params} > ${output_file}`, (err) => {
 					if (err) {
@@ -942,6 +938,7 @@ console.log(sources_list);
 			});
 		}
 		function compileOneSource(input_file, output_file, params) {
+			// invoke the compiler
 			return new Promise((resolve, reject) => {
 				exec(`uglifyjs ${input_file} ${params} -o ${output_file}`, (err) => {
 					if (err) {
@@ -954,6 +951,41 @@ console.log(sources_list);
 				});
 			});
 		}
+
+		// compilation pipeline substeps
+		function substep_I_glue(sources, destination) {
+			// glue multiple source files into one
+			sources.forEach((source_file, index) => {
+				const source_file_data = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
+				if (index === 0) {
+					fs.writeFileSync(destination, source_file_data, { encoding: 'utf8', flag: 'w' });
+				} else {
+					fs.appendFileSync(destination, source_file_data, { encoding: 'utf8', flag: 'a' });
+				}
+			});
+			return destination;
+		}
+		async function substep_II_preprocess(source, destination, preprocessor_params) {
+			// we are ready to run the file through the preprocessor
+			await preprocessOneSource.call(this, source, destination, preprocessor_params);
+
+			return destination;
+		}
+		async function substep_III_compile(source, destination, compiler_params) {
+			// compile source file
+			await compileOneSource.call(this, source, destination, compiler_params);
+			return destination;
+			
+		}
+		function substep_IV_finalize(source, destination, header_data) {
+			// output final file, optionally headerize
+			const source_file_data = fs.readFileSync(source, { encoding: 'utf8', flag: 'r' });
+			const destination_file_data = (header_data.has_header) ?
+				header_data.header.join(EOL) + EOL + source_file_data : source_file_data;
+			fs.writeFileSync(destination, destination_file_data, { encoding: 'utf8', flag: 'w' });
+			return destination;	
+		}
+
 		// compile each source
 		for (const manifest_entry of this._sources_manifest) {
 			this._logger.out_raw(`${manifest_entry.destination} ...`);
@@ -983,49 +1015,81 @@ console.log(sources_list);
 					}
 				}
 			}
-			let preprocess_destination_file;
-			if (use_preprocessor) { // we are using the preprocessor
-				// create the list of preprocessor parameters
+			// prepare a list of preprocessor parameters (if we're using the preprocessor)
+			let preprocessor_params;
+			if (use_preprocessor && has_variables) { // skip listings without variables (might only have "preprocess" set)
 				const preprocessor_params_list = [];
-				if (has_variables) { // skip listing without variables (might only have "preprocess" set)
-					variable_params.forEach(variable_param => {
-						// make sure the variable listing is defined
-						if (variables_listing.hasOwnProperty(variable_param)) {
-							const variables_listing_list = variables_listing[variable_param];
-							variables_listing_list.forEach(variable_entry => {
-								const variable_split = variable_entry.split('=');
-								const variable_key = variable_split[0].trim();
-								const variable_value = variable_split[1].trim();
-								if (variable_key.length && variable_value.length) {
-									preprocessor_params_list.push(`-${variable_key}=${variable_value}`);
-								}
-							});
-						}
-					});
-				}
-				const preprocessor_params = preprocessor_params_list.join(' ');
-				// we are ready to run the file through the preprocessor
-				const preprocess_source_file = manifest_entry.source;
-				preprocess_destination_file = manifest_entry.destination + yabs.PREPROCESS_FILE_EXTENSION;
-				await preprocessOneSource.call(this, preprocess_source_file, preprocess_destination_file, preprocessor_params);
+				variable_params.forEach(variable_param => {
+					// make sure the variable listing is defined
+					if (variables_listing.hasOwnProperty(variable_param)) {
+						const variables_listing_list = variables_listing[variable_param];
+						variables_listing_list.forEach(variable_entry => {
+							const variable_split = variable_entry.split('=');
+							const variable_key = variable_split[0].trim();
+							const variable_value = variable_split[1].trim();
+							if (variable_key.length && variable_value.length) {
+								preprocessor_params_list.push(`-${variable_key}=${variable_value}`);
+							}
+						});
+					}
+				});
+				preprocessor_params = preprocessor_params_list.join(' ');
 			}
-			// compile source into temp file
-			const source_file = (use_preprocessor) ? preprocess_destination_file : manifest_entry.source;
-			const build_destination_file = manifest_entry.destination;
-			const compile_destination_file = build_destination_file + yabs.COMPILE_FILE_EXTENSION;
-			const compiler_params = manifest_entry.compile_options;
-			await compileOneSource.call(this, source_file, compile_destination_file, compiler_params);
-			// output header + compiled source into destination file
-			const header_data = manifest_entry.header_data;
-			const compiled_file_data = fs.readFileSync(compile_destination_file, { encoding: 'utf8', flag: 'r' });
-			const output_file_data = (header_data.has_header) ? header_data.header.join(EOL) + EOL + compiled_file_data : compiled_file_data;
-			fs.writeFileSync(build_destination_file, output_file_data, { encoding: 'utf8', flag: 'w' });
-			// remove temp file(s)
-			fs.rmSync(compile_destination_file, { force: true });
-			if (use_preprocessor) {
-				fs.rmSync(preprocess_destination_file, { force: true });
+			// set skip flag so we can optimize the build process
+			const skip_glue = !(manifest_entry.sources.length > 1);
+
+			// we can now begin the compilation process for this entry
+
+			// compilation pipeline:
+			//
+			// {js} \       I         II       III       IV
+			// [js]  >--> {glw} --> {pre} --> [cmp] --> [js]
+			// {js} /  (optional) (optional)
+
+			let next_source, temp_files = [];
+
+			if (skip_glue) { // glue files substep
+				next_source = manifest_entry.sources[0];
 			}
-			// all done
+			else {
+				temp_files.push(next_source = substep_I_glue.call(
+					this,
+					manifest_entry.sources,
+					manifest_entry.destination + yabs.GLUE_FILE_EXTENSION
+				));
+			}
+
+			if (use_preprocessor) { // preprocess substep
+				temp_files.push(next_source = await substep_II_preprocess.call(
+					this,
+					next_source,
+					manifest_entry.destination + yabs.PREPROCESS_FILE_EXTENSION,
+					preprocessor_params
+				));
+			}
+
+			// compile substep
+			temp_files.push(next_source = await substep_III_compile.call(
+				this,
+				next_source,
+				manifest_entry.destination + yabs.COMPILE_FILE_EXTENSION,
+				manifest_entry.compile_options
+			));
+
+			// finalize substep
+			substep_IV_finalize.call(
+				this,
+				next_source,
+				manifest_entry.destination,
+				manifest_entry.header_data
+			);
+
+			// clean-up the temp files
+			temp_files.forEach(file_to_remove => {
+				fs.rmSync(file_to_remove, { force: true });
+			});
+			
+			// done
 			this._logger.ok();
 			this._n_files_updated += 1;
 		}
@@ -1069,7 +1133,7 @@ console.log(sources_list);
 						return true;
 					});
 					if (matches_sources_manifest) {
-						// now that we have a match, change the src attribute to our destination file
+						// now that we have a match, change the src attribute to the destination file
 						substitute_line = true;
 						substitute_line_str = line_str.replace(extracted_src, destination_src);
 					}
@@ -1095,42 +1159,43 @@ console.log(sources_list);
 		const build_instr_fullpath = path.join(build_instr_dir, build_instr_file);
 		this._logger.info(`Starting build: ${build_instr_fullpath}`);
 
-		this._logger.info('Preparing build ...');
+		this._logger.info('Preparing build');
 
-		// prepare build step I
+		// prepare build (step I)
 		// build the file manifests. this creates three arrays with unified structures that
 		// have "source" and "destination" entries for each file. it also clones the
 		// header data into fresh arrays so they can be used for variable substitution
 		// on a per-source basis
 		this._buildManifests();
 
-		// prepare build step II
+		// prepare build (step II)
 		// now we have to verify the existence of all the files listed in manifests
 		// as sources, to make sure we don't have missing or unreadable source files
 		this._verifySourceFiles();
 
-		// prepare build step III
+		// prepare build (step III)
 		// process header data for sourcefiles
 		this._processSourceHeaders();
-//return; // TODO remove
-		// build step I
+
+
+		// build (step I)
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty
-			this._logger.info('Updating files ...');
+			this._logger.info('Updating files');
 			this._buildStep_I_UpdateFiles();
 		}
 
-		// build step II
+		// build (step II)
 		// preprocess and compile sources
 		if (this._sources_manifest.length > 0) { // skip if empty
-			this._logger.info('Compiling sources ...');
+			this._logger.info('Compiling sources');
 			await this._buildStep_II_CompileSources();
 		}
 
-		// build step III
+		// build (step III)
 		// finally, write updates into and clone HTML files
 		if (this._html_manifest.length > 0) { // skip if empty
-			this._logger.info('Writing HTML files ...');
+			this._logger.info('Writing HTML files');
 			this._buildStep_III_WriteHTMLFiles();
 		}
 
@@ -1218,7 +1283,7 @@ yabs.BatchBuilder = class {
 			build_config = new yabs.BuildConfig(build_param_input);
 		}
 		if (build_config.isBatchBuild()) {
-			throw 'Cannot have nested batch builds: ${build_instr_file}!';
+			throw `Recursive batch builds are disallowed due to dragons, skipping ${build_param_input}`;
 		}
 		const build_params = { variable: build_listing.options };
 		const builder = new yabs.Builder(this._logger, build_config, build_params);
@@ -1263,6 +1328,7 @@ yabs.BatchBuilder = class {
 					// we have --nofail
 					// print the error, but keep going
 					this._logger.error(e);
+					this._logger.out('\nBuild aborted.');
 					// increment failed builds counter
 					n_failed_builds++;
 				}
@@ -1342,7 +1408,7 @@ yabs.Application = class {
 		this._logger.out('---------------------------------------------');
 		this._logger.endl();
 		try {
-			this._logger.info('Configuring build ...');
+			this._logger.info('Configuring build');
 			// figure out what we're building first
 			let build_config = null;
 			if (build_params.free.length === 0) { // parametress run

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>bundle test</title>
+</head>
+<body>
+	<p>pre-script element</p>
+	<script src="normal.js"></script>
+	<script src="script1.js" defer></script>
+	<script src="script2.js" defer></script>
+	<script src="script3.js" defer></script>
+	<script src="nested/nested_normal.js"></script>
+	<script src="nested/nested_script1.js"></script>
+	<script src="nested/nested_script2.js"></script>
+	<script src="nested/nested_script3.js"></script>
+	<script src="nested/src/src_a.js"></script>
+	<script src="nested/src/src_b.js"></script>
+	<script src="nested/src/src_c.js"></script>
+	<script src="nested/src2/src2_a.js" defer></script>
+	<script src="nested/src2/src2_b.js" defer></script>
+	<script src="nested/src2/src2_c.js" defer></script>
+	<p>post-script element</p>
+</body>
+</html>

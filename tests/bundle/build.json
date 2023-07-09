@@ -2,53 +2,37 @@
 	"source_dir": "./",
 	"destination_dir": "build/bundle/",
 	"html": [
-		"index.html",
-		"nested/nested_index.html"
+		"index.html"
 	],
 	"sources": [
+		"src/normal.js",
 		{
 			"bundle": [
-				"script1.js",
-				"script2.js",
-				"script3.js"
+				"src/script1.js",
+				"src/script2.js"
 			],
-			"output_file": "script.min.js",
-			"header": "/* a bundle of scripts */"
+			"output_file": "src/script.min.js",
+			"header": "/* a bundle of scripts %test% */",
+			"variables": {
+				"bla": [
+					"bla=true"
+				]
+			}
 		},
 		{
-			"bundle": [
-				"nested/nested_script1.js",
-				"nested/nested_script2.js",
-				"nested/nested_script3.js"
-			],
-			"output_file": "nested/nested_script.min.js",
-			"header": "/* another bundle of scripts */"
-		},
-		{
-			"file": "normal.js",
-			"header": "/* normal script */"
-		},
-		{
-			"file": "nested/nested_normal.js",
-			"header": "/* another normal script */"
-		},
-		{
-			"bundle": [
-				"nested/src/src_a.js",
-				"nested/src/src_b.js",
-				"nested/src/src_c.js"
-			],
-			"output_file": "../nested_src.min.js",
-			"header": "/* bundled nested scripts */"
-		},
-		{
-			"bundle": [
-				"nested/src2/src2_a.js",
-				"nested/src2/src2_b.js",
-				"nested/src2/src2_c.js"
-			],
-			"output_file": "nested_src2.min.js",
-			"header": "/* another bundled nested scripts */"
+			"file": "src/normal2.js",
+			"header": "/* a normal script %test2% */",
+			"variables": {
+				"nodebug": [
+					"NODEBUG=true"
+				],
+				"test": [
+					"TESTVAR=1"
+				],
+				"test2": [
+					"TESTVAR=2"
+				]
+			}
 		}
 	]
 }
