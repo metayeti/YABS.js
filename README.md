@@ -4,24 +4,6 @@ YABS.js is a lightweight JavaScript build system.
 
 v1.1.0 dev
 
-## Table of contents
-
-- [How it works](#how-it-works)
-- [Dependencies](#dependencies)
-- [Basic usage](#basic-usage)
-- [Minimal example](#minimal-example)
-- [Build instructions file](#build-instructions-file)
-   - [1. Adding custom headers to scripts](#1-adding-custom-headers-to-scripts)
-   - [2. Adding variables to custom headers](#2-adding-variables-to-custom-headers)
-   - [3. Additional options (custom output filenames and compile options)](#3-additional-options-custom-output-filenames-and-compile-options)
-   - [4. Using the preprocessor](#4-using-the-preprocessor)
-   - [5. Bundling scripts](#5-bundling-scripts)
-   - [6. Batch building](#6-batch-building)
-- [Command line parameters](#command-line-parameters)
-- [Possible future features](#possible-future-features)
-- [Thanks](#thanks)
-- [License](#license)
-
 ## How it works
 
 YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and runs the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
