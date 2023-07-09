@@ -310,7 +310,7 @@ console.log('compiled with -release');
 //? }
 ```
 
-Note that `-debug` and `-release` are not the actual variables used by the preprocessor, but an entry defined in the `"variables"` entry.
+Note that `-debug` and `-release` are not the actual variables used by the preprocessor, they are command line parameters that invoke variables corresponding to items defined in `"variables"`, which are `DEBUG` for `-debug` and `RELEASE` for `-release`.
 
 Another feature you can use with the preprocessor are external file includes:
 
