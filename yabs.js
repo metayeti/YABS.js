@@ -1016,7 +1016,7 @@ yabs.Builder = class {
 				}
 			}
 			// prepare a list of preprocessor parameters (if we're using the preprocessor)
-			let preprocessor_params;
+			let preprocessor_params = '';
 			if (use_preprocessor && has_variables) { // skip listings without variables (might only have "preprocess" set)
 				const preprocessor_params_list = [];
 				variable_params.forEach(variable_param => {
