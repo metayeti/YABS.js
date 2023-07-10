@@ -751,14 +751,6 @@ yabs.Builder = class {
 					const source_full_path = path.join(this._base_dir, this._source_dir, source_path);
 					source_full_path_list.push(source_full_path);
 				});
-
-			// ~ TODO temporary? ~
-				let source_original_path;
-				if (!listing_entry.is_bundle) {
-					source_original_path = path.join(this._source_dir, sources_list[0]);
-				}
-			// ~ TODO temporary? ~
-
 				// configure the output filename
 				let output_filename;
 				if (listing_entry.output_file) {
@@ -795,11 +787,6 @@ yabs.Builder = class {
 				// add to manifest
 				this._sources_manifest.push({
 					sources: source_full_path_list,
-
-				// ~ TODO temporary? ~
-					original_source: source_original_path,
-				// ~ TODO temporary? ~
-
 					src: output_filename,
 					destination: destination_full_path,
 					compile_options: compile_options,
