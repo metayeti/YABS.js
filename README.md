@@ -398,9 +398,10 @@ When invoking preprocessor parameters via the command line, they will be applied
 
 Available parameters are:
 
+- `--rebuild` Rebuilds target build (deletes the destination directory and starts build from ground up).
+- `--nofail` In a [batch build](#5-batch-building), keeps going if one of the builds fails.
 - `--version` Displays version info.
 - `--help` Opens online help.
-- `--nofail` In a [batch build](#5-batch-building), keep going when one of the builds fails.
 
 ## Thanks
 

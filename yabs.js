@@ -32,13 +32,13 @@ const { exec } = require('child_process');
  */
 const yabs = {};
 
-yabs.version = '1.1.0 dev'; // YABS.js version
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Constants
 //
 ////////////////////////////////////////////////////////////////////////////////
+
+yabs.VERSION = '1.1.0 dev'; // YABS.js version
 
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
@@ -108,6 +108,10 @@ yabs.util.getModifiedTime = function(source_path) {
 /**
  * Determines whether or not source filename is newer than destination filename.
  *
+ * @function isSourceNewer
+ * @memberof yabs.util
+ * @instance
+ *
  * @param {string} source_path
  * @param {string} destination_path
  *
@@ -124,6 +128,10 @@ yabs.util.isSourceNewer = function(source_path, destination_path) {
  * Skip source files that are both older than, and have a correlating existing destination file.
  * (This makes it so that repeated builds don't keep cloning already existing files for which
  * there is no need to be repeatedly updated.)
+ *
+ * @function getFilesWithRecursiveDescent
+ * @memberof yabs.util
+ * @instance
  * 
  * @param {string} source_dir - Source relative directory.
  * @param {string} destination_dir - Destination relative directory.
@@ -180,6 +188,10 @@ yabs.util.getFilesWithRecursiveDescent = function(source_dir, destination_dir, m
 /**
  * Parses JSDoc-style tags from a source file.
  *
+ * @function parseJSDocTagsFromFile
+ * @memberof yabs.util
+ * @instance
+ *
  * @param {string} source_file - Source filename.
  * @param {object} output - Reference to output object.
  */
@@ -203,6 +215,10 @@ yabs.util.parseJSDocTagsFromFile = function(source_file, output) {
 /**
  * Attempts to resolve the given URL in a native browser.
  *
+ * @function openURLWithBrowser
+ * @memberof yabs.util
+ * @instance
+ *
  * @param {string} url - URL to resolve.
  */
 yabs.util.openURLWithBrowser = function(url) {
@@ -224,7 +240,10 @@ yabs.util.openURLWithBrowser = function(url) {
 
 yabs.Logger = class {
 	/**
-	 * Logger constructor.
+	 * Constructs a Logger object.
+	 *
+	 * @class yabs.Logger
+	 * @classdesc Deals with output.
 	 */
 	constructor() {
 		// detect if output is a terminal or not
@@ -314,7 +333,7 @@ yabs.Logger = class {
 		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
-			' '.repeat(32 - yabs.version.length) + '[ v' + yabs.version + ' ]'
+			' '.repeat(32 - yabs.VERSION.length) + '[ v' + yabs.VERSION + ' ]'
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/yabs.js`
@@ -341,7 +360,10 @@ yabs.Logger = class {
 
 yabs.BuildConfig = class {
 	/**
-	 * BuildConfig constructor.
+	 * Constructs a BuildConfig object.
+	 *
+	 * @class yabs.BuildConfig
+	 * @classdesc Configures a build based on input.
 	 * 
 	 * @param {string} source_file - Build instructions JSON file.
 	 */
@@ -638,7 +660,10 @@ yabs.BuildConfig = class {
 
 yabs.Builder = class {
 	/**
-	 * Builder constructor.
+	 * Constructs a Builder object.
+	 * 
+	 * @class yabs.Builder
+	 * @classdesc Implements building.
 	 * 
 	 * @param {object} logger
 	 * @param {object} build_config
@@ -872,7 +897,7 @@ yabs.Builder = class {
 	_processSourceHeaders() {
 		this._sources_manifest.forEach(manifest_entry => {
 			const header_data = manifest_entry.header_data;
-			if (!header_data.has_header) { // this entry has no header, safe to skip
+			if (!header_data.has_header) { // this entry has no header, it's safe to skip it
 				return;
 			}
 			let has_variables = false;
@@ -887,7 +912,7 @@ yabs.Builder = class {
 			if (!has_variables) { // this entry has a header but no variables, so it's safe to skip
 				return;
 			}
-			// extract JSDoc-style tags from sourcefile
+			// extract JSDoc tags from sourcefile
 			const parsed_variables = {};
 			manifest_entry.sources.forEach(source_file => {
 				yabs.util.parseJSDocTagsFromFile(source_file, parsed_variables);
@@ -895,11 +920,13 @@ yabs.Builder = class {
 			// update header variables
 			for (let i = 0; i < header_data.header.length; ++i) {
 				// from JSDoc tags
-				Object.keys(parsed_variables).forEach(variable_key => {
+				for (let variable_key in parsed_variables) {
 					const variable_value = parsed_variables[variable_key];
-					header_data.header[i] = header_data.header[i].replace(new RegExp(`%${variable_key}%`, 'g'), variable_value);
-				});
-				// special $YEAR$ variable
+					if (Object.prototype.hasOwnProperty.call(parsed_variables, variable_key)) {
+						header_data.header[i] = header_data.header[i].replace(new RegExp(`%${variable_key}%`, 'g'), variable_value);
+					}
+				}
+				// special variable
 				header_data.header[i] = header_data.header[i].replace(/\$YEAR\$/g, new Date().getFullYear());
 			}
 		});
@@ -1037,7 +1064,7 @@ yabs.Builder = class {
 				preprocessor_params = preprocessor_params_list.join(' ');
 			}
 			// set skip flag so we can optimize the build process
-			const skip_glue = !(manifest_entry.sources.length > 1);
+			const skip_glue = (manifest_entry.sources.length <= 1);
 
 			// we can now begin the compilation process for this entry
 
@@ -1172,37 +1199,37 @@ yabs.Builder = class {
 
 		this._logger.info('Preparing build');
 
-		// prepare build (step I)
+		// = prepare build I =
 		// build the file manifests. this creates three arrays with unified structures that
 		// have "source" and "destination" entries for each file. it also clones the
 		// header data into fresh arrays so they can be used for variable substitution
 		// on a per-source basis
 		this._buildManifests();
 
-		// prepare build (step II)
+		// = prepare build II =
 		// now we have to verify the existence of all the files listed in manifests
 		// as sources, to make sure we don't have missing or unreadable source files
 		this._verifySourceFiles();
 
-		// prepare build (step III)
+		// = prepare build III =
 		// process header data for sourcefiles
 		this._processSourceHeaders();
 
-		// build (step I)
+		// = build I =
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty
 			this._logger.info('Updating files');
 			this._buildStep_I_UpdateFiles();
 		}
 
-		// build (step II)
+		// = build II =
 		// preprocess and compile sources
 		if (this._sources_manifest.length > 0) { // skip if empty
 			this._logger.info('Compiling sources');
 			await this._buildStep_II_CompileSources();
 		}
 
-		// build (step III)
+		// = build III =
 		// finally, write updates into and clone HTML files
 		if (this._html_manifest.length > 0) { // skip if empty
 			this._logger.info('Writing HTML files');
@@ -1225,7 +1252,10 @@ yabs.Builder = class {
 
 yabs.BatchBuilder = class {
 	/**
-	 * BatchBuilder constructor.
+	 * Constructs a BatchBuilder object.
+	 *
+	 * @class yabs.BatchBuilder
+	 * @classdesc Implements batch building.
 	 * 
 	 * @param {object} logger
 	 * @param {object} build_config
@@ -1373,7 +1403,10 @@ yabs.BatchBuilder = class {
 
 yabs.Application = class {
 	/**
-	 * Application constructor.
+	 * Constructs an Application object.
+	 *
+	 * @class yabs.Application
+	 * @classdesc Program entry. Parses input and runs build.
 	 */
 	constructor() {
 		this._logger = new yabs.Logger();
