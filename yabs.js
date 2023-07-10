@@ -25,7 +25,6 @@
 const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
-const { EOL } = require('os');
 
 /**
  * yabs.js namespace
@@ -45,6 +44,7 @@ yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
 
 yabs.DEFAULT_COMPILE_OPTIONS = '--compress --mangle';
+yabs.NEWLINE_SYMBOL = '\n'; // LF
 
 yabs.GLUE_FILE_EXTENSION = '.glw';
 yabs.PREPROCESS_FILE_EXTENSION = '.pre';
@@ -269,7 +269,7 @@ yabs.Logger = class {
 	 */
 	info(message) {
 		process.stdout.write(
-			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}*` +
+			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}>` +
 			`${this._OUTPUT_RESET} ${message}\n\n`
 		);
 	}
@@ -800,6 +800,7 @@ yabs.Builder = class {
 					original_source: source_original_path,
 				// ~ TODO temporary? ~
 
+					src: output_filename,
 					destination: destination_full_path,
 					compile_options: compile_options,
 					header_data: header_data,
@@ -994,7 +995,7 @@ yabs.Builder = class {
 			// output final file, optionally headerize
 			const source_file_data = fs.readFileSync(source, { encoding: 'utf8', flag: 'r' });
 			const destination_file_data = (header_data.has_header) ?
-				header_data.header.join(EOL) + EOL + source_file_data : source_file_data;
+				header_data.header.join(yabs.NEWLINE_SYMBOL) + yabs.NEWLINE_SYMBOL + source_file_data : source_file_data;
 			fs.writeFileSync(destination, destination_file_data, { encoding: 'utf8', flag: 'w' });
 			return destination;	
 		}
@@ -1110,6 +1111,68 @@ yabs.Builder = class {
 	}
 
 	_buildStep_III_WriteHTMLFiles() {
+		const script_src_regex = /<script\b[^>]*\bsrc=(["'])(.*?)(\1).*?>/;
+		// write each html file
+		this._html_manifest.forEach(manifest_entry => {
+			this._logger.out_raw(`${manifest_entry.destination} ...`);
+			// check if destination directory exists
+			const dir = path.dirname(manifest_entry.destination);
+			if (!yabs.util.exists(dir)) {
+				// directory doesn't exist yet, create it
+				fs.mkdirSync(dir, { recursive: true });
+			}
+
+			const html_file_data = fs.readFileSync(manifest_entry.source, { encoding: 'utf8', flag: 'r' });
+			const html_line_data = html_file_data.split(/\r?\n/);
+			const html_output_lines = [];
+			const destinations_used = [];
+			html_line_data.forEach(line_string => {
+				const src_regex_match = line_string.match(script_src_regex);
+				let skip_current_line = false;
+				let substitute_current_line = false;
+				let substitution_string = '';
+				if (src_regex_match) {
+					const extracted_src = src_regex_match[2];
+					const src_parsed = path.parse(extracted_src);
+					const src_joined_full = path.join(this._base_dir, this._source_dir, src_parsed.dir, src_parsed.base);
+					this._sources_manifest.every(sources_manifest_entry => {
+						let keep_going = true;
+						sources_manifest_entry.sources.every(source_entry => {
+							if (source_entry === src_joined_full) {
+								// we have a match
+								if (destinations_used.includes(sources_manifest_entry.destination)) {
+									// we already have this destination, this means it's part of a bundle and we should skip this line
+									skip_current_line = true;
+								}
+								else {
+									// we don't have this destination yet, create a substitution line
+									substitute_current_line = true;
+									// normalize path output for html
+									const substitute_src = sources_manifest_entry.src.replace(/\\/g, '/');
+									// prepare the substitute
+									substitution_string = line_string.replace(new RegExp(extracted_src, 'g'), substitute_src);
+									// remember this destination so we can skip it for associated bundled scripts
+									destinations_used.push(sources_manifest_entry.destination);
+								}
+								keep_going = false;
+							}
+							return keep_going;
+						});
+						return keep_going;
+					});
+				}
+				if (!skip_current_line) {
+					html_output_lines.push((substitute_current_line) ? substitution_string : line_string);
+				}
+			});
+			// write output file
+			const html_file_output_data = html_output_lines.join(yabs.NEWLINE_SYMBOL);
+			fs.writeFileSync(manifest_entry.destination, html_file_output_data, { encoding: 'utf8', flag: 'w' });
+			this._logger.ok();
+			this._n_files_updated += 1;
+		});
+		this._logger.endl();
+		/*
 		// bake each file
 		const script_src_regex = /<script\b[^>]*\bsrc=(["'])(.*?)(\1).*?>/;
 		this._html_manifest.forEach(manifest_entry => {
@@ -1161,6 +1224,7 @@ yabs.Builder = class {
 			this._n_files_updated += 1;
 		});
 		this._logger.endl();
+		*/
 	}
 
 	/**
@@ -1189,7 +1253,6 @@ yabs.Builder = class {
 		// prepare build (step III)
 		// process header data for sourcefiles
 		this._processSourceHeaders();
-
 
 		// build (step I)
 		// update files from files manifest

@@ -28,14 +28,14 @@ The MetaScript package is only needed if the build leverages the preprocessor in
 ## Basic usage
 
 1. Drop `yabs.js` or `build.js` into your project root folder.
-2. Create a `build.json`.
+2. Create a `build.json` file.
 3. Execute with `node yabs.js` or `node build.js`.
 
-The `build.js` file is a compiled version of `yabs.js` - but it doesn't matter which you use, they both do the same thing.
+The `build.js` file is a compiled version of `yabs.js`, you can use either.
 
-YABS.js will use the `build_all.json` or `build.json` (in that order) default parameter if the build instructions file is not explicitly provided.
+YABS.js will default to `build_all.json` or `build.json` (in that order) if the build instructions file is not explicitly provided as a command line parameter.
 
-To pass a custom build instructions file, simply do `node yabs.js build_yabs.json`.
+To pass a custom build instructions file, simply use a command line parameter: `node yabs.js build_something.json`.
 
 Only one such parameter will be accepted. If you wish to build multiple things in one go, you can use YABS.js in [batch mode](#5-batch-building).
 
@@ -358,7 +358,7 @@ Header data and preprocessor variables in bundles are on a per-bundle basis, not
 
 ### 6. Batch building
 
-YABS.js is happy to build in batch mode! To do so, create a `build_all.json` (the filename can be anything, but `build.json` is a useful convention and it also provides the comfort of simply be able to type `node yabs.js` or `node build.js` into the command line, and YABS.js will automatically figure out - and prioritize - the `build_all.json` file). Into this file, add a single entry named `"batch_build"`.
+YABS.js can build in batch mode! To do so, create a `build_all.json` (the filename can be anything, but `build.json` is a useful convention and it also provides the comfort of simply be able to type `node yabs.js` or `node build.js` into the command line, and YABS.js will automatically figure out - and prioritize - the `build_all.json` file). Into this file, add a single entry named `"batch_build"`.
 
 You can list all your build instructions files in order you wish to have them built inside this entry:
 
@@ -401,12 +401,6 @@ Available parameters are:
 - `--version` Displays version info.
 - `--help` Opens online help.
 - `--nofail` In a [batch build](#5-batch-building), keep going when one of the builds fails.
-
-## Possible future features
-
-This is a wishlist of features that might at some point be implemented.
-
-- Running custom scripts pre- and post- build.
 
 ## Thanks
 
