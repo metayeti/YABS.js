@@ -1172,59 +1172,6 @@ yabs.Builder = class {
 			this._n_files_updated += 1;
 		});
 		this._logger.endl();
-		/*
-		// bake each file
-		const script_src_regex = /<script\b[^>]*\bsrc=(["'])(.*?)(\1).*?>/;
-		this._html_manifest.forEach(manifest_entry => {
-			this._logger.out_raw(`${manifest_entry.destination} ...`);
-			// check if destination directory exists
-			const dir = path.dirname(manifest_entry.destination);
-			if (!yabs.util.exists(dir)) {
-				// directory doesn't exist yet, create it
-				fs.mkdirSync(dir, { recursive: true });
-			}
-			// write each HTML
-			const html_file_data = fs.readFileSync(manifest_entry.source, { encoding: 'utf8', flag: 'r' });
-			const html_line_data = html_file_data.split(/\r?\n/);
-			let html_file_output_lines = [];
-			html_line_data.forEach(line_str => {
-				const src_regex_match = line_str.match(script_src_regex);
-				let substitute_line = false;
-				let substitute_line_str;
-				if (src_regex_match) {
-					const extracted_src = src_regex_match[2];
-					const src_parsed = path.parse(extracted_src);
-					const src_joined = path.join(this._source_dir, src_parsed.dir, src_parsed.base);
-					// now that we have the parsed src path, we need to find the matching source in the manifest
-					// (so we don't end up changing a path that wasn't referenced in build instructions)
-					let matches_sources_manifest = false;
-					let destination_src;
-					this._sources_manifest.every(sources_manifest_entry => {
-						if (sources_manifest_entry.original_source === src_joined) {
-							matches_sources_manifest = true;
-							const destination_src_parsed = path.parse(sources_manifest_entry.destination);
-							destination_src = src_parsed.dir + '/' + destination_src_parsed.base;
-							return false;
-						}
-						return true;
-					});
-					if (matches_sources_manifest) {
-						// now that we have a match, change the src attribute to the destination file
-						substitute_line = true;
-						substitute_line_str = line_str.replace(extracted_src, destination_src);
-					}
-				}
-				// append next line to output
-				html_file_output_lines.push((substitute_line) ? substitute_line_str : line_str);
-			});
-			// write output file
-			const html_file_output_data = html_file_output_lines.join(EOL);
-			fs.writeFileSync(manifest_entry.destination, html_file_output_data, { encoding: 'utf8', flag: 'w' });
-			this._logger.ok();
-			this._n_files_updated += 1;
-		});
-		this._logger.endl();
-		*/
 	}
 
 	/**
