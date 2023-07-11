@@ -38,7 +38,7 @@
 				"nested/src/src_b.js",
 				"nested/src/src_c.js"
 			],
-			"output_file": "../nested_src.min.js",
+			"output_file": "nested/src/nested_src.min.js",
 			"header": "/* bundled nested scripts */"
 		},
 		{
@@ -47,7 +47,7 @@
 				"nested/src2/src2_b.js",
 				"nested/src2/src2_c.js"
 			],
-			"output_file": "nested_src2.min.js",
+			"output_file": "nested/src2/nested_src2.min.js",
 			"header": "/* another bundled nested scripts */"
 		}
 	]

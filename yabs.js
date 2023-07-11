@@ -812,7 +812,6 @@ yabs.Builder = class {
 				// add to manifest
 				this._sources_manifest.push({
 					sources: source_full_path_list,
-					src: output_filename,
 					destination: destination_full_path,
 					compile_options: compile_options,
 					header_data: header_data,
@@ -1138,6 +1137,7 @@ yabs.Builder = class {
 
 			const html_file_data = fs.readFileSync(manifest_entry.source, { encoding: 'utf8', flag: 'r' });
 			const html_line_data = html_file_data.split(/\r?\n/);
+			const html_base_dir = path.parse(manifest_entry.source).dir;
 			const html_output_lines = [];
 			const destinations_used = [];
 			html_line_data.forEach(line_string => {
@@ -1148,7 +1148,8 @@ yabs.Builder = class {
 				if (src_regex_match) {
 					const extracted_src = src_regex_match[2];
 					const src_parsed = path.parse(extracted_src);
-					const src_joined_full = path.join(this._base_dir, this._source_dir, src_parsed.dir, src_parsed.base);
+					//const src_joined_full = path.join(this._base_dir, this._source_dir, src_parsed.dir, src_parsed.base);
+					const src_joined_full = path.join(html_base_dir, src_parsed.dir, src_parsed.base);
 					this._sources_manifest.every(sources_manifest_entry => {
 						let keep_going = true;
 						sources_manifest_entry.sources.every(source_entry => {
@@ -1161,8 +1162,9 @@ yabs.Builder = class {
 								else {
 									// we don't have this destination yet, create a substitution line
 									substitute_current_line = true;
-									// normalize path output for html
-									const substitute_src = sources_manifest_entry.src.replace(/\\/g, '/');
+									const destination_parsed = path.parse(sources_manifest_entry.destination);
+									const substitute_path = path.join(src_parsed.dir, destination_parsed.base);
+									const substitute_src = substitute_path.replace(/\\/g, '/'); // normalize path output for html
 									// prepare the substitute
 									substitution_string = line_string.replace(new RegExp(extracted_src, 'g'), substitute_src);
 									// remember this destination so we can skip it for associated bundled scripts
