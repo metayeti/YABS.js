@@ -64,7 +64,7 @@ The entries above represent the following concepts:
 
 - `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build/` directory. If this directory doesn't exist at build time, it will be created.
 
-- `"html"` lists all HTML files associated with the web application. This can be a plain string with a single file like used above, or it can be a list of many files. Files listed in this entry will have their `<source>` tags appropriately matched and changed to compiled sourcefiles.
+- `"html"` lists all HTML files associated with the web application. This can be a plain string with a single file like used above, or it can be a list of many files. Files listed in this entry will have their `<script>` tags' `src` attributes appropriately updated to match the compiled sourcefiles.
 
 - `"sources"` lists all JavaScript files that we want to build and process.
 
