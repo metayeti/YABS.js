@@ -351,7 +351,7 @@ YABS.js can bundle multiple script files into one single output file. To do so, 
 
 Bundles are processed and glued together in order they were listed in.
 
-When using bundles, the `"output_file"` parameter is required (remember to include the relative path in the parameter, otherwise the output will be craeted on build root).
+When using bundles, the `"output_file"` parameter is required (remember to include the relative path in the parameter, otherwise the output will be created on build root).
 
 When using header variables in a bundle, all listed sourcefiles will be processed for JSDoc tags with the *latest read* having priority (if a bundle has 3 scripts and they each have a `%version%` variable, the *last script read* will be the one whose value gets used in the final output file).
 
