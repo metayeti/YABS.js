@@ -2,7 +2,7 @@
 
 YABS.js is a lightweight JavaScript build system.
 
-v1.1.0 dev
+v1.1.0
 
 ## How it works
 
@@ -10,13 +10,13 @@ YABS.js takes a single JSON file containing build instructions as an input. It t
 
 Please note that this is a relatively simplistic, content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capabilities provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript)). This build system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
 
-1. Clones the hierarchy of files provided, updating with newer files (skipping files that didn't change since the last build), into the output directory (typically "build/" or "release/" or equivalent) as specified by the build instructions file.
+1. Clones the hierarchy of non-source files, updating with newer files (skipping files that didn't change since the last build), into the output directory (typically "build/" or "release/" or equivalent) as specified by the build instructions file.
 
-2. Minifies (and optionally, preprocesses or bundles) provided JavaScript sources and optionally attaches a custom header to the minified outputs.
+2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources, optionally attaches a custom header to the minified outputs.
 
-3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled filenames (in practice this usually means the extensions .js get converted to .min.js, but you can also specify custom output filenames or bundle multiple scripts into one).
+3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled filenames (in practice this usually means the .js extensions get converted to .min.js, but you can also specify custom output filenames or bundle multiple scripts into one).
 
-Please double check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded beyond the scope of its current capabilities. This software is provided as-is as free and open source software but it is not currently open for contributions (mainly because the author considers it feature-complete and would rather spend time working on other projects). If you need to extend or modify the featureset that this software provides, please consider forking this project instead.
+Please double check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded much beyond the scope of its current capabilities. This software is provided as-is as free and open source software but it is not currently open for contributions (mainly because the author considers it feature-complete and would rather spend time working on other projects). If you need to extend or modify the featureset that this software provides, please consider forking this project.
 
 ## Dependencies
 
@@ -37,7 +37,7 @@ YABS.js will default to `build_all.json` or `build.json` (in that order) if the 
 
 To pass a custom build instructions file, invoke YABS.js with a parameter: `node yabs.js build_something.json`.
 
-Only one such parameter will be accepted. If you wish to build multiple things in one go, you can use YABS.js in [batch mode](#5-batch-building).
+Only one such parameter will be accepted. If you wish to build multiple things in one go, you can [use YABS.js in batch mode](#5-batch-building).
 
 ## Minimal example
 
@@ -199,7 +199,7 @@ If there is a shared `"headers"` entry in the build instructions file and we use
 
 You can use a custom output source filename by adding the `"output_file"` entry into `"sources"` entry.
 
-Note that `"output_file"` needs to always also include the relative directory you want it to be in (this is to prevent ambiguity in cases where we wish to output the file into a different directory than the original had, which YABS.js is capable of). A good rule of thumb to follow is that when your `"file"` entry includes relative paths, then so should the `"output_file"` entry. For example:
+Note that `"output_file"` needs to always specify the relative directory you want it to output to (this is to prevent ambiguity in cases where we wish to output the file into a different directory). A good rule of thumb to follow is that when your `"file"` entry includes relative paths, then so should the `"output_file"` entry. For example:
 
 ```JSON
 {
@@ -214,9 +214,9 @@ Note that `"output_file"` needs to always also include the relative directory yo
 }
 ```
 
-This will take the source file at "/src/script.js" and compile it into "build/src/script-custom-name.min.js".
+This will take the source file at `/src/script.js` and output `build/src/script-custom-name.min.js`.
 
-You can also control compile options by adding a `"compile_options"` entry. These options will be passed to the compiler directly. Default value for compile options is `"--mangle --compress"`. (See the [uglify-js](https://github.com/mishoo/UglifyJS) documentation for more options.)
+You can control compile options by adding a `"compile_options"` entry. These options will be passed to the compiler directly. Default value for compile options is `"--mangle --compress"`. (See the [uglify-js](https://github.com/mishoo/UglifyJS) documentation for more options.)
 
 The `build_yabs.json` build instructions file demonstrates the use of these features:
 
@@ -239,11 +239,11 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
 }
 ```
 
-The above build instructions file generates a "build.js" file (rather than the default "yabs.min.js" if the `"output_file"` entry was omitted), and it uses the "--compress" compiler option rather than the default "--mangle --compress". A brief explanation of these options is that --compress will simply eliminate whitespace and comments whereas --mangle will also rename variables to their shortest forms. The reason YABS.js uses --compress only is so the code can be beautified easily and audited for safety.
+The above build instructions file generates a `build.js` file (rather than the default `yabs.min.js` if the `"output_file"` entry were omitted), and it uses the `"--compress"` compiler option rather than the default `"--mangle --compress"`. A brief explanation of these options is that `--compress` will eliminate whitespace and comments whereas `--mangle` will also rename variables to their shortest forms. The reason YABS.js uses --compress only is so the code is easier to beautify and audit.
 
 ### 4. Using the preprocessor
 
-The preprocessor adds a layer of metaprogramming facilities which we can utilize when compiling sourcefiles. This adds a lot of power to our build process. For example, we can use preprocessor variables to control which code inside of a sourcefile gets compiled into the final output file. This way we can for example add debugging features which we using during development, and which we can then skip in the final release build. There is a lot more we can do with the preprocessor, but YABS.js primarily focuses on preprocessor variables.
+The preprocessor adds a layer of metaprogramming facilities which we can utilize when compiling sourcefiles. This adds a lot of power to our build process. For example, we can use preprocessor variables to control which code inside of a sourcefile gets compiled into the final output file. This way we can for example add debugging features which we can use during development, and which we can then skip in the final release build. Or we can make separate debug and release builds, such as the example below will attempt to demonstrate. YABS.js primarily focuses on preprocessor variables, but there is a lot more we can achieve with the preprocessor.
 
 To use preprocessor variables, first add a `"variables"` entry to any individual `"sources"` entry. Inside, list all the variables that you wish to use when certain command line parameters are invoked. For example:
 
@@ -263,9 +263,9 @@ To use preprocessor variables, first add a `"variables"` entry to any individual
   ]
 ```
 
-Using the entries above, now we can invoke the build using a `-debug` or a `-release` parameter, like this: `node yabs.js -debug` (with a single `-`). Whenever we use one of these parameters, the variables listed in their corresponding entries, will be used when invoking the preprocessor. Any number of parameters and variables may be listed this way.
+Using the entries above, we can now invoke the build using a `-debug` or a `-release` parameter like so: `node yabs.js -debug`. Whenever we use one of these parameters, the variables listed in their corresponding entries will be used when invoking the preprocessor. Any number of parameters and variables may be listed this way.
 
-You can use the same name across many different source entries and in this case you can invoke the preprocessor for many sources at once by using a single parameter on the command line.
+You can use the same variable group across many different source entries and in this case you can invoke the preprocessor for many sources at once by using a single parameter on the command line.
 
 Similarly to how a global `"headers"` entry works, we can add a global `"variables"` entry to the build instructions file:
 
@@ -282,7 +282,7 @@ Similarly to how a global `"headers"` entry works, we can add a global `"variabl
   }
 ```
 
-Then we can refer to it with a `"use_variables"` entry inside a `"sources"` entry:
+Doing so, we may now refer to a global variables group with a `"use_variables"` entry inside a `"sources"` entry:
 
  ```JSON
   "sources": [
@@ -293,7 +293,7 @@ Then we can refer to it with a `"use_variables"` entry inside a `"sources"` entr
   ]
 ```
 
-The above is equivalent to declaring the variable listing from within the `"source"` entry, however if you have many sourcefiles where you end up using the same variables, this might be a better way of creating such listings.
+The above is equivalent to declaring the variable listing from within the `"source"` entry, however if you have many sourcefiles where you end up using the same variables this might be a more convenient way of creating such listings.
 
 Inside the sourcefile, using the preprocessor might look something like this:
 
@@ -307,7 +307,7 @@ console.log('compiled with -release');
 
 Using the above code, the program will respond differently when a build is invoked via `node yabs.js -debug` or `node yabs.js -release`.
 
-Note that this is not typically a good way of separating debug from release builds, you might consider creating a `build_debug.json` and `build_release.json` instead.
+Note that this is not typically a good way of separating debug from release builds and is only used for demonstrative purposes. A more convenient way might be to consider creating a `build_debug.json` and `build_release.json` instead.
 
 Another feature you can use with the preprocessor are external file includes:
 
@@ -315,11 +315,9 @@ Another feature you can use with the preprocessor are external file includes:
 //? include("path/to/file.js");
 ```
 
-Note that when using features other than variables, you will have to add a flag that forces YABS.js to preprocess a certain source on every build.
+It's important to note that by default, YABS.js will only run the preprocessor step automatically whenever a variable group is both associated with a specific script file and also invoked via the command line. This means that if there is a listing for a `DEBUG` variable group, we can invoke `node yabs.js` and the preprocessor step will be skipped (because we don't require preprocessing), but if we invoke it with `node yabs.js -debug`, the preprocessor will kick in and the `DEBUG` group will be used.
 
-By default, YABS.js will only run the preprocessor step whenever a variable group is both associated with a specific script file and also invoked via the command line. This means that if list a `DEBUG` group, we can invoke `node yabs.js` and the preprocessor won't be used, but if we invoke it with `node yabs.js -debug`, then the preprocessor will kick in and the `DEBUG` group will be used.
-
-If we want to leverage the preprocessor for other features, we have to force the use of the preprocessor. We can do so by adding a `"preprocess"` entry to a `"source"` entry, and setting it to `true`:
+This behavior might be undesired if we want to leverage the preprocessor for other features, so we have to force the use of the preprocessor. We can do so by adding a `"preprocess"` entry to a `"source"` entry, and setting it to `true`:
 
 ```JS
   "sources": [
@@ -330,9 +328,9 @@ If we want to leverage the preprocessor for other features, we have to force the
   ]
 ```
 
-This will force the compilation step for this particular source to always use the preprocessor.
+This will force the compilation step for this particular source to always utilize the preprocessor.
 
-You are free to utilize any other [MetaScript](https://github.com/dcodeIO/MetaScript) features available - the sky is the limit.
+You are free to use any other [MetaScript](https://github.com/dcodeIO/MetaScript) features available - the sky is the limit.
 
 ### 5. Bundling scripts
 
@@ -353,11 +351,11 @@ YABS.js can bundle multiple script files into one single output file. To do so, 
 
 Bundles are processed and glued together in order they were listed in.
 
-When using bundles, the `"output_file"` parameter is required.
+When using bundles, the `"output_file"` parameter is required (remember to include the relative path in the parameter, otherwise the output will be craeted on build root).
 
-When using header variables in a bundle, all listed sourcefiles will be processed for JSDoc tags with the latest read having priority (if a bundle has 3 scripts and they each have a `%version%` variable, the *last script read* will be the one whose value gets used in the final output file).
+When using header variables in a bundle, all listed sourcefiles will be processed for JSDoc tags with the *latest read* having priority (if a bundle has 3 scripts and they each have a `%version%` variable, the *last script read* will be the one whose value gets used in the final output file).
 
-Preprocessor variables in bundles are on a per-bundle basis, not per-script - the input files will be preprocessed as if they are one file, glued together.
+Preprocessor variables in bundles are on a per-bundle basis, not per-script - the input files will be preprocessed as if they are one file, glued together. Note that you can **not** use preprocessor includes with bundles, because the glued output file materializes on the build side and cannot reference files which are relative to the source side. This shouldn't be a problem in real-world cases because if you're already using bundles, you probably shouldn't be also using preprocessor includes at the same time.
 
 ### 6. Batch building
 
@@ -401,7 +399,6 @@ When invoking preprocessor parameters via the command line, they will be applied
 
 Available parameters are:
 
-- `--rebuild` Rebuilds target build (deletes the destination directory and starts build from ground up).
 - `--nofail` In a [batch build](#5-batch-building), keeps going if one of the builds fails.
 - `--version` Displays version info.
 - `--help` Opens online help.

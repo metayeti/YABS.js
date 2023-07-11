@@ -6,6 +6,7 @@
 			"target": "tests/advanced/",
 			"options": "-nodebug -test"
 		},
+		"tests/bundle",
 		"tests/empty/",
 		"tests/html/"
 	]

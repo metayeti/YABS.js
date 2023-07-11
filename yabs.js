@@ -18,7 +18,7 @@
 /**
  * @file yabs.js
  * @author Danijel Durakovic
- * @version 1.1.0 dev
+ * @version 1.1.0
  * @license GPLv3
  */
 
@@ -38,7 +38,7 @@ const yabs = {};
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.VERSION = '1.1.0 dev'; // YABS.js version
+yabs.VERSION = '1.1.0'; // YABS.js version
 
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
@@ -850,19 +850,6 @@ yabs.Builder = class {
 		buildFilesManifest.call(this);
 		buildSourcesManifest.call(this);
 		buildHTMLManifest.call(this);
-
-		/*
-		console.log('----------------------------------');
-		console.log('FILES MANIFEST');
-		console.log(this._files_manifest);
-		console.log('----------------------------------');
-		console.log('SOURCES MANIFEST:');
-		console.log(this._sources_manifest);
-		console.log('----------------------------------');
-		console.log('HTML MANIFEST');
-		console.log(this._html_manifest);
-		console.log('----------------------------------');
-		*/
 	}
 
 	/**
