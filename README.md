@@ -153,7 +153,7 @@ We can then refer to these entries by using a `"use_header"` entry inside a `"so
 
 ### 2. Adding variables to custom headers
 
-We can use variables with script headers, which may help us add dynamic data to the headers, such as versions and copyright information. The valuables for these values are extracted from JSDoc tags in the sourcefiles, which are typically the first thing in the source file.
+We can use variables with script headers, which may help us add dynamic data to the headers, such as versions and copyright information. The values are extracted from JSDoc tags in the sourcefiles, which are typically the first thing to appear in a sourcefile.
 
 To begin, at the top of the JavaScript sourcefile, we will add something like this:
 
