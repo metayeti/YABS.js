@@ -35,9 +35,16 @@ The `build.js` file is a compiled version of `yabs.js` - you can use either for 
 
 YABS.js will default to `build_all.json` or `build.json` (in that order) if the build instructions file is not explicitly provided as a command line parameter.
 
-To pass a custom build instructions file, invoke YABS.js with a parameter: `node yabs.js build_something.json`.
+To pass a custom build instructions file, invoke YABS.js with a parameter: `node yabs.js build_something.json`. Note that only one such parameter will be accepted (if you wish to build multiple things in one go, you can use YABS.js in [batch mode](#5-batch-building)).
 
-Only one such parameter will be accepted. If you wish to build multiple things in one go, you can [use YABS.js in batch mode](#5-batch-building).
+For example, you can build YABS.js by using `node yabs.js build_yabs.js` from the repository root, upon which you might see something like this as output:
+
+![screenshot](/screenshot.png?raw=true)
+
+Some other commands you can try are:
+
+- Build a specific test: `node yabs.js tests/minimal`
+- Build everything: `node yabs.js`
 
 ## Minimal example
 
