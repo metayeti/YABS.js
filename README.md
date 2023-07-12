@@ -37,7 +37,7 @@ YABS.js will default to `build_all.json` or `build.json` (in that order) if the 
 
 To pass a custom build instructions file, invoke YABS.js with a parameter: `node yabs.js build_something.json`.
 
-Only one such parameter will be accepted. If you wish to build multiple things in one go, you can [use YABS.js in batch mode](#5-batch-building).
+Only one such parameter will be accepted. If you wish to build multiple things in one go, you can [use YABS.js in batch mode](#6-batch-building).
 
 ## Minimal example
 
@@ -399,7 +399,7 @@ When invoking preprocessor parameters via the command line, they will be applied
 
 Available parameters are:
 
-- `--nofail` In a [batch build](#5-batch-building), keeps going if one of the builds fails.
+- `--nofail` In a [batch build](#6-batch-building), keeps going if one of the builds fails.
 - `--version` Displays version info.
 - `--help` Opens online help.
 
