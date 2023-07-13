@@ -1,3 +1,12 @@
+## 1.2.0 (?)
+- `FEATURE` Can now specify a default set of preprocessor variables.
+- `FEATURE` Added --rebuild flag.
+- `FEATURE` Better testcases, added friendlier examples.
+- (maybe) `FEATURE` Recursive batch builds are now allowed.
+- `FEATURE` Any parameter, not just preprocessor variables allowed in `"batch_build"` `"options"` entry (this means you can make batch builds where one of the items will always --rebuild, etc.).
+- (maybe) `BUGFIX` Preprocess includes can now be used in bundles as well.
+- `FEATURE` 
+
 ## 1.1.0 (July 11, 2023)
 - `FEATURE` Implements script bundling, it is now possible to combine multiple scripts into one by using bundles.
 - `FEATURE` Paths can now be passed to YABS.js directly whenever `build.json` (or `build_all.json`) is present in that path. This applies to command line parameters as well as a batch build listing. Where previously you had to specify `"path/to/build.json"`, now you can simply use `"path/to"` and `"build.json"` is implied.

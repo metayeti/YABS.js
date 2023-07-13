@@ -2,7 +2,7 @@
 
 YABS.js is a lightweight JavaScript build system.
 
-v1.1.0
+v1.2.0 dev
 
 ## How it works
 
