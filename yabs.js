@@ -1135,7 +1135,6 @@ yabs.Builder = class {
 				if (src_regex_match) {
 					const extracted_src = src_regex_match[2];
 					const src_parsed = path.parse(extracted_src);
-					//const src_joined_full = path.join(this._base_dir, this._source_dir, src_parsed.dir, src_parsed.base);
 					const src_joined_full = path.join(html_base_dir, src_parsed.dir, src_parsed.base);
 					this._sources_manifest.every(sources_manifest_entry => {
 						let keep_going = true;

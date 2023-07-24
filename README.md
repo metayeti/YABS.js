@@ -236,11 +236,6 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
       "file": "yabs.js",
       "output_file": "build.js",
       "compile_options": "--compress",
-      "header": [
-        "/* YABS.js %version% (c) $YEAR$ %author%",
-        " * https://github.com/pulzed/yabs.js",
-        " * Licensed under the MIT license */"
-      ]
     }
   ]
 }
