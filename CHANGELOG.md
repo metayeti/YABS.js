@@ -1,4 +1,5 @@
 ## 1.2.0 (?)
+- `FEATURE` Can now name builds via `"name"`.
 - `FEATURE` Can now specify a default set of preprocessor variables.
 - `FEATURE` Added --rebuild flag.
 - `FEATURE` Better testcases, added friendlier examples.
