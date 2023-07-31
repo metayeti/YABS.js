@@ -1,13 +1,7 @@
 {
 	"batch_build": [
 		"build_yabs.json",
-		"tests/minimal/",
-		{
-			"target": "tests/advanced/",
-			"options": "-nodebug -test"
-		},
-		"tests/bundle",
-		"tests/empty/",
-		"tests/html/"
+		"build_examples.json",
+		"build_tests.json"
 	]
 }
