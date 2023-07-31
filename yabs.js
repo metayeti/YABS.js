@@ -52,6 +52,8 @@ yabs.COMPILE_FILE_EXTENSION = '.cmp';
 
 yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
 
+yabs.URL_YABS_HOME = 'https://github.com/pulzed/YABS.js';
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Utility
@@ -336,7 +338,7 @@ yabs.Logger = class {
 			' '.repeat(32 - yabs.VERSION.length) + '[ v' + yabs.VERSION + ' ]'
 		);
 		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/yabs.js`
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/YABS.js`
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW} .js` +
@@ -1428,7 +1430,7 @@ yabs.Application = class {
 					return;
 				}
 				else if (build_params.option.includes('help')) {
-					yabs.util.openURLWithBrowser('https://github.com/pulzed/YABS.js');
+					yabs.util.openURLWithBrowser(yabs.URL_YABS_HOME);
 					return;
 				}
 			}
