@@ -1,0 +1,18 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/tests/backref_bundle/",
+	"html": "html/index.html",
+	"sources": [
+		{
+			"bundle": [
+				"script_a.js",
+				"src/script_b.js",
+				"html/nested/script_c.js"
+			],
+			"output_file": "src/script.min.js"
+		}
+	],
+	"files": [
+		"css/*.css"
+	]
+}

@@ -3,9 +3,9 @@
 	"destination_dir": "build/tests/backref_script/",
 	"html": "html/index.html",
 	"sources": [
-		"script_in_root.js",
-		"src/script_in_src.js",
-		"html/nested/script_in_nested.js"
+		"script_a.js",
+		"src/script_b.js",
+		"html/nested/script_c.js"
 	],
 	"files": [
 		"css/*.css"
