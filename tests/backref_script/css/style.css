@@ -1,21 +1,21 @@
 body {
 	margin: 0;
 	padding: 15px;
-	background-color: #3061ba;
+	background-color: #e3d666;
 	background-size: 5px 5px;
 	background-image:
-		linear-gradient(to right, #2b59ad 1px, transparent 1px),
-		linear-gradient(to bottom, #2b59ad 1px, transparent 1px);
+		linear-gradient(to right, #d6c95a 1px, transparent 1px),
+		linear-gradient(to bottom, #d6c95a 1px, transparent 1px);
 }
 hr {
 	border: 0;
-	border-top: 1px solid #fff;
+	border-top: 1px solid #000;
 	margin: 10px 0;
 }
 h1, h2, p, a {
 	margin: 0;
 	font-family: sans-serif;
-	color: #fff;
+	color: #000;
 }
 h2 {
 	padding: 5px 0;
@@ -25,7 +25,7 @@ p {
 	font-size: 15px;
 }
 a {
-	color: #10a4f4;
+	color: #0e43e3;
 	text-decoration: none;
 }
 a:hover,
@@ -36,14 +36,14 @@ img {
 	padding: 10px 0;
 }
 .highlight {
-	color: #fff200;
+	color: #e3430e;
 }
 h2.title {
 	font-size: 23px;
 	font-weight: bold;
 }
 a.inactive {
-	color: #fff;
+	color: #000;
 	pointer-events: none;
 }
 a.inactive::before {
