@@ -42,3 +42,13 @@ h2.title {
 	font-size: 23px;
 	font-weight: bold;
 }
+a.inactive {
+	color: #fff;
+	pointer-events: none;
+}
+a.inactive::before {
+	content: '[ ';
+}
+a.inactive::after {
+	content: ' ]';
+}
