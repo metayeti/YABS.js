@@ -1,0 +1,11 @@
+{
+	"batch_build": [
+		"bundle",
+		"game",
+		"headers",
+		"library",
+		"minimal",
+		"preprocessor",
+		"website"
+	]
+}
