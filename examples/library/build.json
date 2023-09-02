@@ -1,0 +1,12 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/examples/library/",
+	"sources": [
+		{
+			"file": "src/library.js",
+			"output_file": "dist/library.min.js",
+			"header": "/* example library */"
+		}
+	],
+	"files": "tests/test_dist.js"
+}
