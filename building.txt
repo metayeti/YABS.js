@@ -58,7 +58,7 @@ III. BUILD ALL EXAMPLES
 
 To build all examples, use:
 
-  node yabs.js build_examples.json
+  node yabs.js examples
 
 This will build all examples and output them into build/examples/.
 
@@ -69,7 +69,7 @@ IV. BUILD ALL TESTS
 
 To build all tests, use:
 
-  node yabs.js build_tests.json
+  node yabs.js tests
 
 This will build all tests and output them into build/tests/.
 
