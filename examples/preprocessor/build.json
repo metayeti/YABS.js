@@ -18,6 +18,17 @@
 		{
 			"file": "src/include.js",
 			"preprocess": true
+		},
+		{
+			"file": "src/variables.js",
+			"variables": {
+				"oranges": [
+					"ORANGES=true"
+				],
+				"bananas": [
+					"BANANAS=true"
+				]
+			}
 		}
 	],
 	"files": [
