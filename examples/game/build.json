@@ -1,0 +1,19 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/examples/game/",
+	"html": "index.html",
+	"sources": [
+		{
+			"file": "src/game.js",
+			"header": [
+				"/* YABS.js game example v%version%",
+				" * Written by %author%",
+				" * (c) $YEAR$"
+			]
+		}
+	],
+	"files": [
+		"css/*.css",
+		"data/*"
+	]
+}
