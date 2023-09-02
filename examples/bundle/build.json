@@ -1,0 +1,18 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/examples/bundle/",
+	"html": "index.html",
+	"sources": [
+		{
+			"bundle": [
+				"src/script_a.js",
+				"src/script_b.js",
+				"src/script_c.js"
+			],
+			"output_file": "src/script.min.js"
+		}
+	],
+	"files": [
+		"css/*.css"
+	]
+}

@@ -7,3 +7,5 @@
    <script src='src/script.js?v=4.2'></script>
    
 3. Preprocessor fails when using undefined variables, add entry to readme that clarifies how to use those.
+
+4. Bundle builds without "output_file" for some reason output Error: Bundled scripts require an "output_field" entry!.
