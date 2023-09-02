@@ -1,5 +1,11 @@
 {
 	"batch_build": [
-		"examples/minimal"
+		"examples/bundle",
+		"examples/game",
+		"examples/headers",
+		"examples/library",
+		"examples/minimal",
+		"examples/preprocessor",
+		"examples/website"
 	]
 }

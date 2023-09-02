@@ -1,0 +1,11 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/examples/preprocessor/",
+	"html": "index.html",
+	"sources": [
+		"src/script.js"
+	],
+	"files": [
+		"css/*.css"
+	]
+}
