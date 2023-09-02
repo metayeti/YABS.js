@@ -9,3 +9,5 @@
 3. Preprocessor fails when using undefined variables, add entry to readme that clarifies how to use those.
 
 4. Bundle builds without "output_file" for some reason output Error: Bundled scripts require an "output_field" entry!.
+
+5. Potential bug: "use_variables" should probably work alongside with "variables" and merge the entries (priority "variables")?
