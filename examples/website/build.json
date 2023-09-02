@@ -1,12 +1,17 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/examples/minimal/",
-	"html": "index.html",
+	"destination_dir": "build/examples/website/",
+	"html": [
+		"index.html",
+		"blog.html",
+		"about.html"
+	],
 	"sources": [
-		"src/script.js"
+		"src/script.js",
+		"src/popup.js",
+		"src/blog.js"
 	],
 	"files": [
-		"css/*.css",
-		"img/*"
+		"css/*.css"
 	]
 }
