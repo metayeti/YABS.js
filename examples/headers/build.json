@@ -1,0 +1,46 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/examples/headers/",
+	"headers": {
+		"my_header": [
+			"/* This is a global header that can be reused many times.",
+			" * Variables used here will depend on the individual",
+			" * scripts that use this header.",
+			" *",
+			" * Script written by %author%",
+			" * (c) $YEAR$ %company% */"
+		]
+	},
+	"sources": [
+		{
+			"file": "script1.js",
+			"header": "/* This is a simple, one-line header. */"
+		},
+		{
+			"file": "script2.js",
+			"header": [
+				"/* This is a",
+				" * multiline",
+				" * header. */"
+			]
+		},
+		{
+			"file": "script3.js",
+			"header": [
+				"/* This is a multiline header",
+				" * that uses some variables.",
+				" *",
+				" * Script written by %author%",
+				" * (c) $YEAR$ %company% */"
+			]
+		},
+		{
+			"file": "script4.js",
+			"use_header": "my_header"
+		},
+		{
+			"file": "script5.js",
+			"use_header": "my_header"
+		}
+	]
+}
