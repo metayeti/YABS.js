@@ -22,11 +22,11 @@
 		{
 			"file": "src/variables.js",
 			"variables": {
-				"oranges": [
-					"ORANGES=true"
+				"param1": [
+					"PARAM1=true"
 				],
-				"bananas": [
-					"BANANAS=true"
+				"param2": [
+					"PARAM2=true"
 				]
 			}
 		}

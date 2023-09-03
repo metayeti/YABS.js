@@ -11,7 +11,7 @@
  */
 
 //
-// utilty functions
+// utilty
 //
 function getBMPTextWidth(font, text) {
 	let i, ci, acc = 0;
@@ -20,6 +20,10 @@ function getBMPTextWidth(font, text) {
 		acc += font.widths[ci] + font.spacing;
 	}
 	return acc;
+}
+
+function EventWrapper(event) {
+	
 }
 
 //
@@ -101,14 +105,16 @@ loadState.update = function() {
 	this.emulatedConsole.update();
 };
 
-loadState.doIntro = function() {
+loadState.doIntro = function(done) {
 	this.emulatedConsole.pushText('DOS/5GW protected mode runtime\n');
 	this.emulatedConsole.pushText('Loading game...');
+	//TODO
+	//pollEvent.then(done);
 };
 
 loadState.doOutro = function() {
-	this.emulatedConsole.pushText('\n* All loaded! ^_^\n\n');
-	this.emulatedConsole.pushText('Press any key to start!');
+	this.emulatedConsole.pushText('\nAll loaded! ^_^\n\n');
+	this.emulatedConsole.pushText('Press any key!');
 };
 
 //
