@@ -4,9 +4,9 @@
  * meaning it will skip over all the comments. In release "mode", the lines after ?= will be outputted to script. */
 
 // Note: normally, the preprocessor only runs when invoking a build with a -variable
-// parameter. Since we don't care about that when using preprocessor includes, we
-// need to "force" the use of preprocessor by setting the "preprocess" option to
-// true in build.json for this specific script.
+// parameter. Since we want this file to be run through the preprocessor when no
+// parameters are invoked, we need to "force" the use of the preprocessor by setting
+// the "preprocess" option to true in build.json for this specific script.
 
 /* First let's check the type of build and configure for release. */
 
