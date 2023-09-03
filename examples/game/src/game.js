@@ -13,6 +13,17 @@
 //
 // utilty
 //
+function waitUntil(conditionf) {
+	return new Promise((resolve, reject) => {
+		(function waitForIt() {
+			if (conditionf()) {
+				return resolve();
+			}
+			setTimeout(waitForIt, 30); // poll until condition met
+		}());
+	});
+}
+
 function getBMPTextWidth(font, text) {
 	let i, ci, acc = 0;
 	for (i = 0; i < text.length; ++i) {
@@ -20,10 +31,6 @@ function getBMPTextWidth(font, text) {
 		acc += font.widths[ci] + font.spacing;
 	}
 	return acc;
-}
-
-function EventWrapper(event) {
-	
 }
 
 //
@@ -43,7 +50,7 @@ loadState.init = function() {
 			show: true // alternates on and off for blinking
 		};
 		const cursorBlinkTimer = new myst.Timer(15);
-		const textFeedTimer = new myst.Timer(2);
+		const textFeedTimer = new myst.Timer(3);
 		this.redraw = function() {
 			// clear the surface before redrawing
 			this.surface.clear();
@@ -87,10 +94,15 @@ loadState.init = function() {
 		this.pushText = function(text) {
 			this.textQueue.push(...Array.from(text));
 		};
+		this.isQueueEmpty = function() {
+			return this.textQueue.length === 0;
+		};
 	}
-
 	this.emulatedConsole = new EmulatedConsole();
 	this.emulatedConsole.redraw();
+
+	// disallow input until everything is loaded and 
+	this.inputAllowed = false;
 };
 
 loadState.draw = function() {
@@ -103,18 +115,35 @@ loadState.draw = function() {
 
 loadState.update = function() {
 	this.emulatedConsole.update();
+	if (this.inputAllowed) {
+		let KeyEvent;
+		while (keyEvent = keyHandler.pollEvent()) {
+			if (keyEvent.type === keyHandler.KEYDOWN) {
+				// proceed to main state
+				game.setState(mainState);
+			}
+		}
+	}
 };
 
-loadState.doIntro = function(done) {
+loadState.doIntro = function() {
 	this.emulatedConsole.pushText('DOS/5GW protected mode runtime\n');
-	this.emulatedConsole.pushText('Loading game...');
-	//TODO
-	//pollEvent.then(done);
+	this.emulatedConsole.pushText('---\n');
+	this.emulatedConsole.pushText('NOW LOADING GAME...');
+	// wait until the intro finishes
+	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
 };
 
 loadState.doOutro = function() {
-	this.emulatedConsole.pushText('\nAll loaded! ^_^\n\n');
-	this.emulatedConsole.pushText('Press any key!');
+	this.emulatedConsole.pushText('\n(ok) All loaded! ^_^\n\n');
+	this.emulatedConsole.pushText('Press any key...');
+	// wait until the outro finishes
+	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
+};
+
+loadState.allowInput = function() {
+	this.inputAllowed = true;
+	keyHandler.clear(); // clear key buffer
 };
 
 //
@@ -122,9 +151,11 @@ loadState.doOutro = function() {
 //
 const mainState  = new myst.State();
 
+mainState.init = function() {
+};
+
 mainState.draw = function() {
 	this.surface.clear();
-	this.paint.rectFill(10, 10, 6, 9, '#fff');
 };
 
 mainState.update = function() {
@@ -269,6 +300,9 @@ const assetList = {
 // asset loader
 const loader = new myst.AssetLoader();
 
+// key handler
+const keyHandler = new myst.KeyInput();
+
 // run game on window load
 window.addEventListener('load', function() {
 	// load the preload assets
@@ -277,19 +311,26 @@ window.addEventListener('load', function() {
 		done: function() {
 			// create the game font
 			game.createFont();
-			console.log('loaded');
 			// we have all assets required for the loadscreen
 			// run the game
 			game.run();
-			// play the loadscreen intro
-			loadState.doIntro();
-			// load the game assets
-			assetList.game = loader.load({
-				assets: assetList.game,
-				done: function() {
-					// play the loadscreen outro
-					loadState.doOutro();
-				}
+			// play the loadscreen intro and wait until it's done
+			loadState.doIntro().then(() => {
+				// add a slight delay just for effect
+				const delay = 1500;
+				setTimeout(() => {
+					// start loading the game assets
+					assetList.game = loader.load({
+						assets: assetList.game,
+						done: function() {
+							// play the loadscreen outro
+							loadState.doOutro().then(() => {
+								// all done loading, allow input from the loadscreen
+								loadState.allowInput();
+							});
+						}
+					});
+				}, delay);
 			});
 		}
 	});
