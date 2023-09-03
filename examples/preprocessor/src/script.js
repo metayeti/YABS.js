@@ -19,3 +19,12 @@
 //?= "const $firstp = document.querySelector('p');"
 //?= "$firstp.innerHTML = 'This example demonstrates preprocessor features. This example is now running in &rsquo;RELEASE&rsquo; mode.';"
 //? }
+
+/* If this is the debug version, we can add features as plain code.
+ * This will make it so that when running locally, the code will behave
+ * as if the meta comments are just normal comments. When building, the preprocessor will kick in
+ * and omit the code below, unless compiled with -debug. */
+
+//? if (DEBUG) {
+	console.log('This message will only show up in debug mode!');
+//? }
