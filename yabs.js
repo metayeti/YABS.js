@@ -18,7 +18,7 @@
 /**
  * @file yabs.js
  * @author Danijel Durakovic
- * @version 1.1.0
+ * @version 1.1.1
  * @license GPLv3
  */
 
@@ -38,7 +38,7 @@ const yabs = {};
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.VERSION = '1.1.0'; // YABS.js version
+yabs.VERSION = '1.1.1'; // YABS.js version
 
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
@@ -970,11 +970,12 @@ yabs.Builder = class {
 		function substep_I_glue(sources, destination) {
 			// glue multiple source files into one
 			sources.forEach((source_file, index) => {
-				const source_file_data = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
+				let source_file_data = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
+				source_file_data = source_file_data.replace(/\r/gm, ''); // normalize output to \n
 				if (index === 0) {
 					fs.writeFileSync(destination, source_file_data, { encoding: 'utf8', flag: 'w' });
 				} else {
-					fs.appendFileSync(destination, source_file_data, { encoding: 'utf8', flag: 'a' });
+					fs.appendFileSync(destination, '\n' + source_file_data, { encoding: 'utf8', flag: 'a' });
 				}
 			});
 			return destination;

@@ -1,3 +1,6 @@
+## 1.1.1 (September 12, 2023)
+- `HOTFIX` Glue step for bundled scripts now adds newlines between individual scripts to prevent cases where one script ending on a comment would comment out the next script's first line.
+
 ## 1.1.0 (July 11, 2023)
 - `FEATURE` Implements script bundling, it is now possible to combine multiple scripts into one by using bundles.
 - `FEATURE` Paths can now be passed to YABS.js directly whenever `build.json` (or `build_all.json`) is present in that path. This applies to command line parameters as well as a batch build listing. Where previously you had to specify `"path/to/build.json"`, now you can simply use `"path/to"` and `"build.json"` is implied.
