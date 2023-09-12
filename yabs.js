@@ -972,11 +972,12 @@ yabs.Builder = class {
 		function substep_I_glue(sources, destination) {
 			// glue multiple source files into one
 			sources.forEach((source_file, index) => {
-				const source_file_data = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
+				let source_file_data = fs.readFileSync(source_file, { encoding: 'utf8', flag: 'r' });
+				source_file_data = source_file_data.replace(/\r/gm, ''); // normalize output to \n
 				if (index === 0) {
 					fs.writeFileSync(destination, source_file_data, { encoding: 'utf8', flag: 'w' });
 				} else {
-					fs.appendFileSync(destination, source_file_data, { encoding: 'utf8', flag: 'a' });
+					fs.appendFileSync(destination, '\n' + source_file_data, { encoding: 'utf8', flag: 'a' });
 				}
 			});
 			return destination;
