@@ -290,7 +290,7 @@ yabs.Logger = class {
 	 */
 	info(message) {
 		process.stdout.write(
-			`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}>` +
+			`${this._OUTPUT_FG_YELLOW}>` +
 			`${this._OUTPUT_RESET} ${message}\n\n`
 		);
 	}
@@ -326,22 +326,22 @@ yabs.Logger = class {
 	 * Prints the YABS.js header.
 	 */
 	header() {
-		this.out_raw(`${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}`);
+		this.out_raw(`${this._OUTPUT_FG_YELLOW}`);
 		this.out('  __ __ _____ _____ _____     _');
 		this.out(' |  |  |  _  |  _  |   __|   |_|___');
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
 		this.out('                           |___|');
-		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`);
+		this.out(` ${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`);
 		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
+			` ${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
 			' '.repeat(32 - yabs.VERSION.length) + '[ v' + yabs.VERSION + ' ]'
 		);
 		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/YABS.js`
+			` ${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/YABS.js`
 		);
 		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW} .js` +
+			` ${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_FG_YELLOW} .js` +
 			`${this._OUTPUT_RESET}        (c) 2023 Danijel Durakovic`
 		);
 		this.endl();
