@@ -4,7 +4,15 @@
 	"html": "index.html",
 	"sources": [
 		{
-			"file": "src/game.js",
+			"bundle": [
+				"src/meta.js",
+				"src/util.js",
+				"src/load_state.js",
+				"src/main_state.js",
+				"src/assets.js",
+				"src/game.js"
+			],
+			"output_file": "src/game.min.js",
 			"header": [
 				"/* YABS.js game example v%version%",
 				" * (c) $YEAR$ %author% */"
