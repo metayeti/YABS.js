@@ -6,12 +6,17 @@ v1.2.0 dev
 
 ## Contents
 
-1. How it works
+1. [How it works](#1-how-it-works)
 2. Dependencies
 3. Basic usage
 4. Minimal example
+5. [Build instructions file](#build-instructions-file)
+    5.1. Abc
+    5.2. bbc
+6. Command line parameters
+7. License
 
-## How it works
+## 1. How it works
 
 YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and runs the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
 
