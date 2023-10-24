@@ -1,7 +1,0 @@
-{
-	"batch_build": [
-		"tests/backref_bundle",
-		"tests/backref_script",
-		"tests/empty"
-	]
-}

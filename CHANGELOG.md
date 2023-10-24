@@ -1,10 +1,10 @@
 ## 1.2.0 (?)
-- `FEATURE` Can now name builds via `"name"`.
-- `FEATURE` Can now specify a default set of preprocessor variables.
-- `FEATURE` Added --rebuild flag.
-- `FEATURE` Better testcases and friendlier examples.
+- (wip) `FEATURE` Can now name builds via `"name"`.
+- (wip) `FEATURE` Can now specify a default set of preprocessor variables.
+- (wip) `FEATURE` Added --rebuild flag.
+- (wip) `FEATURE` Better testcases and friendlier examples.
 - (maybe) `FEATURE` Recursive batch builds are now allowed (you can batch-build a bunch of batch-builds).
-- `FEATURE` Any parameter, not just preprocessor variables allowed in `"batch_build"` `"options"` entry (this means you can make batch builds where one of the items will always --rebuild, etc.).
+- (wip) `FEATURE` Any parameter, not just preprocessor variables allowed in `"batch_build"` `"options"` entry (this means you can make batch builds where one of the items will always --rebuild, etc.).
 - (maybe) `BUGFIX` Preprocess includes can now be used in bundles as well.
 - (maybe) `FEATURE` Pre-build and post-build events.
 

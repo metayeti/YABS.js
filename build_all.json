@@ -1,6 +1,5 @@
 {
 	"batch_build": [
-		"build_yabs.json",
 		"examples",
 		"tests"
 	]

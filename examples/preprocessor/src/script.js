@@ -8,7 +8,7 @@
 /* First let's check the type of build and configure variables. */
 
 //? if (typeof DEBUG === 'undefined') DEBUG = false;
-//? const RELEASE = !DEBUG;
+//? RELEASE = !DEBUG;
 
 /* If this is the release version, change some text in the document. */
 

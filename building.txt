@@ -5,7 +5,7 @@
                                BUILD INSTRUCTIONS
   
                              #>>----------------<<#
-                             \\\\   YABS.JS   ////
+                             \\\\             ////
                                 %--------------%
 
 
@@ -26,17 +26,18 @@ MetaScript package. Install using:
 
 You should now be able to build from the command line.
 
+All commands listed below should be run from the project root folder.
+
 
 
 I. BUILD EVERYTHING AT ONCE
 ---------------------------
 
-If you just want to build everything and be done with it, use:
+If you just want to build everything and be done with it, just use:
 
-  node yabs.js
+  node build
 
 This will:
-  - build yabs.js and output build.js.
   - build all examples and output them into build/examples/.
   - build all tests and output them into build/tests/.
 
@@ -45,11 +46,11 @@ This will:
 II. BUILD YABS.JS
 -----------------
 
-To build yabs.js only, use:
+To build YABS.js, use:
 
-  node yabs.js build_yabs.json
+  node yabs build_yabs.json
 
-This will build yabs.js and output build.js.
+This will make yabs.js build itself and output build.js.
 
 
 
@@ -58,18 +59,18 @@ III. BUILD ALL EXAMPLES
 
 To build all examples, use:
 
-  node yabs.js examples
+  node build examples
 
 This will build all examples and output them into build/examples/.
 
 
 
 IV. BUILD ALL TESTS
-------------------
+-------------------
 
 To build all tests, use:
 
-  node yabs.js tests
+  node build tests
 
 This will build all tests and output them into build/tests/.
 
@@ -80,14 +81,14 @@ V. BUILD A SPECIFIC TEST OR  EXAMPLE
 
 To build a specific example, use:
 
-  node yabs.js examples/{example_name}
+  node build examples/{example_name}
 
 Similarly, to build a specific test, use:
 
-  node yabs.js test/{test_name}
+  node build test/{test_name}
 
 For example, to build the "minimal" example, use:
 
-  node yabs.js examples/minimal
+  node build examples/minimal
 
 This will build the "minimal" example and output it into build/examples/minimal.
