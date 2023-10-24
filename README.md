@@ -4,6 +4,13 @@ YABS.js is a lightweight JavaScript build system.
 
 v1.2.0 dev
 
+## Contents
+
+1. How it works
+2. Dependencies
+3. Basic usage
+4. Minimal example
+
 ## How it works
 
 YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and runs the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
@@ -79,13 +86,14 @@ The entries above represent the following concepts:
 
 The hierarchy of files for this minimal build will look like this:
 ```
+
 📁 css
-   📄 style.css
+ └─ 📄 style.css
 📁 img
-   📄 cat.jpg
-   📄 dog.png
+ └─ 📄 cat.jpg
+ └─ 📄 dog.png
 📁 src
-   📄 script.js
+ └─ 📄 script.js
 📄 build.json
 📄 index.html
 📄 yabs.js
@@ -401,7 +409,7 @@ When invoking preprocessor parameters via the command line, they will be applied
 
 Available parameters are:
 
-- `--nofail` In a [batch build](#6-batch-building), keeps going if one of the builds fails.
+- `--nofail` In a [batch build](#6-batch-building), keeps going even if one of the builds fails.
 - `--version` Displays version info.
 - `--help` Opens online help.
 
