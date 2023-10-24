@@ -11,8 +11,8 @@ v1.2.0 dev
 3. Basic usage
 4. Minimal example
 5. [Build instructions file](#build-instructions-file)
-    5.1. Abc
-    5.2. bbc
+    - 5.1. Abc
+    - 5.2. bbc
 6. Command line parameters
 7. License
 
