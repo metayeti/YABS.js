@@ -103,7 +103,7 @@ Next, we need to focus on the build instructions file. That is the `build.json` 
 
 The entries above represent the following concepts:
 
-- `"source_dir"` represents the source directory for the project we are building. The value `"./"` means that the source directory is the same as the root directory (directory which contains `yabs.js` or `build.js` if using the compiled version - in this example we use `yabs.js` for clarity to distinguish it clearly from `build.json`).
+- `"source_dir"` represents the source directory for the project we are building. The value `"./"` means that the source directory is the same as the root directory (the same directory build.json is in).
 
 - `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build/` directory. If this directory doesn't exist at build time, it will be created.
 
