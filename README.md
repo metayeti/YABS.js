@@ -68,8 +68,8 @@ Some other commands you can try are:
 To demonstrate basic usage, we will need a structure of a basic web application, and we will need a build instructions file. Let's start with the file hierarchy first.
 
 The hierarchy of files for this minimal build will look like this:
-```
 
+```
 📁 css
  └─ 📄 style.css
 📁 img
