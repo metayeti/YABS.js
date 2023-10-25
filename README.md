@@ -7,14 +7,19 @@ v1.2.0 dev
 ## Contents
 
 1. [How it works](#1-how-it-works)
-2. Dependencies
-3. Basic usage
-4. Minimal example
-5. [Build instructions file](#build-instructions-file)  
-&nbsp;&nbsp;5.1. Abc  
-&nbsp;&nbsp;5.2. bbc
-6. Command line parameters
-7. License
+2. [Dependencies](#2-dependencies)
+3. [Basic usage](#3-basic-usage)
+4. [Minimal example](#4-minimal-example)
+5. [Build instructions file](#5-build-instructions-file)  
+&nbsp;&nbsp;5.1. [Adding custom headers to scripts](#51-adding-custom-headers-to-scripts)  
+&nbsp;&nbsp;5.2. [Adding variables to custom headers](#52-adding-variables-to-custom-headers)  
+&nbsp;&nbsp;5.3. [Additional options (output filenames and compile options)](#53-additional-options-output-filenames-and-compile-options)  
+&nbsp;&nbsp;5.4. [Using the preprocessor](#54-using-the-preprocessor)  
+&nbsp;&nbsp;5.5. [Bundling scripts](#55-bundling-scripts)  
+&nbsp;&nbsp;5.6. [Batch building](#56-batch-building)
+6. [Command line parameters](#6-command-line-parameters)
+7. [Credits](#7-credits)
+8. [License](#8-license)
 
 ## 1. How it works
 
@@ -30,14 +35,14 @@ This is a content-unaware build system which only deals with files and not sourc
 
 Please double check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded much beyond the scope of its current capabilities. This software is provided as-is as free and open source software but it is not currently open for contributions (mainly because the author considers it feature-complete and would rather spend time working on other projects). If you need to extend or modify the featureset that this software provides, please consider forking this project.
 
-## Dependencies
+## 2. Dependencies
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
 - [MetaScript](https://www.npmjs.com/package/metascript) ( install with "npm -g install metascript" )
 
 The MetaScript package is only needed if the build leverages the preprocessor in some way.
 
-## Basic usage
+## 3. Basic usage
 
 1. Drop `yabs.js` or `build.js` into your project's root folder.
 2. Create a `build.json` file.
@@ -58,9 +63,28 @@ Some other commands you can try are:
 - Build a specific test: `node yabs.js tests/minimal`
 - Build everything: `node yabs.js`
 
-## Minimal example
+## 4. Minimal example
 
-To demonstrate basic usage, we will need a structure of a basic web application, and we will need a build instructions file. The build instructions file is a plain JSON file with some entries, let's name it `build.json` and write the following inside: 
+To demonstrate basic usage, we will need a structure of a basic web application, and we will need a build instructions file. Let's start with the file hierarchy first.
+
+The hierarchy of files for this minimal build will look like this:
+```
+
+📁 css
+ └─ 📄 style.css
+📁 img
+ └─ 📄 cat.jpg
+ └─ 📄 dog.png
+📁 src
+ └─ 📄 script.js
+📄 build.json
+📄 index.html
+📄 build.js
+```
+
+For now, it doesn't really matter what these files contain. Let's imagine they contain some code and some data. The `build.js` file is the YABS.js build system (we could use the `yabs.js` sourcefile as well if we wanted to).
+
+Next, we need to focus on the build instructions file. That is the `build.json` file in the hierarchy above. The build instructions file is a plain JSON file with some entries. Let's write the following inside: 
 
 ```JSON
 {
@@ -89,32 +113,15 @@ The entries above represent the following concepts:
 
 - `"files"` lists all other files associated with the web application that we do not wish to process in any way, just have them copied over into the build output. This entry can be a plain file list pointing to individual files, or it can include basic pattern masks. In the example above, `"img/*"` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` mask would only capture all files within the directory, but it would skip any subdirectories. A `*.txt` would only capture files with `.txt` extension in the directory, also skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
 
-The hierarchy of files for this minimal build will look like this:
-```
+Now that we have our hierarchy and our build instructions file, we can build the project. To build, all you have to do is invoke `node build` from the terminal at the root of the project. Build output will materialize in the `build/` folder which will be created automatically.
 
-📁 css
- └─ 📄 style.css
-📁 img
- └─ 📄 cat.jpg
- └─ 📄 dog.png
-📁 src
- └─ 📄 script.js
-📄 build.json
-📄 index.html
-📄 yabs.js
-```
+This is really all we need to do to build a simple web application, but YABS.js offers more options. In the following sections, additional capabilities of the build instructions file and how to utilize them will be explained.
 
-For now, it doesn't really matter what these files contain. Let's imagine they contain some code and some data.
-
-To build, you can now simply invoke `node yabs.js` from the root of the project to start the build. The build output will appear in the `build/` folder.
-
-This is all we need to do to build a simple web application. In the following sections, additional capabilities of the build instructions file will be explained.
-
-## Build instructions file
+## 5. Build instructions file
 
 There is more that we can accomplish with the build instructions file. Let's look at some examples.
 
-### 1. Adding custom headers to scripts
+### 5.1. Adding custom headers to scripts
 
 Sometimes, we may want to add copyright information or other relevant information in the minified output scripts in the form of a commented header.
 
@@ -171,7 +178,7 @@ We can then refer to these entries by using a `"use_header"` entry inside a `"so
   ]
 ```
 
-### 2. Adding variables to custom headers
+### 5.2. Adding variables to custom headers
 
 We can use variables with script headers, which may help us add dynamic data to the headers, such as versions and copyright information. The values are extracted from JSDoc tags in the sourcefiles, which are typically the first thing to appear in a sourcefile.
 
@@ -215,7 +222,7 @@ Variable names are arbitrary and can be anything as long as they match the JSDoc
 
 If there is a shared `"headers"` entry in the build instructions file and we use variables in those, those variables will be relative to the individual scripts that use them. This means that every script that uses those headers has to include the matching JSDoc tags.
 
-### 3. Additional options (output filenames and compile options)
+### 5.3. Additional options (output filenames and compile options)
 
 You can use a custom output source filename by adding the `"output_file"` entry into `"sources"` entry.
 
@@ -256,7 +263,7 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
 
 The above build instructions file generates a `build.js` file (rather than the default `yabs.min.js` if the `"output_file"` entry were omitted), and it uses the `"--compress"` compiler option rather than the default `"--mangle --compress"`. A brief explanation of these options is that `--compress` will eliminate whitespace and comments whereas `--mangle` will also rename variables to their shortest forms. The reason YABS.js uses --compress only is so the code is easier to beautify and audit.
 
-### 4. Using the preprocessor
+### 5.4. Using the preprocessor
 
 The preprocessor adds a layer of metaprogramming facilities which we can utilize when compiling sourcefiles. This adds a lot of power to our build process. For example, we can use preprocessor variables to control which code inside of a sourcefile gets compiled into the final output file. This way we can for example add debugging features which we can use during development, and which we can then skip in the final release build. Or we can make separate debug and release builds, such as the example below will attempt to demonstrate. YABS.js primarily focuses on preprocessor variables, but there is a lot more we can achieve with the preprocessor.
 
@@ -347,7 +354,7 @@ This will force the compilation step for this particular source to always utiliz
 
 You are free to use any other [MetaScript](https://github.com/dcodeIO/MetaScript) features available - the sky is the limit.
 
-### 5. Bundling scripts
+### 5.5. Bundling scripts
 
 YABS.js can bundle multiple script files into one single output file. To do so, add a `"bundle"` (rather than a `"file"`) entry inside a `"sources"` item:
 
@@ -372,7 +379,7 @@ When using header variables in a bundle, all listed sourcefiles will be processe
 
 Preprocessor variables in bundles are on a per-bundle basis, not per-script - the input files will be preprocessed as if they are one file, glued together. Note that you can **not** use preprocessor includes with bundles, because the glued output file materializes on the build side and cannot reference files which are relative to the source side. This shouldn't be a problem in real-world cases because if you're already using bundles, you probably shouldn't be also using preprocessor includes at the same time.
 
-### 6. Batch building
+### 5.6. Batch building
 
 YABS.js can build in batch mode! To do so, create a `build_all.json` (the filename can be anything, but `build.json` is a useful convention and it also provides the comfort of simply be able to type `node yabs.js` or `node build.js` into the command line, and YABS.js will automatically figure out - and prioritize - the `build_all.json` file). Into this file, add a single entry named `"batch_build"`.
 
@@ -410,7 +417,7 @@ When invoking preprocessor parameters via the command line, they will be applied
   ]
 ```
 
-## Command line parameters
+## 6. Command line parameters
 
 Available parameters are:
 
@@ -418,12 +425,12 @@ Available parameters are:
 - `--version` Displays version info.
 - `--help` Opens online help.
 
-## Thanks
+## 7. Credits
 
 The [uglify-js](https://www.npmjs.com/package/uglify-js) and [MetaScript](https://www.npmjs.com/package/metascript) packages.
 
-## License
+## 8. License
 
-Copyright (c) 2023 Danijel Durakovic
+Copyright © 2023 Danijel Durakovic
 
 Licensed under the terms of the [GPLv3 license](LICENSE)
