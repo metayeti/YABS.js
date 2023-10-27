@@ -38,6 +38,7 @@ If you just want to build everything and be done with it, just use:
   node build
 
 This will:
+  - build yabs.js and output build.js
   - build all examples and output them into build/examples/.
   - build all tests and output them into build/tests/.
 
@@ -48,9 +49,9 @@ II. BUILD YABS.JS
 
 To build YABS.js, use:
 
-  node yabs build_yabs.json
+  node yabs build.json
 
-This will make yabs.js build itself and output build.js.
+This will build yabs.js and output build.js.
 
 
 
