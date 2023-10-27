@@ -1,6 +1,6 @@
 ![YABS.js](/logo.png?raw=true)
 
-YABS.js is a lightweight JavaScript build system.
+YABS.js is a JavaScript build system.
 
 v1.2.0 dev
 
@@ -25,43 +25,54 @@ v1.2.0 dev
 
 YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and runs the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
 
-This is a content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capabilities provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript)). This build system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
+For the most part, this is a content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capabilities provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript), and the fact that JSDoc-like meta tags can be extracted from sourcefiles to construct information headers for output files). This build system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
 
-1. Clones the hierarchy of non-source files, updating with newer files (skipping files that didn't change since the last build), into the output directory (typically "build/" or "release/" or equivalent) as specified by the build instructions file.
+1. Clones the hierarchy of non-source files related to the web application, updating with newer files (skipping files that didn't change since the last build), into the output directory (typically `build/`, `release/` or equivalent) as specified by the build instructions file.
 
-2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources, optionally attaches a custom header to the minified outputs.
+2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources, optionally attaches a custom header to the minified outputs with variables which can be extracted from the JSDoc-like tags in the sourcefile.
 
-3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled filenames (in practice this usually means the .js extensions get converted to .min.js, but you can also specify custom output filenames or bundle multiple scripts into one).
+3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled outputs (in practice this usually simply means that the `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
 
-Please double check your requirements to see if this featureset fits your needs and if it does not, use one of the more advanced build systems. It is unlikely that this system will be expanded much beyond the scope of its current capabilities. This software is provided as-is as free and open source software but it is not currently open for contributions (mainly because the author considers it feature-complete and would rather spend time working on other projects). If you need to extend or modify the featureset that this software provides, please consider forking this project.
+Please double check your requirements to see if this featureset fits your needs and use one of the more advanced build systems if it does not. This software is provided as-is as free and open source software but it is not currently open for contributions (mainly because the author considers it feature-complete and would prefer to spend time working on other projects). It is unlikely that this system will be expanded much beyond the scope of its current capabilities. If you need to extend or modify the featureset that this software provides, consider forking this project.
 
 ## 2. Dependencies
 
-- [uglify-js](https://www.npmjs.com/package/uglify-js) ( install with "npm -g install uglify-js" )
-- [MetaScript](https://www.npmjs.com/package/metascript) ( install with "npm -g install metascript" )
+The first prerequisite is [Node.js](https://nodejs.org/) - grab the latest copy by clicking on the link.
 
-The MetaScript package is only needed if the build leverages the preprocessor in some way.
+From then on, YABS.js only has two dependencies (only one if you don't need preprocessing). They need to be installed globally rather than locally:
+
+- [uglify-js](https://www.npmjs.com/package/uglify-js) - install with "npm -g install uglify-js"
+- [MetaScript](https://www.npmjs.com/package/metascript) - install with "npm -g install metascript"
+
+The MetaScript package is only needed if the build leverages the preprocessor in some way, otherwise you can skip installing it. Note that some examples that use preprocessing will not build without it.
 
 ## 3. Basic usage
 
-1. Drop `yabs.js` or `build.js` into your project's root folder.
-2. Create a `build.json` file.
-3. Execute with `node yabs.js` or `node build.js`.
+The most common form of usage goes like this:
 
-The `build.js` file is a compiled version of `yabs.js` - you can use either for your projects.
+1. Drop `build.js` or `yabs.js` into your project's root folder.
+2. Create a `build.json` file and describe the build you wish to perform.
+3. Run the build with `node build` (or `node yabs` if you used `yabs.js`).
 
-YABS.js will default to `build_all.json` or `build.json` (in that order) if the build instructions file is not explicitly provided as a command line parameter.
+The `build.js` file is a compiled version of `yabs.js` - you can use either for your projects, they are equivalent in function.
 
-To pass a custom build instructions file, invoke YABS.js with a parameter: `node yabs.js build_something.json`. Note that only one such parameter will be accepted (if you wish to build multiple things in one go, you can use YABS.js in [batch mode](#6-batch-building)).
+YABS.js will automatically default to `build_all.json` or `build.json` (in that order) whenever the build instructions file is not explicitly provided as a command line parameter.
 
-For example, you can build YABS.js by using `node yabs.js build_yabs.js` from the repository root, upon which you might see something like this as output:
+If you wish to pass custom build instructions file, invoke YABS.js with a parameter: `node build something.json`. Note that only one such parameter will be accepted (if you wish to build multiple things in one go, you can use YABS.js in [batch mode](#56-batch-building)).
+
+If your `build.json` file is located in another directory relative to the location of your `build.js`, you can just pass that directory to the build system: `node build something/`. In this example, it is assumed that a `something/build.json` file (or `something/build_all.json`) exists.
+
+You can build YABS.js itself by invoking `node yabs build.json`, upon which you might see something like this as output:
 
 ![screenshot](/screenshot.png?raw=true)
 
-Some other commands you can try are:
+Other commands you can try are:
 
-- Build a specific test: `node yabs.js tests/minimal`
-- Build everything: `node yabs.js`
+- Build the [minimal](/examples/minimal/) example: `node build examples/minimal`
+- Build all examples: `node build examples`
+- Build everything: `node build`
+
+Also see [building.txt](/building.txt) for information on building this repository.
 
 ## 4. Minimal example
 
@@ -77,9 +88,9 @@ The hierarchy of files for this minimal build will look like this:
  └─ 📄 dog.png
 📁 src
  └─ 📄 script.js
+📄 build.js
 📄 build.json
 📄 index.html
-📄 build.js
 ```
 
 For now, it doesn't really matter what these files contain. Let's imagine they contain some code and some data. The `build.js` file is the YABS.js build system (we could use the `yabs.js` sourcefile as well if we wanted to).
@@ -107,25 +118,25 @@ The entries above represent the following concepts:
 
 - `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build/` directory. If this directory doesn't exist at build time, it will be created.
 
-- `"html"` lists all HTML files associated with the web application. This can be a plain string with a single file like used above, or it can be a list of many files. Files listed in this entry will have their `<script>` tags' `src` attributes appropriately updated to match the compiled sourcefiles.
+- `"html"` lists all HTML files associated with the web application. This can be a plain string with a single file like used above, or it can be a list of many files. Files listed in this entry will have their `<script>` tags' `src` attributes appropriately updated to match the compiled sourcefiles (to avoid this you can list them in `"files"` instead).
 
 - `"sources"` lists all JavaScript files that we want to build and process.
 
-- `"files"` lists all other files associated with the web application that we do not wish to process in any way, just have them copied over into the build output. This entry can be a plain file list pointing to individual files, or it can include basic pattern masks. In the example above, `"img/*"` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` mask would only capture all files within the directory, but it would skip any subdirectories. A `*.txt` would only capture files with `.txt` extension in the directory, also skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
+- `"files"` lists all other files associated with the web application that we do not wish to process in any way, we just want to have them copied over into the build output. These are usually all the files associated to the web application that aren't source code. This entry is a list pointing to individual files and can include basic pattern masks. In the example above, `"img/*"` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` mask would only capture all files within the directory, but it would skip any subdirectories. A `*.txt` would only capture files with `.txt` extension in the directory, skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
 
-Now that we have our hierarchy and our build instructions file, we can build the project. To build, all you have to do is invoke `node build` from the terminal at the root of the project. Build output will materialize in the `build/` folder which will be created automatically.
+Now that we have the file hierarchy and a build instructions file, we can build the project. To build, all we have to do is to invoke `node build` from the command line from the root of the project. Build output will materialize in the `build/` folder which will be created automatically if it doesn't exist. All subsequent builds will only update relevant files and will skip files listed under `"files"` that have not updated since the last build. Only the source files are processed with every build.
 
-This is really all we need to do to build a simple web application, but YABS.js offers more options. In the following sections, additional capabilities of the build instructions file and how to utilize them will be explained.
+This is all we need to run a build for a simple web application, but YABS.js offers more options. In the following sections, additional capabilities of the build instructions file and how to utilize them will be explained.
 
 ## 5. Build instructions file
 
-There is more that we can accomplish with the build instructions file. Let's look at some examples.
+There is more that we can accomplish with the build instructions file than what we have seen in the example above. Let's look at some features through various examples.
 
 ### 5.1. Adding custom headers to scripts
 
-Sometimes, we may want to add copyright information or other relevant information in the minified output scripts in the form of a commented header.
+Sometimes we may want to add copyright information or other relevant information in the minified output scripts in the form of a commented header so the compiled JavaScript sources are not just minified source code, but contain a header with useful information.
 
-To add a custom header to the output script, we can add a `"header"` entry to individual `"sources"` entries. To do so, first we need to change the structure slightly by wrapping the listing into an object and referring to the script file using a `"file"` entry:
+To add a custom header to the output script, we can add a `"header"` entry to any individual `"sources"` entry. To do so, first we need to change the structure slightly by wrapping the listing into an object and referring to the script file with a `"file"` entry:
 
 ```JSON
   "sources": [
@@ -136,7 +147,7 @@ To add a custom header to the output script, we can add a `"header"` entry to in
   ]
 ```
 
-We can make the header multiline by changing it into a list:
+We can make the header multiline by changing the value to a list of strings:
 
 ```JSON
   "sources": [
@@ -151,7 +162,7 @@ We can make the header multiline by changing it into a list:
   ]
 ```
 
-Sometimes we may want to use the same header across many output files. In this case we can add a `"headers"` entry to the build instructions file:
+Sometimes we may want to use the same header across many output files. If that is the case, we may add a shared `"headers"` entry to the build instructions file:
 
 ```JSON
   "headers": {
@@ -163,7 +174,7 @@ Sometimes we may want to use the same header across many output files. In this c
   }
 ```
 
-We can then refer to these entries by using a `"use_header"` entry inside a `"sources"` entry:
+We can then refer to these entries with a `"use_header"` entry that we put inside any `"sources"` entry:
 
 ```JSON
   "sources": [
@@ -180,7 +191,7 @@ We can then refer to these entries by using a `"use_header"` entry inside a `"so
 
 ### 5.2. Adding variables to custom headers
 
-We can use variables with script headers, which may help us add dynamic data to the headers, such as versions and copyright information. The values are extracted from JSDoc tags in the sourcefiles, which are typically the first thing to appear in a sourcefile.
+Sometimes the data we want to include in the sourcefile header is dynamic and may change with time. Things like application version number and copyright year would be irritating to work with if we needed to change the build instructions file every time the program version went up. This is why with YABS.js, we can use variables with script headers, which help us add dynamic data to the headers, such as versions and copyright information. The values are extracted from JSDoc-like tags in the sourcefiles, which are typically at the top of the file and the first thing to appear in a sourcefile.
 
 To begin, at the top of the JavaScript sourcefile, we will add something like this:
 
@@ -194,7 +205,7 @@ To begin, at the top of the JavaScript sourcefile, we will add something like th
  */
 ```
 
-We can now use these entries with headers by using `%variable%` notation:
+We can now use these entries in output headers with the `%variable%` notation:
 
 ```JSON
   "sources": [
@@ -216,17 +227,19 @@ The header in the compiled sourcefile will become the following:
  * Copyright (c) 2023 Big Corp */
 ```
 
-Variable names are arbitrary and can be anything as long as they match the JSDoc tags in the sourcefile. They are only required to be one single word without spaces, and they are case-sensitive.
+Variable names are completely arbitrary and can be anything as long as they match the JSDoc tags in the sourcefile. They are required to be one single word without spaces and they are case-sensitive.
 
 `$YEAR$` is a special variable that outputs the current year.
 
-If there is a shared `"headers"` entry in the build instructions file and we use variables in those, those variables will be relative to the individual scripts that use them. This means that every script that uses those headers has to include the matching JSDoc tags.
+If we use the shared `"headers"` entry in the build instructions file, the variables we use will be relative to the individual scripts that use them. This means that every script that uses those headers has to include the matching JSDoc tags, and the values can vary from one another.
 
 ### 5.3. Additional options (output filenames and compile options)
 
 You can use a custom output source filename by adding the `"output_file"` entry into `"sources"` entry.
 
-Note that `"output_file"` needs to always specify the relative directory you want it to output to (this is to prevent ambiguity in cases where we wish to output the file into a different directory). A good rule of thumb to follow is that when your `"file"` entry includes relative paths, then so should the `"output_file"` entry. For example:
+Note that `"output_file"` needs to always specify the relative directory you want it to output to (this is to prevent ambiguity in cases where we wish to output the file into a different directory). A good rule of thumb to follow is that when your `"file"` value includes relative paths, then so should the `"output_file"` value.
+
+For example:
 
 ```JSON
 {
@@ -433,4 +446,4 @@ The [uglify-js](https://www.npmjs.com/package/uglify-js) and [MetaScript](https:
 
 Copyright © 2023 Danijel Durakovic
 
-Licensed under the terms of the [GPLv3 license](LICENSE)
+Licensed under the terms of the [GPLv3 license](LICENSE).
