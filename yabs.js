@@ -335,14 +335,14 @@ yabs.Logger = class {
 		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
-			' '.repeat(32 - yabs.VERSION.length) + '[ v' + yabs.VERSION + ' ]'
+			' '.repeat(34 - yabs.VERSION.length) + '[ v' + yabs.VERSION + ' ]'
 		);
 		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/pulzed/YABS.js`
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/metayeti/YABS.js`
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW} .js` +
-			`${this._OUTPUT_RESET}        (c) 2023 Danijel Durakovic`
+			`${this._OUTPUT_RESET}          (c) 2023 Danijel Durakovic`
 		);
 		this.endl();
 	}
@@ -350,7 +350,7 @@ yabs.Logger = class {
 	 * Prints a long line.
 	 */
 	line() {
-		this.out('---------------------------------------------');
+		this.out('-----------------------------------------------');
 	}
 };
 
