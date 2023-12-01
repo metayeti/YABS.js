@@ -6,7 +6,7 @@
  *                            |___|
  *
  *  Yet-Another-Build-System.js
- *  https://github.com/pulzed/YABS.js
+ *  https://github.com/metayeti/YABS.js
  *  ---
  *  (c) 2023 Danijel Durakovic
  *  Licensed under GPLv3
@@ -52,7 +52,7 @@ yabs.COMPILE_FILE_EXTENSION = '.cmp';
 
 yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
 
-yabs.URL_YABS_HOME = 'https://github.com/pulzed/YABS.js';
+yabs.URL_YABS_HOME = 'https://github.com/metayeti/YABS.js';
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -231,7 +231,7 @@ yabs.util.openURLWithBrowser = function(url) {
 			default: return 'xdg-open';
 		}
 	}());
-	require('child_process').exec(start_cmd + ' ' + url);
+	exec(start_cmd + ' ' + url);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
