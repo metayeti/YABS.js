@@ -91,7 +91,7 @@ loadState.update = function() {
 };
 
 loadState.doIntro = function() {
-	this.emulatedConsole.pushText('> DOS/9GW protected mode runtime\n');
+	this.emulatedConsole.pushText('> HTML/9GW protected mode runtime\n');
 	this.emulatedConsole.pushText('\n');
 	this.emulatedConsole.pushText('NOW LOADING GAME...');
 	// wait until the intro finishes
@@ -99,7 +99,7 @@ loadState.doIntro = function() {
 };
 
 loadState.doOutro = function() {
-	this.emulatedConsole.pushText(' ok!\n\n');
+	this.emulatedConsole.pushText(' all done!\n\n');
 	this.emulatedConsole.pushText('Press any key...');
 	// wait until the outro finishes
 	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
