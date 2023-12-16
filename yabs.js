@@ -977,6 +977,7 @@ yabs.Builder = class {
 				if (index === 0) {
 					fs.writeFileSync(destination, source_file_data, { encoding: 'utf8', flag: 'w' });
 				} else {
+					// no need to use NEWLINE_SYMBOL here as we will process the output
 					fs.appendFileSync(destination, '\n' + source_file_data, { encoding: 'utf8', flag: 'a' });
 				}
 			});

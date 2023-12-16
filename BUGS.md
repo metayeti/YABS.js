@@ -11,3 +11,5 @@
 4. Bundle builds without "output_file" for some reason output Error: Bundled scripts require an "output_field" entry!.
 
 5. Potential bug: "use_variables" should probably work alongside with "variables" and merge the entries (priority "variables")?
+
+6. Batch build listing a folder with nonexisting build.json will output `Error: TypeError: Cannot read properties of null (reading 'isBatchBuild')`, should output something more coherent.
