@@ -9,7 +9,7 @@
  *  https://github.com/metayeti/YABS.js
  *  ---
  *  (c) 2023 Danijel Durakovic
- *  Licensed under GPLv3
+ *  Licensed under the terms of the MIT license
  *
  */
 
@@ -19,7 +19,7 @@
  * @file yabs.js
  * @author Danijel Durakovic
  * @version 1.2.0 dev
- * @license GPLv3
+ * @license MIT
  */
 
 const path = require('path');
@@ -38,7 +38,7 @@ const yabs = {};
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.VERSION = '1.2.0 dev'; // YABS.js version
+yabs.VERSION = '1.2.0'; // YABS.js version
 
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';

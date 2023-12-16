@@ -446,4 +446,4 @@ The [uglify-js](https://www.npmjs.com/package/uglify-js) and [MetaScript](https:
 
 Copyright © 2023 Danijel Durakovic
 
-Licensed under the terms of the [GPLv3 license](LICENSE).
+Licensed under the terms of the [MIT license](LICENSE).
