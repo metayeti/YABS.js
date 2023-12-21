@@ -15,7 +15,8 @@ PREREQUISITES
 
 To start with, you will need node.js. Download and install from https://nodejs.org/.
 
-To use YABS.js, you will need the uglify-js package. Install via command line using:
+To use YABS.js in any meaningful capacity, you will need the uglify-js package.
+Install via command line using:
 
   npm -g install uglify-js
 

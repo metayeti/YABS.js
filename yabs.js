@@ -460,7 +460,7 @@ yabs.BuildConfig = class {
 						if (source_entry.hasOwnProperty('bundle')) {
 							if (source_entry_object.output_file === undefined) {
 								// we are missing output_file
-								throw 'Bundled scripts require an "output_field" entry!';
+								throw 'Bundled sources require an "output_file" entry!';
 							}
 							if (!(source_entry.bundle instanceof Array)) {
 								throw 'The "bundle" entry has to be an Array type!';
