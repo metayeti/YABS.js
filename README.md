@@ -23,9 +23,9 @@ v1.2.0 dev
 
 ## 1. How it works
 
-YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and runs the build process. If the build is successful, you should see a "Build finished!" message at the end of the output.
+YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and runs the build process. If the build is successful, you should see a "Build finished!" message at the end of the output and the build should materialize in the build destination directory.
 
-For the most part, this is a content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capabilities provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript), and the fact that JSDoc-like meta tags can be extracted from sourcefiles to construct information headers for output files). This build system does not understand modules, `import`, `export` and `require` statements. What it does is roughly the following:
+For the most part, this is a content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capabilities provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript), and the fact that JSDoc-like meta tags can be extracted from sourcefiles to construct information headers for output files). This build system does not understand modules, `import`, `export` or `require` statements. What it does is roughly the following:
 
 1. Clones the hierarchy of non-source files related to the web application, updating with newer files (skipping files that didn't change since the last build), into the output directory (typically `build/`, `release/` or equivalent) as specified by the build instructions file.
 
@@ -33,7 +33,9 @@ For the most part, this is a content-unaware build system which only deals with 
 
 3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled outputs (in practice this usually simply means that the `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
 
-Please double check your requirements to see if this featureset fits your needs and use one of the more advanced build systems if it does not. This software is provided as-is as free and open source software but it is not currently open for contributions (mainly because the author considers it feature-complete and would prefer to spend time working on other projects). It is unlikely that this system will be expanded much beyond the scope of its current capabilities. If you need to extend or modify the featureset that this software provides, consider forking this project.
+Please double check your requirements to see if this featureset fits your needs and use one of the more advanced build systems if it does not.
+
+This program is provided as-is as free and open source software but it is not currently open for contributions (mainly because the author considers it feature-complete and would prefer to spend time working on other projects). It is unlikely that this system will be expanded much beyond the scope of its current capabilities. If you need to extend or modify the featureset that this software provides, consider forking this project.
 
 ## 2. Dependencies
 
@@ -44,7 +46,7 @@ From then on, YABS.js only has two dependencies (only one if you don't need prep
 - [uglify-js](https://www.npmjs.com/package/uglify-js) - install with "npm -g install uglify-js"
 - [MetaScript](https://www.npmjs.com/package/metascript) - install with "npm -g install metascript"
 
-The MetaScript package is only needed if the build leverages the preprocessor in some way, otherwise you can skip installing it. Note that some examples that use preprocessing will not build without it.
+The MetaScript package is only needed if your builds leverage the preprocessor, otherwise you can skip installing it. Note that some examples that use preprocessing will not build without it.
 
 ## 3. Basic usage
 
@@ -58,11 +60,11 @@ The `build.js` file is a compiled version of `yabs.js` - you can use either for 
 
 YABS.js will automatically default to `build_all.json` or `build.json` (in that order) whenever the build instructions file is not explicitly provided as a command line parameter.
 
-If you wish to pass custom build instructions file, invoke YABS.js with a parameter: `node build something.json`. Note that only one such parameter will be accepted (if you wish to build multiple things in one go, you can use YABS.js in [batch mode](#56-batch-building)).
+If you wish to pass a custom build instructions file, invoke YABS.js with a parameter: `node build something.json`. Note that only one such parameter will be accepted (if you want to build multiple things in one go, you can use YABS.js in [batch mode](#56-batch-building)).
 
-If your `build.json` file is located in another directory relative to the location of your `build.js`, you can just pass that directory to the build system: `node build something/`. In this example, it is assumed that a `something/build.json` file (or `something/build_all.json`) exists.
+If your `build.json` file is located in a directory relative to the location of YABS.js, you can just pass that directory to the build system: `node build something`. In this example, it is assumed that a `something/build.json` file (or `something/build_all.json`) exists.
 
-You can build YABS.js itself by invoking `node yabs build.json`, upon which you might see something like this as output:
+You can build YABS.js itself by invoking `node yabs build.json` from the repository root, upon which you might see something like this as output:
 
 ![screenshot](/screenshot.png?raw=true)
 
@@ -126,7 +128,7 @@ The entries above represent the following concepts:
 
 Now that we have the file hierarchy and a build instructions file, we can build the project. To build, all we have to do is to invoke `node build` from the command line from the root of the project. Build output will materialize in the `build/` folder which will be created automatically if it doesn't exist. All subsequent builds will only update relevant files and will skip files listed under `"files"` that have not updated since the last build. Only the source files are processed with every build.
 
-This is all we need to run a build for a simple web application, but YABS.js offers more options. In the following sections, additional capabilities of the build instructions file and how to utilize them will be explained.
+This is all we need to run a build for a simple web application, but YABS.js offers more options. In the following sections, additional capabilities of the build instructions file and directions on how to utilize them will be explained.
 
 ## 5. Build instructions file
 
@@ -134,7 +136,7 @@ There is more that we can accomplish with the build instructions file than what 
 
 ### 5.1. Adding custom headers to scripts
 
-Sometimes we may want to add copyright information or other relevant information in the minified output scripts in the form of a commented header so the compiled JavaScript sources are not just minified source code, but contain a header with useful information.
+Sometimes we may want to add copyright information or other relevant information into the minified output scripts in the form of a commented header such that the compiled JavaScript sources are not just minified source code, but contain a header with useful information.
 
 To add a custom header to the output script, we can add a `"header"` entry to any individual `"sources"` entry. To do so, first we need to change the structure slightly by wrapping the listing into an object and referring to the script file with a `"file"` entry:
 
