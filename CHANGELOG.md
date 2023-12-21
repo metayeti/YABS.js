@@ -1,4 +1,6 @@
 ## 1.2.0 (?)
+- `FEATURE` Added sub-build output to batch builds so failed builds can be traced back more easily.
+
 - (wip) `FEATURE` Can now name builds via `"name"`.
 - (wip) `FEATURE` Can now specify a default set of preprocessor variables.
 - (wip) `FEATURE` Added --rebuild flag.

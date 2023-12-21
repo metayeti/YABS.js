@@ -1333,7 +1333,7 @@ yabs.BatchBuilder = class {
 		const build_instr_fullpath = path.join(build_instr_dir, build_instr_file);
 		this._logger.info(
 			`Starting ${this._logger._OUTPUT_BRIGHT}${this._logger._OUTPUT_FG_GREEN}<batch build>` +
-			`${this._logger._OUTPUT_RESET}: ${build_instr_fullpath}`
+			`${this._logger._OUTPUT_RESET} : ${build_instr_fullpath}`
 		);
 
 		// build the batch manifest
@@ -1347,7 +1347,8 @@ yabs.BatchBuilder = class {
 		while (build_index < n_builds) {
 			this._logger.out(
 				`=== ${this._logger._OUTPUT_BRIGHT}${this._logger._OUTPUT_FG_GREEN}<batch build>` +
-				`${this._logger._OUTPUT_RESET} ${build_index + 1}/${n_builds} ===\n`
+				`${this._logger._OUTPUT_RESET} ${build_index + 1}/${n_builds}` +
+				` : ${this._batch_manifest[build_index].build_target} ===\n`
 			);
 			try {
 				// build this item
