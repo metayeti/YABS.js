@@ -332,17 +332,21 @@ yabs.Logger = class {
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
 		this.out('                           |___|');
-		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`);
 		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
-			' '.repeat(34 - yabs.VERSION.length) + '[ v' + yabs.VERSION + ' ]'
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et` +
+			' '.repeat(38 - yabs.VERSION.length) + '[ v' + yabs.VERSION + ' ]'
 		);
 		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild      https://github.com/metayeti/YABS.js`
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
+			'    https://github.com/metayeti/YABS.js'
+		);
+		this.out(
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild` +
+			`     ${this._OUTPUT_RESET}          (c) 2023 Danijel Durakovic`
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW} .js` +
-			`${this._OUTPUT_RESET}          (c) 2023 Danijel Durakovic`
+			`${this._OUTPUT_RESET}`
 		);
 		this.endl();
 	}
@@ -460,7 +464,7 @@ yabs.BuildConfig = class {
 						if (source_entry.hasOwnProperty('bundle')) {
 							if (source_entry_object.output_file === undefined) {
 								// we are missing output_file
-								throw 'Bundled sources require an "output_file" entry!';
+								throw 'Bundled scripts require an "output_file" entry!';
 							}
 							if (!(source_entry.bundle instanceof Array)) {
 								throw 'The "bundle" entry has to be an Array type!';
