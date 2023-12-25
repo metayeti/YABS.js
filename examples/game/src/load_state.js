@@ -25,7 +25,7 @@ loadState.init = function() {
 			// draw the cursor
 			if (this.cursor.show) {
 				const cursorXOffset = getBMPTextWidth(game.font, this.textBuffer[this.currentLine]);
-				this.surface.render.rectFill(10 + cursorXOffset, 10 + 25 * this.currentLine, 9, 16, '#fff');
+				this.surface.render.rectFill(10 + cursorXOffset, 9 + 25 * this.currentLine, 9, 16, '#fff');
 			}
 		};
 		this.update = function() {
@@ -74,7 +74,7 @@ loadState.draw = function() {
 	// draw the emulated console
 	this.paint.surface(this.emulatedConsole.surface, 0, 0);
 	// draw the cursor
-	this.paint.bmptext(game.font, 'v1.0.0', 414, 316, 0, 2);
+	this.paint.bmptext(game.font, `v${GAME_VERSION}`, 414, 316, 0, 2);
 };
 
 loadState.update = function() {
@@ -91,16 +91,18 @@ loadState.update = function() {
 };
 
 loadState.doIntro = function() {
-	this.emulatedConsole.pushText('> HTML/9GW protected mode runtime\n');
-	this.emulatedConsole.pushText('\n');
-	this.emulatedConsole.pushText('NOW LOADING GAME...');
+	this.emulatedConsole.pushText('> HTML/5GW protected mode runtime\n\n');
+	this.emulatedConsole.pushText('Loading system ... ok!\n');
+	this.emulatedConsole.pushText('Loading awesome ... ok!\n');
+	this.emulatedConsole.pushText('Loading resources ... ');
 	// wait until the intro finishes
 	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
 };
 
 loadState.doOutro = function() {
-	this.emulatedConsole.pushText(' all done!\n\n');
-	this.emulatedConsole.pushText('Press any key...');
+	this.emulatedConsole.pushText('all done!\n\n');
+	this.emulatedConsole.pushText('----\n\n');
+	this.emulatedConsole.pushText('PRESS ANY KEY TO CONTINUE');
 	// wait until the outro finishes
 	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
 };

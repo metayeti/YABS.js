@@ -1,4 +1,25 @@
+body > .darken {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-color: #000;
+	opacity: 0;
+	visibility: hidden;
+	transition: visibility 0s, opacity 0.3s linear;
+}
+body > .darken.active {
+	opacity: 0.95;
+	visibility: visible;
+}
 #game {
 	background-color: #000;
+	border: 10px solid #1a1a1a;
+	background-image: url('../data/gfx/splash.png');
+	transition: border-color 0.3s linear;
+}
+#game.active {
+	background-image: none;
 	border: 10px solid #1d3f7c;
 }

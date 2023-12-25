@@ -1,6 +1,6 @@
 ![YABS.js](/logo.png?raw=true)
 
-YABS.js is a JavaScript build system.
+YABS.js is a minimalistic JavaScript build system.
 
 v1.2.0 dev
 
@@ -13,44 +13,43 @@ v1.2.0 dev
 5. [Build instructions file](#5-build-instructions-file)  
   5.1. [Adding custom headers to scripts](#51-adding-custom-headers-to-scripts)  
   5.2. [Adding variables to custom headers](#52-adding-variables-to-custom-headers)  
-  5.3. [Additional options (output filenames and compile options)](#53-additional-options-output-filenames-and-compile-options)  
+  5.3. [Output filenames and compile options](#53-output-filenames-and-compile-options)  
   5.4. [Using the preprocessor](#54-using-the-preprocessor)  
   5.5. [Bundling scripts](#55-bundling-scripts)  
   5.6. [Batch building](#56-batch-building)
 6. [Command line parameters](#6-command-line-parameters)
-7. [Credits](#7-credits)
-8. [License](#8-license)
+7. [Contribution](#7-credits)
+8. [Credits](#8-credits)
+9. [License](#9-license)
 
 ## 1. How it works
 
-YABS.js takes a single JSON file containing build instructions as an input. It then configures, prepares, and runs the build process. If the build is successful, you should see a "Build finished!" message at the end of the output and the build should materialize in the build destination directory.
+YABS.js takes a single build instructions JSON file as input. It then configures, prepares, and runs the build process as described by the build instructions file. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
 
 For the most part, this is a content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capabilities provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript), and the fact that JSDoc-like meta tags can be extracted from sourcefiles to construct information headers for output files). This build system does not understand modules, `import`, `export` or `require` statements. What it does is roughly the following:
 
 1. Clones the hierarchy of non-source files related to the web application, updating with newer files (skipping files that didn't change since the last build), into the output directory (typically `build/`, `release/` or equivalent) as specified by the build instructions file.
 
-2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources, optionally attaches a custom header to the minified outputs with variables which can be extracted from the JSDoc-like tags in the sourcefile.
+2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources and optionally attaches a custom header to the minified outputs Headers may use variables extracted from the JSDoc-like tags in the sourcefile.
 
-3. Matches `<script src="...">` attributes in the HTML files to the associated JS files and updates those entries to match compiled outputs (in practice this usually simply means that the `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
+3. Matches `<script src="...">` attributes in the HTML files to the associated JS sources and updates those entries to match compiled outputs (in practice this usually simply means that the `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
 
 Please double check your requirements to see if this featureset fits your needs and use one of the more advanced build systems if it does not.
 
-This program is provided as-is as free and open source software but it is not currently open for contributions (mainly because the author considers it feature-complete and would prefer to spend time working on other projects). It is unlikely that this system will be expanded much beyond the scope of its current capabilities. If you need to extend or modify the featureset that this software provides, consider forking this project.
-
 ## 2. Dependencies
 
-The first prerequisite is [Node.js](https://nodejs.org/) - grab the latest copy by clicking on the link.
+The first prerequisite is the latest version of [Node.js](https://nodejs.org/).
 
 From then on, YABS.js only has two dependencies (only one if you don't need preprocessing). They need to be installed globally rather than locally:
 
-- [uglify-js](https://www.npmjs.com/package/uglify-js) - install with "npm -g install uglify-js"
-- [MetaScript](https://www.npmjs.com/package/metascript) - install with "npm -g install metascript"
+- [uglify-js](https://www.npmjs.com/package/uglify-js) (install with `npm -g install uglify-js`)
+- [MetaScript](https://www.npmjs.com/package/metascript) (install with `npm -g install metascript`)
 
 The MetaScript package is only needed if your builds leverage the preprocessor, otherwise you can skip installing it. Note that some examples that use preprocessing will not build without it.
 
 ## 3. Basic usage
 
-The most common form of usage goes like this:
+The most common usage pattern goes like this:
 
 1. Drop `build.js` or `yabs.js` into your project's root folder.
 2. Create a `build.json` file and describe the build you wish to perform.
@@ -68,13 +67,14 @@ You can build YABS.js itself by invoking `node yabs build.json` from the reposit
 
 ![screenshot](/screenshot.png?raw=true)
 
-Other commands you can try are:
+Other commands you can try to run from the repository root are:
 
-- Build the [minimal](/examples/minimal/) example: `node build examples/minimal`
-- Build all examples: `node build examples`
-- Build everything: `node build`
+- `node build examples/minimal` (builds the [minimal](/examples/minimal/) example)
+- `node build examples` (builds all examples)
+- `node build tests` (builds all tests)
+- `node build` (build everything)
 
-Also see [building.txt](/building.txt) for information on building this repository.
+See [building.txt](/building.txt) for more detailed information on building this repository.
 
 ## 4. Minimal example
 
@@ -235,7 +235,7 @@ Variable names are completely arbitrary and can be anything as long as they matc
 
 If we use the shared `"headers"` entry in the build instructions file, the variables we use will be relative to the individual scripts that use them. This means that every script that uses those headers has to include the matching JSDoc tags, and the values can vary from one another.
 
-### 5.3. Additional options (output filenames and compile options)
+### 5.3. Output filenames and compile options
 
 You can use a custom output source filename by adding the `"output_file"` entry into `"sources"` entry.
 
@@ -380,7 +380,7 @@ YABS.js can bundle multiple script files into one single output file. To do so, 
         "src/script1.js",
         "src/script2.js"
       ],
-      "output_file": "src/script_combined.js",
+      "output_file": "src/combined.js",
       "header": "/* This is a combined script! */"
     }
   ]
@@ -388,17 +388,17 @@ YABS.js can bundle multiple script files into one single output file. To do so, 
 
 Bundles are processed and glued together in order they were listed in.
 
-When using bundles, the `"output_file"` parameter is required (remember to include the relative path in the parameter, otherwise the output will be created on build root).
+When using bundles, the `"output_file"` parameter is required (remember to include the relative path in the parameter, otherwise the output will be created on build target root).
 
-When using header variables in a bundle, all listed sourcefiles will be processed for JSDoc tags with the *latest read* having priority (if a bundle has 3 scripts and they each have a `@version` variable, the *last script read* will be the one whose value gets used in the final output file).
+When using header variables in a bundle, all listed sourcefiles will be processed for JSDoc tags with the *latest read* having priority (if a bundle has 3 scripts and they each have a `@version` variable, the *last script read* will be the one whose value gets used in the output file).
 
-Preprocessor variables in bundles are on a per-bundle basis, not per-script - the input files will be preprocessed as if they are one file, glued together. Note that you can **not** use preprocessor includes with bundles, because the glued output file materializes on the build side and cannot reference files which are relative to the source side. This shouldn't be a problem in real-world cases because if you're already using bundles, you probably shouldn't be also using preprocessor includes at the same time.
+Preprocessor variables in bundles are on a per-bundle basis, not per-script - the input files will be preprocessed as if they are one file, glued together. Note that preprocessor includes will **not** work with bundles because the glued output file materializes on the build side and as such cannot reference files which are relative to the file on the source side. This shouldn't be a problem in real-world cases because if you're already using bundles, you probably shouldn't be also using preprocessor includes at the same time.
 
 ### 5.6. Batch building
 
-YABS.js can build in batch mode! To do so, create a `build_all.json` (the filename can be anything, but `build.json` is a useful convention and it also provides the comfort of simply be able to type `node yabs.js` or `node build.js` into the command line, and YABS.js will automatically figure out - and prioritize - the `build_all.json` file). Into this file, add a single entry named `"batch_build"`.
+YABS.js can build in batch mode! To do so, create a `build_all.json` (the filename can be anything, but `build_all.json` is a useful convention).
 
-You can list all your build instructions files in order you wish to have them built inside this entry:
+Into this file, add a single entry named `"batch_build"`. Inside, list all your build instructions files in the order you wish to have them built:
 
 ```JSON
   "batch_build": [
@@ -407,20 +407,20 @@ You can list all your build instructions files in order you wish to have them bu
   ]
 ```
 
-Any number of build instructions files can be listed in a batch build, but note that recursive batch builds are forbidden and will fail automatically (there be dragons). You will have to deal with a single layer of batch building.
+Any number of build instructions files can be listed in a batch build. Recursive batch builds are allowed (listing batch builds inside batch builds) and will behave as if they are one big batch.
 
-Note that if any of the builds in line fail, all subsequent builds will stop. To prevent this, you can use `--nofail` when running the build, in this case all builds will attempt to build regardless of previous failures.
+Note that if any of the builds in line fail, all subsequent builds will be aborted. To prevent this behavior, you may use `--nofail` when running the build. If used, all builds will attempt to build regardless of any of the builds failing.
 
-If your build targets reside in a nested folder hierarchy and each of the targets contains a `build.json` file at the appropriate level, you can shorten the syntax and just point to the directory:
+If build targets reside in a nested folder hierarchy and each of the targets contains a `build.json` file at the appropriate level, you can shorten the syntax and just point to the directory:
 
 ```JSON
   "batch_build": [
-    "some/project/",
-    "another/project/"
+    "some/project",
+    "another/project"
   ]
 ```
 
-When invoking preprocessor parameters via the command line, they will be applied to all builds in the batch build which may be undesirable in certain circumstances. To avoid this, we can restructure the batch build instructions, wrapping it in an object, pointing to the build instructions file via a `"target"` entry and adding an `"options"` entry to the object. The options listed there will override command line options and will be used when running that specific build:
+When invoking preprocessor parameters via the command line, they will be applied to all builds in the batch, which may be undesirable in certain circumstances. To avoid this, we can restructure the batch build instructions, wrapping it in an object, pointing to the build instructions file via a `"target"` entry and adding an `"options"` entry to the object. The options listed here will override any command line-provided options and will be used when running that specific build:
 
 ```JSON
   "batch_build": [
@@ -434,17 +434,22 @@ When invoking preprocessor parameters via the command line, they will be applied
 
 ## 6. Command line parameters
 
-Available parameters are:
+Option parameters begin with `--` and provide additional features to be used in the command line.
 
-- `--nofail` In a [batch build](#6-batch-building), keeps going even if one of the builds fails.
+- `--nofail` In a [batch build](#6-batch-building), will keep the build going even if any of the builds in line fail.
+- `--nuke` Deletes the target build directory prior to building. This is the equivalent of a "rebuild" command with the name chosen for precautionary reasons. It is not allowed in batch builds and it does not warn - use with caution.
 - `--version` Displays version info.
-- `--help` Opens online help.
+- `--help` Opens the online repository with help reference.
 
-## 7. Credits
+## 7. Contribution
+
+This program is provided as-is as free and open source software, but it is not currently open for contributions (mainly because the author considers it feature-complete and would prefer to spend time working on other projects). It is unlikely that this system will be expanded much beyond the scope of its current capabilities. If you need to extend or modify the featureset that this software provides, please consider forking this project.
+
+## 8. Credits
 
 The [uglify-js](https://www.npmjs.com/package/uglify-js) and [MetaScript](https://www.npmjs.com/package/metascript) packages.
 
-## 8. License
+## 9. License
 
 Copyright © 2023 Danijel Durakovic
 

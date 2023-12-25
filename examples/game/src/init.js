@@ -122,8 +122,15 @@ const loader = new myst.AssetLoader();
 // key handler
 const keyHandler = new myst.KeyInput();
 
-// run game on window load
-window.addEventListener('load', function() {
+// run game on splash screen click
+document.getElementById('game').addEventListener('click', () => {
+	// prevent clicking multiple times
+	if (game.getState()) { // if game has state it is already running
+		return;
+	}
+	// darken screen	
+	document.body.querySelector('body > .darken').classList.add('active');
+	document.getElementById('game').classList.add('active');
 	// load the preload assets
 	assetList.preload = loader.load({
 		assets: assetList.preload,

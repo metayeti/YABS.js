@@ -10,5 +10,11 @@
  * @version 1.0.0
  */
 
-//? if (typeof DEBUG === 'undefined') const DEBUG = false;
+const GAME_VERSION = '1.0.0';
+
+// >-- preprocessor variables -->
+
+//? if (typeof DEBUG === 'undefined') DEBUG = false;
 //? const RELEASE = !DEBUG;
+
+// <-- preprocessor variables <--

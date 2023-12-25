@@ -44,7 +44,7 @@ yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
 
 yabs.DEFAULT_COMPILE_OPTIONS = '--compress --mangle';
-yabs.NEWLINE_SYMBOL = '\n'; // LF
+yabs.NEWLINE_SYMBOL = '\n'; // LF, use \r\n for CRLF
 
 yabs.GLUE_FILE_EXTENSION = '.glw';
 yabs.PREPROCESS_FILE_EXTENSION = '.pre';
@@ -677,12 +677,9 @@ yabs.Builder = class {
 	 */
 	constructor(logger, build_config, build_params) {
 		this._logger = logger;
-		// build configuration
-		this._build_config = build_config;
-		// build parameters
-		this._build_params = build_params;
-		// base directory
-		this._base_dir = this._build_config.getBaseDir();
+		this._build_config = build_config; // build configuration
+		this._build_params = build_params; // build parameters
+		this._base_dir = this._build_config.getBaseDir(); // base directory
 		// source and destination directories
 		this._source_dir = path.normalize(this._build_config.getSourceDir());
 		this._destination_dir = path.normalize(this._build_config.getDestinationDir());
@@ -1259,16 +1256,11 @@ yabs.BatchBuilder = class {
 	 */
 	constructor(logger, build_config, build_params) {
 		this._logger = logger;
-		// build configuration
-		this._build_config = build_config;
-		// build parameters
-		this._build_params = build_params;
-		// base directory
-		this._base_dir = this._build_config.getBaseDir();
-		// build manifest
-		this._batch_manifest = null;
-		// build statistics
-		this._batch_build_start_time = Date.now();
+		this._build_config = build_config; // build configuration
+		this._build_params = build_params; // build parameters
+		this._base_dir = this._build_config.getBaseDir(); // base directory
+		this._batch_manifest = null; // build manifest
+		this._batch_build_start_time = Date.now(); // build statistics
 	}
 
 	_buildBatchManifest() {
@@ -1412,11 +1404,11 @@ yabs.Application = class {
 	 * Program entry point.
 	 */
 	async main(argv) {
-		// parse build parameters
+		// process parameters
 		const build_params = {
 			option: [], // --option parameters
 			variable: [], // -variable parameters (used for preprocessor)
-			free: [] // freestanding parameters (should only contain a single item with the build instructions file)
+			free: [] // freestanding parameters (build instructions input file)
 		};
 		argv.slice(2).forEach(str_value => {
 			if (str_value.startsWith('--')) { // this is an --option parameter
