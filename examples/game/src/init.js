@@ -1,3 +1,5 @@
+const $canvas = document.getElementById('game');
+
 //
 // game object
 //
@@ -122,15 +124,30 @@ const loader = new myst.AssetLoader();
 // key handler
 const keyHandler = new myst.KeyInput();
 
+// splash "press" effect
+function canvasMDown(e) {
+	$canvas.classList.add('pressed');
+}
+
+function canvasMUp(e) {
+	$canvas.classList.remove('pressed');
+}
+
+$canvas.addEventListener('mousedown', canvasMDown);
+window.addEventListener('mouseup', canvasMUp);
+
 // run game on splash screen click
-document.getElementById('game').addEventListener('click', () => {
+$canvas.addEventListener('click', () => {
 	// prevent clicking multiple times
 	if (game.getState()) { // if game has state it is already running
 		return;
 	}
 	// darken screen	
 	document.body.querySelector('body > .darken').classList.add('active');
-	document.getElementById('game').classList.add('active');
+	$canvas.classList.add('active');
+	// remove splash press listeners
+	$canvas.removeEventListener('mousedown', canvasMDown);
+	window.removeEventListener('mouseup', canvasMUp);
 	// load the preload assets
 	assetList.preload = loader.load({
 		assets: assetList.preload,
