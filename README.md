@@ -18,7 +18,7 @@ v1.2.0 dev
   5.5. [Bundling scripts](#55-bundling-scripts)  
   5.6. [Batch building](#56-batch-building)
 6. [Command line parameters](#6-command-line-parameters)
-7. [Contribution](#7-credits)
+7. [Contribution](#7-contribution)
 8. [Credits](#8-credits)
 9. [License](#9-license)
 
@@ -437,7 +437,6 @@ When invoking preprocessor parameters via the command line, they will be applied
 Option parameters begin with `--` and provide additional features to be used in the command line.
 
 - `--nofail` In a [batch build](#6-batch-building), will keep the build going even if any of the builds in line fail.
-- `--nuke` Deletes the target build directory prior to building. This is the equivalent of a "rebuild" command with the name chosen for precautionary reasons. It is not allowed in batch builds and it does not warn - use with caution.
 - `--version` Displays version info.
 - `--help` Opens the online repository with help reference.
 

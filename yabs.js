@@ -1016,7 +1016,7 @@ yabs.Builder = class {
 			}
 			// check if we should use the preprocessor or not
 			let use_preprocessor = false;
-			const variable_params = this._build_params.variable;
+			const variable_params = this._build_params.variables;
 			const variables_data = manifest_entry.variables_data;
 			const has_variables = variables_data.has_variables;
 			const variables_listing = variables_data.variables;
@@ -1259,61 +1259,86 @@ yabs.BatchBuilder = class {
 		this._build_config = build_config; // build configuration
 		this._build_params = build_params; // build parameters
 		this._base_dir = this._build_config.getBaseDir(); // base directory
-		this._batch_manifest = null; // build manifest
+		this._batch_manifest = []; // build manifest
+		this._nofail_flag = this._build_params.options.includes('nofail'); // nofail flag
 		this._batch_build_start_time = Date.now(); // build statistics
 	}
 
-	_buildBatchManifest() {
-		const batch_listing = this._build_config.getBatchListing();
-		this._batch_manifest = [];
+	_buildBatchManifest(batch_listing, root_dir = '') {
 		batch_listing.forEach(listing_entry => {
 			const build_instr_path = listing_entry.target;
 			if (!build_instr_path.length) {
 				return;
 			}
-			let options;
+			let build_options;
 			if (listing_entry.options) {
-				options = [];
+				build_options = [];
 				const split_options = listing_entry.options.trim().split(/\s+/);
 				split_options.forEach(options_item => {
 					if (options_item.length >= 2 && options_item[0] === '-') {
-						options.push(options_item.substring(1));
+						build_options.push(options_item.substring(1));
 					}
 				});
 			}
 			else {
-				options = this._build_params.variable;
+				build_options = this._build_params.variables;
 			}
-			const build_instr_path_full = path.join(this._base_dir, build_instr_path);
-			this._batch_manifest.push({
-				build_target: build_instr_path_full,
-				options: options
-			});
+			// construct the build target full path
+			const build_target = path.join(this._base_dir, root_dir, build_instr_path);
+			// check if we already have this build target
+			if (this._batch_manifest.some(e => e.build_target === build_target)) {
+				// we already have this build target, we may skip it
+				// has the useful side-effect of keeping the recursive dragons at bay
+				return;
+			}
+			// create the build configurations
+			let build_config = null;
+			if (!yabs.util.exists(build_target)) {
+				const error_message = 'Cannot find path or file: ' + build_target;
+				if (this._nofail_flag) {
+					this._logger.error(error_message + '\n');
+					return;
+				}
+				else {
+					throw error_message;
+				}
+			}
+			if (yabs.util.isDirectory(build_target)) { // implied build.json or build_all.json
+				const path_build_json = path.join(build_target, yabs.DEFAULT_BUILD_FILE);
+				const path_buildall_json = path.join(build_target, yabs.DEFAULT_BUILD_ALL_FILE);
+				if (yabs.util.exists(path_build_json)) { // prioritize build over build_all
+					build_config = new yabs.BuildConfig(path_build_json);
+				}
+				else if (yabs.util.exists(path_buildall_json)) {
+					build_config = new yabs.BuildConfig(path_buildall_json);
+				}
+			}
+			else {
+				build_config = new yabs.BuildConfig(build_target);
+			}
+			// check if this is a batch build
+			if (build_config.isBatchBuild()) {
+				// walk the tree recursively and fetch all the items on the way
+				this._buildBatchManifest(build_config.getBatchListing(), build_instr_path);
+			}
+			else {
+			// push the new item into the manifest
+				this._batch_manifest.push({
+					build_target: build_target,
+					options: build_options,
+					config: build_config
+				});
+			}
 		});
 	}
 
 	async _buildOne(build_index) {
 		const build_listing = this._batch_manifest[build_index];
-		let build_config = null;
-		const build_param_input = build_listing.build_target;
-		if (!yabs.util.exists(build_param_input)) {
-			throw 'Cannot find path or file: ' + build_param_input;
-		}
-		if (yabs.util.isDirectory(build_param_input)) { // append build.json if input is a directory
-			if (yabs.util.exists(path.join(build_param_input, yabs.DEFAULT_BUILD_FILE))) { // prioritize build over build_all
-				build_config = new yabs.BuildConfig(path.join(build_param_input, yabs.DEFAULT_BUILD_FILE));
-			}
-			else if (yabs.util.exists(path.join(build_param_input, yabs.DEFAULT_BUILD_ALL_FILE))) {
-				build_config = new yabs.BuildConfig(path.join(build_param_input, yabs.DEFAULT_BUILD_ALL_FILE));
-			}
-		}
-		else {
-			build_config = new yabs.BuildConfig(build_param_input);
-		}
+		const build_config = build_listing.config;	
 		if (build_config.isBatchBuild()) {
-			throw `Recursive batch builds are disallowed due to dragons, skipping ${build_param_input}`;
+			return; // should never occur
 		}
-		const build_params = { variable: build_listing.options };
+		const build_params = { variables: build_listing.options };
 		const builder = new yabs.Builder(this._logger, build_config, build_params);
 		await builder.build();
 	}
@@ -1322,7 +1347,7 @@ yabs.BatchBuilder = class {
 	 * Start the build.
 	 */
 	async build() {
-		const nofail_flag = this._build_params.option.includes('nofail');
+		const nofail_flag = this._nofail_flag;
 
 		const build_instr_dir = this._build_config.getBaseDir();
 		const build_instr_file = this._build_config.getSourceFile();
@@ -1333,7 +1358,7 @@ yabs.BatchBuilder = class {
 		);
 
 		// build the batch manifest
-		this._buildBatchManifest();
+		this._buildBatchManifest(this._build_config.getBatchListing());
 
 		let build_index = 0;
 		const n_builds = this._batch_manifest.length;
@@ -1406,16 +1431,16 @@ yabs.Application = class {
 	async main(argv) {
 		// process parameters
 		const build_params = {
-			option: [], // --option parameters
-			variable: [], // -variable parameters (used for preprocessor)
+			options: [], // --option parameters
+			variables: [], // -variable parameters (used for preprocessor)
 			free: [] // freestanding parameters (build instructions input file)
 		};
 		argv.slice(2).forEach(str_value => {
 			if (str_value.startsWith('--')) { // this is an --option parameter
-				build_params.option.push(str_value.slice(2));
+				build_params.options.push(str_value.slice(2));
 			}
 			else if (str_value.startsWith('-')) { // this is a -variable parameter
-				build_params.variable.push(str_value.slice(1));
+				build_params.variables.push(str_value.slice(1));
 			}
 			else { // this is a freestanding parameter
 				build_params.free.push(str_value);
@@ -1423,12 +1448,12 @@ yabs.Application = class {
 		});
 
 		if (build_params.free.length === 0) {
-			if (build_params.option.length > 0) {
-				if (build_params.option.includes('version')) {
+			if (build_params.options.length > 0) {
+				if (build_params.options.includes('version')) {
 					this._logger.header();
 					return;
 				}
-				else if (build_params.option.includes('help')) {
+				else if (build_params.options.includes('help')) {
 					yabs.util.openURLWithBrowser(yabs.URL_YABS_GITHUB);
 					return;
 				}
@@ -1456,7 +1481,7 @@ yabs.Application = class {
 				if (!yabs.util.exists(build_param_input)) {
 					throw 'Cannot find path or file: ' + build_param_input;
 				}
-				if (yabs.util.isDirectory(build_param_input)) { // append build.json if input is a directory	
+				if (yabs.util.isDirectory(build_param_input)) { // append build.json if input is a directory		
 					if (yabs.util.exists(path.join(build_param_input, yabs.DEFAULT_BUILD_FILE))) { // prioritize build over build_all
 						build_config = new yabs.BuildConfig(path.join(build_param_input, yabs.DEFAULT_BUILD_FILE));
 					}

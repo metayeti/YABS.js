@@ -1,9 +1,7 @@
 ## 1.2.0 (?)
 - `FEATURE` Added extra output to batch builds so that failed builds can be identified more easily.
-- `BUGFIX` More tiny bugfixes.
-- `FEATURE` Added --nuke flag.
 - `FEATURE` Recursive batch builds are now allowed (you can batch-build a bunch of batch-builds).
-
+- `BUGFIX` Many more bugfixes.
 - (wip) `FEATURE` Can now name builds via `"name"`.
 - (wip) `FEATURE` Can now specify a default set of preprocessor variables.
 - (wip) `FEATURE` Better testcases and friendlier examples.

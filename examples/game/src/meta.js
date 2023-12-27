@@ -7,10 +7,10 @@
 
 /**
  * @author Danijel Durakovic
- * @version 1.0.0
+ * @version 0.0.3
  */
 
-const GAME_VERSION = '1.0.0';
+const GAME_VERSION = '0.0.3';
 
 // >-- preprocessor variables -->
 
