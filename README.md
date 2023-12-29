@@ -18,9 +18,17 @@ v1.2.0 dev
   5.5. [Bundling scripts](#55-bundling-scripts)  
   5.6. [Batch building](#56-batch-building)
 6. [Command line parameters](#6-command-line-parameters)
-7. [Contribution](#7-contribution)
-8. [Credits](#8-credits)
-9. [License](#9-license)
+7. [Examples](#7-examples)  
+  7.1. Minimal  
+  7.2. Headers  
+  7.3. Website  
+  7.4. Preprocessor  
+  7.5. Bundle  
+  7.6. Library  
+  7.7. Game
+8. [Contribution](#7-contribution)
+9. [Credits](#8-credits)
+10. [License](#9-license)
 
 ## 1. How it works
 
@@ -440,15 +448,21 @@ Option parameters begin with `--` and provide additional features to be used in 
 - `--version` Displays version info.
 - `--help` Opens the online repository with help reference.
 
-## 7. Contribution
+## 7. Examples
+
+Several examples are provided to demonstrate various YABS.js usage patterns.
+
+### 7.1. Minimal
+
+## 8. Contribution
 
 This program is provided as-is as free and open source software, but it is not currently open for contributions (mainly because the author considers it feature-complete and would prefer to spend time working on other projects). It is unlikely that this system will be expanded much beyond the scope of its current capabilities. If you need to extend or modify the featureset that this software provides, please consider forking this project.
 
-## 8. Credits
+## 9. Credits
 
 The [uglify-js](https://www.npmjs.com/package/uglify-js) and [MetaScript](https://www.npmjs.com/package/metascript) packages.
 
-## 9. License
+## 10. License
 
 Copyright © 2023 Danijel Durakovic
 

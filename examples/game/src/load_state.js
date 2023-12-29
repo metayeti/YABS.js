@@ -84,7 +84,7 @@ loadState.update = function() {
 		while (keyEvent = keyHandler.pollEvent()) {
 			if (keyEvent.type === keyHandler.KEYDOWN) {
 				// proceed to main state
-				game.setState(mainState);
+				game.setState(gameState);
 			}
 		}
 	}
