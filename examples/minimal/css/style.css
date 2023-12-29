@@ -33,7 +33,8 @@ a:focus {
 	text-decoration: underline;
 }
 img {
-	padding: 10px 0;
+	margin: 10px 0;
+	border: 10px solid #fff;
 }
 .highlight {
 	color: #fff200;

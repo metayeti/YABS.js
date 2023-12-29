@@ -1,6 +1,6 @@
 ![YABS.js](/logo.png?raw=true)
 
-YABS.js is a minimalistic JavaScript build system.
+YABS.js is a single-file, minimalistic JavaScript build system.
 
 v1.2.0 dev
 
@@ -9,7 +9,7 @@ v1.2.0 dev
 1. [How it works](#1-how-it-works)
 2. [Dependencies](#2-dependencies)
 3. [Basic usage](#3-basic-usage)
-4. [Minimal example](#4-minimal-example)
+4. [Basic example](#4-basic-example)
 5. [Build instructions file](#5-build-instructions-file)  
   5.1. [Adding custom headers to scripts](#51-adding-custom-headers-to-scripts)  
   5.2. [Adding variables to custom headers](#52-adding-variables-to-custom-headers)  
@@ -19,13 +19,13 @@ v1.2.0 dev
   5.6. [Batch building](#56-batch-building)
 6. [Command line parameters](#6-command-line-parameters)
 7. [Examples](#7-examples)  
-  7.1. Minimal  
-  7.2. Headers  
-  7.3. Website  
-  7.4. Preprocessor  
-  7.5. Bundle  
-  7.6. Library  
-  7.7. Game
+  7.1. [Minimal](#71-minimal)  
+  7.2. [Headers](#72-headers)  
+  7.3. [Website](#73-website)  
+  7.4. [Preprocessor](#74-preprocessor)  
+  7.5. [Bundle](#75-bundle)  
+  7.6. [Library](#76-library)  
+  7.7. [Game](#77-game)
 8. [Contribution](#7-contribution)
 9. [Credits](#8-credits)
 10. [License](#9-license)
@@ -40,7 +40,7 @@ For the most part, this is a content-unaware build system which only deals with 
 
 2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources and optionally attaches a custom header to the minified outputs Headers may use variables extracted from the JSDoc-like tags in the sourcefile.
 
-3. Matches `<script src="...">` attributes in the HTML files to the associated JS sources and updates those entries to match compiled outputs (in practice this usually simply means that the `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
+3. Matches `<script src="...">` attributes in the HTML files to the associated JS sources and updates those entries to match compiled outputs (in practice this means that the `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
 
 Please double check your requirements to see if this featureset fits your needs and use one of the more advanced build systems if it does not.
 
@@ -84,9 +84,9 @@ Other commands you can try and run from the repository root are:
 
 See [building.txt](/building.txt) for more detailed information on building this repository.
 
-## 4. Minimal example
+## 4. Basic example
 
-To demonstrate basic usage, we will need a structure of a basic web application, and we will need a build instructions file. Let's start with the file hierarchy first.
+To demonstrate principal usage, we will need a structure of a basic web application, and we will need a build instructions file. Let's start with the file hierarchy first.
 
 The hierarchy of files for this minimal build will look like this:
 
@@ -450,21 +450,65 @@ Option parameters begin with `--` and provide additional features to be used in 
 
 ## 7. Examples
 
-Several examples are provided to demonstrate various YABS.js usage patterns.
+Examples are provided to demonstrate various ways to use YABS.js.
 
 ### 7.1. Minimal
 
+This example is found in [/examples/minimal](/examples/minimal).
+
+This example demonstrates the simplest build instructions JSON file. It defines a single HTML file, a single JS sourcefile and some extra files (CSS stylesheet and an image file).
+
+Investigate the `build.json` file to see how the build is structured:
+
+```JSON
+{
+  "source_dir": "./",
+  "destination_dir": "build/examples/minimal/",
+  "html": "index.html",
+  "sources": [
+    "src/script.js"
+  ],
+  "files": [
+    "css/*.css",
+    "img/*"
+  ]
+}
+
+```
+
+To build this example, run `node build examples/minimal` from the repository root.
+
 ### 7.2. Headers
+
+This example is found in [/examples/headers](/examples/headers).
+
+This example demonstrates various ways of prepending compiled output with commented headers that contain some data. Investigate the `build.json` file to see details about the build. This build compiles several JavaScript sourcefiles and prepends headers to them:
+
+- `script1.js` gets prepended by a one-line header with static text.
+- `script2.js` gets prepended by a multi-line header  with static text.
+- `script3.js` gets prepended by a multi-line header containing variables extracted from the sourcefile.
+- `script4.js` gets prepended by a multi-line shared header that is described globally inside `build.json` and can be reused for many compiled scripts as a template. This header also uses variables.
+- `script5.js` gets prepended by the same multi-line shared header as `script4.js`. Same variables are used, but values from `script5.js` are extracted instead.
 
 ### 7.3. Website
 
+This example is found in [/examples/website](/examples/website).
+
 ### 7.4. Preprocessor
+
+This example is found in [/examples/preprocessor](/examples/preprocessor).
 
 ### 7.5. Bundle
 
+This example is found in [/examples/bundle](/examples/bundle).
+
 ### 7.6. Library
 
+This example is found in [/examples/library](/examples/library).
+
 ### 7.7. Game
+
+This example is found in [/examples/game](/examples/game).
 
 ## 8. Contribution
 
