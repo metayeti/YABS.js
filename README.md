@@ -71,11 +71,11 @@ If you wish to pass a custom build instructions file, invoke YABS.js with a para
 
 If your `build.json` file is located in a directory relative to the location of YABS.js, you can just pass that directory to the build system: `node build something`. In this example, it is assumed that a `something/build.json` file (or `something/build_all.json`) exists.
 
-You can build YABS.js itself by invoking `node yabs build.json` from the repository root, upon which you might see something like this as output:
+You can build YABS.js itself by running `node yabs build.json` from the repository root, upon which you should see something like this as output:
 
 ![screenshot](/screenshot.png?raw=true)
 
-Other commands you can try to run from the repository root are:
+Other commands you can try and run from the repository root are:
 
 - `node build examples/minimal` (builds the [minimal](/examples/minimal/) example)
 - `node build examples` (builds all examples)
@@ -453,6 +453,18 @@ Option parameters begin with `--` and provide additional features to be used in 
 Several examples are provided to demonstrate various YABS.js usage patterns.
 
 ### 7.1. Minimal
+
+### 7.2. Headers
+
+### 7.3. Website
+
+### 7.4. Preprocessor
+
+### 7.5. Bundle
+
+### 7.6. Library
+
+### 7.7. Game
 
 ## 8. Contribution
 

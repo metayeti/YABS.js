@@ -38,7 +38,7 @@ const yabs = {};
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-yabs.VERSION = '1.2.0'; // YABS.js version
+yabs.VERSION = '1.2.0dev'; // YABS.js version
 
 yabs.DEFAULT_BUILD_ALL_FILE = 'build_all.json';
 yabs.DEFAULT_BUILD_FILE = 'build.json';
@@ -331,22 +331,22 @@ yabs.Logger = class {
 		this.out(' |  |  |  _  |  _  |   __|   |_|___');
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
-		this.out('                           |___|');
+		this.out('                           |___|' + `${this._OUTPUT_RESET}` + ' '.repeat(13 - yabs.VERSION.length) + 'v' + yabs.VERSION);
 		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et` +
-			' '.repeat(38 - yabs.VERSION.length) + '[ v' + yabs.VERSION + ' ]'
+			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`
+			//' '.repeat(41 - yabs.VERSION.length) + 'v' + yabs.VERSION
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
-			'    https://github.com/metayeti/YABS.js'
+			'   https://github.com/metayeti/YABS.js'
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild` +
-			`     ${this._OUTPUT_RESET}          (c) 2023 Danijel Durakovic`
+			`     ${this._OUTPUT_RESET}         (c) 2023 Danijel Durakovic`
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW} .js` +
-			`${this._OUTPUT_RESET}`
+			`${this._OUTPUT_RESET}                        MIT licence`
 		);
 		this.endl();
 	}
@@ -354,7 +354,7 @@ yabs.Logger = class {
 	 * Prints a long line.
 	 */
 	line() {
-		this.out('-----------------------------------------------');
+		this.out('----------------------------------------------');
 	}
 };
 
