@@ -450,15 +450,15 @@ Option parameters begin with `--` and provide additional features to be used in 
 
 ## 7. Examples
 
-Examples are provided to demonstrate various ways to use YABS.js.
+Examples are provided to demonstrate various ways to use YABS.js. Examples can be built one by one, or you can use `node build examples` from the repository root to build all examples in one go.
 
 ### 7.1. Minimal
 
 This example is found in [/examples/minimal](/examples/minimal).
 
-This example demonstrates the simplest build instructions JSON file. It defines a single HTML file, a single JS sourcefile and some extra files (CSS stylesheet and an image file).
+The build instructions JSON describes a basic build consisting of a single HTML file, a single JS sourcefile which be compiled, and some extra files (CSS stylesheet and an image file).
 
-Investigate the `build.json` file to see how the build is structured:
+To get a closer look at the syntax, open `build.json`:
 
 ```JSON
 {
@@ -476,19 +476,69 @@ Investigate the `build.json` file to see how the build is structured:
 
 ```
 
+`"source_dir"` is relative to the `build.json` file. When set to `"./"`, it means "current directory where this build instructions file is located".
+
+`"destination_dir"` is relative to the directory from which are calling YABS.js *from*. For this example this would typically be the repository root.
+
+`"sources"` is a list of JavaScript sourcefiles to be processed.
+
+`"files"` is a list of files relevant to the build, for example CSS files and images. These files will be copied over on first run. On subsequent builds, only files which are newer than build-side files will be copied. Masks (`*`, `*.*`, `*.css` etc) can be used here.
+
+
 To build this example, run `node build examples/minimal` from the repository root.
 
 ### 7.2. Headers
 
 This example is found in [/examples/headers](/examples/headers).
 
-This example demonstrates various ways of prepending compiled output with commented headers that contain some data. Investigate the `build.json` file to see details about the build. This build compiles several JavaScript sourcefiles and prepends headers to them:
+This example demonstrates various ways of prepending compiled output with commented headers that contain some data. Investigate the `build.json` file to see details about the build.
 
-- `script1.js` gets prepended by a one-line header with static text.
-- `script2.js` gets prepended by a multi-line header  with static text.
-- `script3.js` gets prepended by a multi-line header containing variables extracted from the sourcefile.
-- `script4.js` gets prepended by a multi-line shared header that is described globally inside `build.json` and can be reused for many compiled scripts as a template. This header also uses variables.
-- `script5.js` gets prepended by the same multi-line shared header as `script4.js`. Same variables are used, but values from `script5.js` are extracted instead.
+This build compiles several JavaScript sourcefiles and prepends headers to them:
+
+- `script1.js` is compiled into `script1.min.js` and prepended by a one-line header with static text:
+```JS
+/* This is a simple, one-line header. */
+```
+
+- `script2.js` is cmopiled into `script2.min.js` and prepended by a multi-line header  with static text:
+```JS
+/* This is a
+ * multiline
+ * header. */
+```
+
+- `script3.js` is compiled into `script3.min.js` and prepended by a multi-line header containing variables extracted from the sourcefile:
+```JS
+/* This is a multiline header
+ * that uses some variables.
+ *
+ * Script written by Alice Adams
+ * (c) 2023 ByteWave Technologies */
+```
+
+
+- `script4.js` is compiled into `script4.min.js` and prepended by a multi-line shared header that is described globally inside `build.json` and can be reused across many sourcefiles. This header also uses variables:
+```JS
+/* This is a global header that can be reused many times.
+ * Variables used here will depend on the individual
+ * scripts that use this header.
+ *
+ * Script written by Brian Baker
+ * (c) 2023 DataSphere Innovations */
+```
+
+- `script5.js` is compiled into `script5.min.js` and prepended by the same multi-line shared header as `script4.js`. Same variables are used, but values from `script5.js` are extracted instead:
+```JS
+/* This is a global header that can be reused many times.
+ * Variables used here will depend on the individual
+ * scripts that use this header.
+ *
+ * Script written by Charlotte Carter
+ * (c) 2023 QuantumLogic Systems */
+```
+
+
+To build this example, run `node build examples/headers` from the repository root.
 
 ### 7.3. Website
 
