@@ -1,0 +1,16 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/examples/events/",
+	"sources": [
+		"script.js"
+	],
+	"events": {
+		"prebuild": [
+			"pre_build.js"	
+		],
+		"postbuild": [
+			"post_build.js -you -can -even -feed -it -parameters"
+		]
+	}
+}
+
