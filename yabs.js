@@ -581,6 +581,33 @@ yabs.BuildConfig = class {
 		if (!this._files_listing) {
 			this._files_listing = [];
 		}
+		// extract events listing
+		if (json_data.hasOwnProperty('events')) {
+			this._events_listing = {
+				prebuild: [],
+				postbuild: []
+			};
+			const events_entry = json_data.events;
+			if (typeof events_entry === 'object' && events_entry !== null) {
+				const prebuild_entry = events_entry.prebuild;
+				const postbuild_entry = events_entry.postbuild;
+				if (prebuild_entry instanceof Array) {
+					if (!prebuild_entry.every(element => typeof element === 'string')) {
+						throw 'Every element in "prebuild" entry has to be a String type!';
+					}
+					this._events_listing.prebuild = prebuild_entry;
+				}
+				if (postbuild_entry instanceof Array) {
+					if (!postbuild_entry.every(element => typeof element === 'string')) {
+						throw 'Every element in "postbuild" entry has to be a String type!';
+					}
+					this._events_listing.postbuild = postbuild_entry;
+				}
+			}
+		}
+		else {
+			this._events_listing = null;
+		}
 	}
 	/**
 	 * Returns the input build instructions filename.
@@ -655,6 +682,15 @@ yabs.BuildConfig = class {
 	 */
 	getFilesListing() {
 		return this._files_listing;
+	}
+
+	/**
+	 * Returns events listing.
+	 * 
+	 * @returns {array}
+	 */
+	getEventsListing() {
+		return this._events_listing;
 	}
 };
 
@@ -1188,8 +1224,9 @@ yabs.Builder = class {
 		const build_instr_dir = this._build_config.getBaseDir();
 		const build_instr_file = this._build_config.getSourceFile();
 		const build_instr_fullpath = path.join(build_instr_dir, build_instr_file);
-		this._logger.info(`Starting build: ${build_instr_fullpath}`);
+		const events_listing = this._build_config.getEventsListing();
 
+		this._logger.info(`Starting build: ${build_instr_fullpath}`);
 		this._logger.info('Preparing build');
 
 		// = prepare build I =
@@ -1207,6 +1244,16 @@ yabs.Builder = class {
 		// = prepare build III =
 		// process header data for sourcefiles
 		this._processSourceHeaders();
+
+		// = run the pre-build events, if there are any =
+		/*
+		//TODO
+		if (events_listing && events_listing.prebuild.length > 0) {
+			events_listing.prebuild.forEach(event_script => {
+				//this._runEventScript(event_script);
+			});
+		}
+		*/
 
 		// = build I =
 		// update files from files manifest
@@ -1228,6 +1275,14 @@ yabs.Builder = class {
 			this._logger.info('Writing HTML files');
 			this._buildStep_III_WriteHTMLFiles();
 		}
+
+		// = run the post-build events, if there are any =
+		/*
+		//TODO
+		if (events_listing && events_listing.postbuild.length > 0) {
+			//events_listing.postbuild.forEeach(event_script => this.invokeEventScript(event_script));
+		}
+		*/
 
 		// build finished
 		const build_time = ((Date.now() - this._build_start_time) / 1000).toFixed(2);
