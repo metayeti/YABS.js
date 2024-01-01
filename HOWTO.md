@@ -12,7 +12,8 @@
   5.3. [Output filenames and compile options](#53-output-filenames-and-compile-options)  
   5.4. [Using the preprocessor](#54-using-the-preprocessor)  
   5.5. [Bundling scripts](#55-bundling-scripts)  
-  5.6. [Batch building](#56-batch-building)
+  5.6. [Build events](#56-build-events)  
+  5.7. [Batch building](#57-batch-building)
 6. [Command line parameters](#6-command-line-parameters)
 7. [Examples](#7-examples)  
   7.1. [Minimal](#71-minimal)  
@@ -395,7 +396,11 @@ When using header variables in a bundle, all listed sourcefiles will be processe
 
 Preprocessor variables in bundles are on a per-bundle basis, not per-script - the input files will be preprocessed as if they are one file, glued together. Note that preprocessor includes will **not** work with bundles because the glued output file materializes on the build side and as such cannot reference files which are relative to the file on the source side. This shouldn't be a problem in real-world cases because if you're already using bundles, you probably shouldn't be also using preprocessor includes at the same time.
 
-### 5.6. Batch building
+### 5.6. Build events
+
+There are two build events we can attach scripts to, the pre-build event (occurs before the build begins) and the post-build event (occurs after the build begins).
+
+### 5.7. Batch building
 
 YABS.js can build in batch mode! To do so, create a `build_all.json` (the filename can be anything, but `build_all.json` is a useful convention).
 
