@@ -342,7 +342,7 @@ yabs.Logger = class {
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild` +
-			`     ${this._OUTPUT_RESET}         (c) 2023 Danijel Durakovic`
+			`     ${this._OUTPUT_RESET}         (c) 2024 Danijel Durakovic`
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW} .js` +
