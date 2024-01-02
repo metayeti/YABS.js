@@ -421,7 +421,7 @@ In the above example, scripts A, B and C (in that order) will run on the `prebui
 
 These scripts are running on your standard Node environment and offer everything that JavaScript with Node already offers. They can be as complex or as basic as needed.
 
-The script can either work synchroniously or asynchroniously, meaning that inside the script, we can choose to have a sequence of commands like this:
+The script can either work synchronously or asynchronously, meaning that inside the script, we can choose to have a sequence of commands like this:
 
 ```JS
 do_thing();
@@ -429,7 +429,7 @@ do_other_thing();
 // all done!
 ```
 
-Or we can have aynchronous code that does something and then signals back to the system that it's done via a `process.send`, for example:
+Or we can have asynchronous  code that does something and then signals back to the system that it's done via a `process.send`, for example:
 
 ```JS
 // we will wait 3 seconds before letting the build continue
@@ -443,7 +443,7 @@ The `{exit: 'ok'}` parameter which we send back to YABS.js is merely convention,
 
 Any output from the scripts will be visible mid-build, we can use `console.log` to output any information relevant to the build.
 
-Arguments are passed to the scripts, the first two of which are the build source directory and the source destination directory (in that order). All arguments that come after are custom arguments which we may add to the build instructions entry so we can for example control some flags in the script:
+Arguments are passed to the scripts, the first two of which are the build source directory and the build destination directory (in that order). All arguments that come after are custom arguments which we may add to the build instructions entry so we can for example control some flags in the script:
 
 ```JSON
   "events": {
