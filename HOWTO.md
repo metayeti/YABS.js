@@ -22,7 +22,8 @@
   7.4. [Preprocessor](#74-preprocessor)  
   7.5. [Bundle](#75-bundle)  
   7.6. [Library](#76-library)  
-  7.7. [Game](#77-game)
+  7.7. [Events](#77-events)  
+  7.8. [Game](#78-game)
 
 ## 1. How it works
 
@@ -400,7 +401,7 @@ Preprocessor variables in bundles are on a per-bundle basis, not per-script - th
 
 There are two build events we can invoke at build time, the pre-build event (occurs before the build begins) and the post-build event (occurs after the build completes).
 
-We can define events by adding an `"events"` entry to our build instructions file. Inside, we can add either `"prebuild"`, `"postbuild"` entries (or both) which are lists of scripts we wish to run in order:
+We can define events by adding an `"events"` entry to our build instructions file. Inside, we can add either `"prebuild"`, `"postbuild"` entries (or both) and in them, a list of scripts in order we wish them to be run:
 
 ```JSON
   "events": {
@@ -469,7 +470,9 @@ const extra_params = argv.slice(2); // Discard the build source directories.
 // ["some", "-custom", "--parameters"]
 ```
 
-When invoking a prebuild script, note that the destination directory or any directory contained within the destination directory might not yet exist at that point in the build. Normally, the directories are creates on demand as the build runs. But in the case where we're building for the first time, the directory structure in the prebuild event will be missing which means we may need to deal with directories manually. Check if the destination directory exists with `fs.existsSync` or create required directories with `fs.makedirSync`. Note that the `fs` module is required to access these functions.
+When invoking a pre-build script, note that the destination directory or any directory contained within the destination directory that is relevant to the application being built, might not yet exist at that point in the build. Normally, the directories are creates on demand as the build runs. But in the case where we're building for the first time, the directory structure in the prebuild event will be missing which means we may need to deal with directories manually. Check if the destination directory exists with `fs.existsSync` or create required directories with `fs.makedirSync`. Note that the `fs` module is required to access these functions.
+
+The above is irrelevant for post-build scripts as those run only after any relevant directories have already been created.
 
 ### 5.7. Batch building
 
@@ -525,7 +528,7 @@ Examples are provided to demonstrate various ways to use YABS.js. Examples can b
 
 This example is found in [/examples/minimal](/examples/minimal).
 
-The build instructions JSON describes a basic build consisting of a single HTML file, a single JS sourcefile which be compiled, and some extra files (CSS stylesheet and an image file).
+The build instructions JSON file describes a basic build consisting of a single HTML file, a single JS sourcefile which be compiled, and some extra files (CSS stylesheet and an image file).
 
 To get a closer look at the syntax, open `build.json`:
 
@@ -547,11 +550,11 @@ To get a closer look at the syntax, open `build.json`:
 
 `"source_dir"` is relative to the `build.json` file. When set to `"./"`, it means "current directory where this build instructions file is located".
 
-`"destination_dir"` is relative to the directory from which are calling YABS.js *from*. For this example this would typically be the repository root.
+`"destination_dir"` is relative to the directory from which we are calling YABS.js *from*. When building this example, this example this would typically be the repository root.
 
 `"sources"` is a list of JavaScript sourcefiles to be processed.
 
-`"files"` is a list of files relevant to the build, for example CSS files and images. These files will be copied over on first run. On subsequent builds, only files which are newer than build-side files will be copied. Masks (`*`, `*.*`, `*.css` etc) can be used here.
+`"files"` is a list of files relevant to the build, for example CSS files and images. These files will be copied over on first run. On subsequent builds, only files which are newer than build-side files will be copied. Masks (`*` - everything including subfolders, `*.*` - everything excluding subfolders, `*.css` - all css files, and similar) can be used in this entry.
 
 
 To build this example, run `node build examples/minimal` from the repository root.
@@ -625,6 +628,40 @@ This example is found in [/examples/bundle](/examples/bundle).
 
 This example is found in [/examples/library](/examples/library).
 
-### 7.7. Game
+### 7.7. Events
+
+This example is found in [/examples/events](/examples/events).
+
+This example demonstrated use of build events. The `build.json` file in this example looks like this:
+
+```JSON
+{
+  "source_dir": "./",
+  "destination_dir": "build/examples/events/",
+  "sources": [
+    "script.js"
+  ],
+  "events": {
+    "prebuild": [
+      "pre_build.js"
+    ],
+    "postbuild": [
+      "post_build.js -you -can -even -feed -it -parameters"
+    ]
+  }
+}
+```
+
+Both the pre-build and post-build events are a script or list of scripts to be run upon entering the build.
+
+Please see the source code of `pre_build.js` and `post_build.js` for more detail.
+
+The `pre_build.js` demonstrates a synchronous script that outputs some text and shows how arguments can be extracted. It then outputs the build source and destination directories. This script exits automatically.
+
+The `post_build.js` demonstrates an asynchronous script that halts the build for 2 seconds before continuing using `process.send`. This script also shows how to extract the parameters fed by the build instructions file.
+
+To build this example, run `node build examples/events` from the repository root.
+
+### 7.8. Game
 
 This example is found in [/examples/game](/examples/game).
