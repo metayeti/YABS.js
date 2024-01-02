@@ -8,7 +8,7 @@
  *  Yet-Another-Build-System.js
  *  https://github.com/metayeti/YABS.js
  *  ---
- *  (c) 2023 Danijel Durakovic
+ *  (c) 2024 Danijel Durakovic
  *  Licensed under the terms of the MIT license
  *
  */
@@ -24,7 +24,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
+const { fork, exec } = require('child_process');
 
 /**
  * yabs.js namespace
@@ -231,8 +231,36 @@ yabs.util.openURLWithBrowser = function(url) {
 			default: return 'xdg-open';
 		}
 	}());
-	exec(start_cmd + ' ' + url);
+	exec(`${start_cmd} ${url}`);
 };
+
+/**
+ * Runs an external script.
+ * 
+ * @function runExternalScript
+ * @memberof yabs.util
+ * @instance
+ * 
+ * @param {string} path - Path to script.
+ * @param {array} params - List of parameters.
+ */
+yabs.util.runExternalScript = async function(path, params) {
+	return new Promise((resolve, reject) => {
+		const proc = fork(path, params);
+		proc.on('error', (err) => {
+			this._logger.out_raw('\n\n');
+			reject(err);
+		});	
+		/*
+		proc.on('exit', () => {
+			resolve();
+		});
+		*/
+		proc.on('message', (msg) => {
+			resolve(msg);
+		});
+	});
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -342,7 +370,7 @@ yabs.Logger = class {
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}B${this._OUTPUT_RESET}uild` +
-			`     ${this._OUTPUT_RESET}         (c) 2023 Danijel Durakovic`
+			`     ${this._OUTPUT_RESET}         (c) 2024 Danijel Durakovic`
 		);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}S${this._OUTPUT_RESET}ystem${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW} .js` +
@@ -1218,6 +1246,34 @@ yabs.Builder = class {
 	}
 
 	/**
+	 * Executes events by invoking every script in the listing sequentially.
+	 */
+	async runEvents(listing) {
+		const build_instr_dir = this._build_config.getBaseDir();
+		for (let i = 0; i < listing.length; i++) {
+			const event_entry = listing[i];
+			const event_split = event_entry.split(' ');
+			const script_path = event_split.shift();
+			const script_args = event_split;
+			const script_fullpath = path.join(build_instr_dir, script_path);
+			this._logger.out(
+				`${this._logger._OUTPUT_FG_RED}[` +
+				`${this._logger._OUTPUT_FG_YELLOW}-->` +
+				//`${this._logger._OUTPUT_FG_GREEN}>` +
+				`${this._logger._OUTPUT_RESET} ` +
+				`Executing: ${script_fullpath}`
+			);
+			await yabs.util.runExternalScript(script_fullpath, script_args);
+			this._logger.out(
+				`${this._logger._OUTPUT_FG_YELLOW}<--` +
+				`${this._logger._OUTPUT_FG_RED}]` +
+				//`${this._logger._OUTPUT_FG_GREEN}>` +
+				`${this._logger._OUTPUT_RESET}`
+			);
+		}
+	}
+
+	/**
 	 * Start the build.
 	 */
 	async build() {
@@ -1246,14 +1302,11 @@ yabs.Builder = class {
 		this._processSourceHeaders();
 
 		// = run the pre-build events, if there are any =
-		/*
-		//TODO
 		if (events_listing && events_listing.prebuild.length > 0) {
-			events_listing.prebuild.forEach(event_script => {
-				//this._runEventScript(event_script);
-			});
+			this._logger.info('Running pre-build events');
+			await this.runEvents(events_listing.prebuild);
+			this._logger.endl();
 		}
-		*/
 
 		// = build I =
 		// update files from files manifest
@@ -1277,12 +1330,11 @@ yabs.Builder = class {
 		}
 
 		// = run the post-build events, if there are any =
-		/*
-		//TODO
 		if (events_listing && events_listing.postbuild.length > 0) {
-			//events_listing.postbuild.forEeach(event_script => this.invokeEventScript(event_script));
+			this._logger.info('Running post-build events');
+			await this.runEvents(events_listing.postbuild);
+			this._logger.endl();
 		}
-		*/
 
 		// build finished
 		const build_time = ((Date.now() - this._build_start_time) / 1000).toFixed(2);
