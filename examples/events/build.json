@@ -6,8 +6,7 @@
 	],
 	"events": {
 		"prebuild": [
-			"pre_build.js -abc -def",
-			"post_build.js"
+			"pre_build.js"
 		],
 		"postbuild": [
 			"post_build.js -you -can -even -feed -it -parameters"

@@ -235,32 +235,30 @@ yabs.util.openURLWithBrowser = function(url) {
 };
 
 /**
- * Runs an external script.
+ * Runs an external script as defined by the user.
  * 
- * @function runExternalScript
+ * @function runUserScript
  * @memberof yabs.util
  * @instance
  * 
  * @param {string} path - Path to script.
  * @param {array} params - List of parameters.
  */
-yabs.util.runExternalScript = async function(path, params) {
+yabs.util.runUserScript = async function(path, params) {
 	return new Promise((resolve, reject) => {
 		const proc = fork(path, params);
 		proc.on('error', (err) => {
 			this._logger.out_raw('\n\n');
 			reject(err);
-		});	
-		/*
+		});
 		proc.on('exit', () => {
 			resolve();
 		});
-		*/
 		proc.on('message', (msg) => {
 			resolve(msg);
 		});
 	});
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -360,10 +358,7 @@ yabs.Logger = class {
 		this.out('  \\_   |     |  _ -|__   |_  | |_ -|');
 		this.out('   /__/|__|__|_____|_____|_|_| |___|');
 		this.out('                           |___|' + `${this._OUTPUT_RESET}` + ' '.repeat(13 - yabs.VERSION.length) + 'v' + yabs.VERSION);
-		this.out(
-			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`
-			//' '.repeat(41 - yabs.VERSION.length) + 'v' + yabs.VERSION
-		);
+		this.out(` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}Y${this._OUTPUT_RESET}et`);
 		this.out(
 			` ${this._OUTPUT_BRIGHT}${this._OUTPUT_FG_YELLOW}A${this._OUTPUT_RESET}nother` +
 			'   https://github.com/metayeti/YABS.js'
@@ -1249,25 +1244,28 @@ yabs.Builder = class {
 	 * Executes events by invoking every script in the listing sequentially.
 	 */
 	async runEvents(listing) {
-		const build_instr_dir = this._build_config.getBaseDir();
+		const build_instr_dir = path.normalize(this._build_config.getBaseDir());
+		const build_dest_dir = path.normalize(this._build_config.getDestinationDir());
 		for (let i = 0; i < listing.length; i++) {
 			const event_entry = listing[i];
 			const event_split = event_entry.split(' ');
 			const script_path = event_split.shift();
 			const script_args = event_split;
+			script_args.unshift(build_dest_dir); // prepend build destination directory
+			script_args.unshift(build_instr_dir); // prepend build source directory
 			const script_fullpath = path.join(build_instr_dir, script_path);
 			this._logger.out(
-				`${this._logger._OUTPUT_FG_RED}[` +
+				`${this._logger._OUTPUT_BRIGHT}${this._logger._OUTPUT_FG_RED}[` +
 				`${this._logger._OUTPUT_FG_YELLOW}-->` +
-				//`${this._logger._OUTPUT_FG_GREEN}>` +
 				`${this._logger._OUTPUT_RESET} ` +
 				`Executing: ${script_fullpath}`
 			);
-			await yabs.util.runExternalScript(script_fullpath, script_args);
+			this._logger.endl();
+			await yabs.util.runUserScript(script_fullpath, script_args);
+			this._logger.endl();
 			this._logger.out(
-				`${this._logger._OUTPUT_FG_YELLOW}<--` +
+				`${this._logger._OUTPUT_BRIGHT}${this._logger._OUTPUT_FG_YELLOW}<--` +
 				`${this._logger._OUTPUT_FG_RED}]` +
-				//`${this._logger._OUTPUT_FG_GREEN}>` +
 				`${this._logger._OUTPUT_RESET}`
 			);
 		}

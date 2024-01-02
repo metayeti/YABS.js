@@ -398,7 +398,78 @@ Preprocessor variables in bundles are on a per-bundle basis, not per-script - th
 
 ### 5.6. Build events
 
-There are two build events we can attach scripts to, the pre-build event (occurs before the build begins) and the post-build event (occurs after the build begins).
+There are two build events we can invoke at build time, the pre-build event (occurs before the build begins) and the post-build event (occurs after the build completes).
+
+We can define events by adding an `"events"` entry to our build instructions file. Inside, we can add either `"prebuild"`, `"postbuild"` entries (or both) which are lists of scripts we wish to run in order:
+
+```JSON
+  "events": {
+    "prebuild": [
+      "script_A.js",
+      "script_B.js",
+      "script_C.js"
+    ],
+    "postbuild": [
+      "script_D.js",
+      "script_E.js",
+      "script_F.js"
+    ],
+  }
+```
+
+In the above example, scripts A, B and C (in that order) will run on the `prebuild` event, and scripts D, E, F will run on the `postbuild` event.
+
+These scripts are running on your standard Node environment and offer everything that JavaScript with Node already offers. They can be as complex or as basic as needed.
+
+The script can either work synchroniously or asynchroniously, meaning that inside the script, we can choose to have a sequence of commands like this:
+
+```JS
+do_thing();
+do_other_thing();
+// all done!
+```
+
+Or we can have aynchronous code that does something and then signals back to the system that it's done via a `process.send`, for example:
+
+```JS
+// we will wait 3 seconds before letting the build continue
+setTimeout(() => {
+  // all done!
+  process.send({ exit: 'ok' });
+}, 3000);
+```
+
+The `{exit: 'ok'}` parameter which we send back to YABS.js is merely convention, any non-empty parameter will signal YABS.js to continue building.
+
+Any output from the scripts will be visible mid-build, we can use `console.log` to output any information relevant to the build.
+
+Arguments are passed to the scripts, the first two of which are the build source directory and the source destination directory (in that order). All arguments that come after are custom arguments which we may add to the build instructions entry so we can for example control some flags in the script:
+
+```JSON
+  "events": {
+    "postbuild": [
+      "script_B.js some -custom --parameters",
+    ],
+  }
+```
+
+We can then extract these parameters in the script:
+
+```JS
+// Discard the first two arguments (path to node and path to script).
+const argv = process.argv.slice(2);
+
+// Now we can extract the first two arguments from YABS.js:
+const build_source_dir = argv[0]; // Build source directory.
+const build_destination_dir = argv[1]; // Build destination directory.
+
+// And here is how to extract all the extra arguments:
+const extra_params = argv.slice(2); // Discard the build source directories.
+// The value of extra_params for this example is now:
+// ["some", "-custom", "--parameters"]
+```
+
+When invoking a prebuild script, note that the destination directory or any directory contained within the destination directory might not yet exist at that point in the build. Normally, the directories are creates on demand as the build runs. But in the case where we're building for the first time, the directory structure in the prebuild event will be missing which means we may need to deal with directories manually. Check if the destination directory exists with `fs.existsSync` or create required directories with `fs.makedirSync`. Note that the `fs` module is required to access these functions.
 
 ### 5.7. Batch building
 
