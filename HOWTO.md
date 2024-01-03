@@ -35,7 +35,7 @@ For the most part, this is a content-unaware build system which only deals with 
 
 1. Clones the hierarchy of non-source files related to the web application, updating with newer files (skipping files that didn't change since the last build), into the output directory (typically `build/`, `release/` or equivalent) as specified by the build instructions file.
 
-2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources and optionally attaches a custom header to the minified outputs Headers may use variables extracted from the JSDoc-like tags in the sourcefile.
+2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources and optionally attaches a custom header to the minified outputs. Headers may use variables extracted from the JSDoc-like tags in the sourcefile.
 
 3. Matches `<script src="...">` attributes in the HTML files to the associated JS sources and updates those entries to match compiled outputs (in practice this means that the `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
 
