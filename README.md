@@ -6,8 +6,8 @@ v1.2.0 dev
 
 ## Features
 
-- Easy to use: drop `build.js` into your project, describe your build with `build.json` and when ready, run the build with `node build`.
-- Can prepend info headers (with copyright and such) to compiled scripts.
+- Easy to use: drop `build.js` into your project, describe your build with `build.json` and run the build with `node build`
+- Can prepend info headers (with copyright and such) to compiled scripts
 - Script bundling
 - Preprocessor superpowers
 - Batch building
@@ -24,7 +24,7 @@ This program is provided as-is as free and open source software, but it is not c
 
 ## Credits
 
-This project exists thanks to [uglify-js](https://www.npmjs.com/package/uglify-js) and [MetaScript](https://www.npmjs.com/package/metascript) packages.
+This project exists thanks to the [uglify-js](https://www.npmjs.com/package/uglify-js) and [MetaScript](https://www.npmjs.com/package/metascript) packages.
 
 ## License
 

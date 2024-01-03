@@ -27,7 +27,9 @@
 
 ## 1. How it works
 
-YABS.js takes a single build instructions JSON file as input. It then configures, prepares, and runs the build process as described by the build instructions file. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
+This build system works on the basic observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. The idea of a build system then is to convert these 3 types of files into something that we may push into production (i.e. create a "release" build), or that we build something that behaves *slightly* differently but allows us to test things better (i.e. a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
+
+To make YABS.js work, we feed it a build instructions file. This is a JSON-formatted file that contains instructions on how the build should be performed. YABS.js then configures, prepares, and runs the build as described by the build instructions file. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
 
 For the most part, this is a content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capabilities provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript), and the fact that JSDoc-like meta tags can be extracted from sourcefiles to construct information headers for output files). This build system does not understand modules, `import`, `export` or `require` statements. What it does is roughly the following:
 
@@ -528,9 +530,9 @@ Examples are provided to demonstrate various ways to use YABS.js. Examples can b
 
 This example is found in [/examples/minimal](/examples/minimal).
 
-The build instructions JSON file describes a basic build consisting of a single HTML file, a single JS sourcefile which be compiled, and some extra files (CSS stylesheet and an image file).
+The build instructions JSON file in this example describes a basic build consisting of a single HTML file, a single JavaScript sourcefile to be compiled, and some extra files relevant to the build (CSS stylesheets and image files).
 
-To get a closer look at the syntax, open `build.json`:
+To get a closer look at the syntax, investigate `build.json`:
 
 ```JSON
 {
@@ -563,7 +565,7 @@ To build this example, run `node build examples/minimal` from the repository roo
 
 This example is found in [/examples/headers](/examples/headers).
 
-This example demonstrates various ways of prepending compiled output with commented headers that contain some data. Investigate the `build.json` file to see details about the build.
+This example demonstrates various ways of prepending compiled output with commented headers that contain some data. Investigate the `build.json` file to see details on how to setup the build.
 
 This build compiles several JavaScript sourcefiles and prepends headers to them:
 
@@ -616,17 +618,33 @@ To build this example, run `node build examples/headers` from the repository roo
 
 This example is found in [/examples/website](/examples/website).
 
+This example demonstrates a simple website consisting of `index.html`, `blog.html` and `about.html` with associated scripts and stylesheets.
+
+To build this example, run `node build examples/website` from the repository root.
+
 ### 7.4. Preprocessor
 
 This example is found in [/examples/preprocessor](/examples/preprocessor).
+
+This example demonstrates several ways to use the preprocessor.
+
+To build this example, run `node build examples/preprocessor` from the repository root.
 
 ### 7.5. Bundle
 
 This example is found in [/examples/bundle](/examples/bundle).
 
+This example demonstrates script bundling.
+
+To build this example, run `node build examples/bundle` from the repository root.
+
 ### 7.6. Library
 
 This example is found in [/examples/library](/examples/library).
+
+This example demonstrates building a basic utility library.
+
+To build this example, run `node build examples/library` from the repository root.
 
 ### 7.7. Events
 
@@ -647,11 +665,11 @@ This example demonstrates the use of build events. The relevant entry in the `bu
 
 Both the pre-build and post-build events are a script or list of scripts to be run upon entering the build.
 
+`pre_build.js` demonstrates a synchronous script that outputs some text and shows the basics of how how arguments from YABS.js can be extracted.
+
+`post_build.js` demonstrates an asynchronous script that halts the build for 2 seconds before continuing by signaling YABS.js with a `process.send` to let it know it can move on with the build. This example script also shows how to extract the extra parameters that were defined in the build instructions file.
+
 Please see the source code of `pre_build.js` and `post_build.js` for more detail and pay close attention to the commented text.
-
-`pre_build.js` demonstrates a synchronous script that outputs some text. It also shows how arguments from YABS.js can be extracted. It outputs the build source and destination directories. This script exits automatically.
-
-`post_build.js` demonstrates an asynchronous script that halts the build for 2 seconds before continuing using `process.send`. This script also shows how to extract the extra parameters that were defined in the build instructions file.
 
 To build this example, run `node build examples/events` from the repository root.
 
@@ -659,6 +677,45 @@ To build this example, run `node build examples/events` from the repository root
 
 This example is found in [/examples/game](/examples/game).
 
-This example demonstrates a simple game built on the myst.js engine.
+This example demonstrates a (very) basic platformer game built on the [myst.js](https://github.com/metayeti/myst.js) engine.
+
+The build demonstrates a typical game development scenario. The build accomplishes the following:
+- Strips any debug-related code out of the release build
+- Bundles all scripts into one minified output and attaches a header with copyright and version info
+- Strips files we don't not need in release (files in `dev/` in this example)
+- Updates associated files (files in `css/`, `data/` and `lib/` in this example)
+
+This example demonstrates a useful setup for the preprocessor. If we take a peak into `src/meta.js`, we will see this:
+
+```JS
+// >-- preprocessor variables -->
+
+//? if (typeof DEBUG === 'undefined') DEBUG = false;
+//? const RELEASE = !DEBUG;
+
+// <-- preprocessor variables <--
+```
+
+This defines two compile-time variables named `DEBUG` and `RELEASE`. In this example we set the build up such that the code behaves as if it is in "debug" mode when run locally. For release builds, we then simply strip code out as we wrap it in this way:
+
+```JS
+//? if (DEBUG) {
+  debug_feature1()
+  debug_feature2()
+//? }
+```
+
+With this setup, any time we run the release build now (which is the default build), we will skip this block of code. This allows us to maintain a debug version of the game on the development-side and a release version of the game on production-side. An alternative approach could involve dedicated debug builds but it would avoid the convenience of being able to locally run code live.
+
+We can build with the `-debug` flag if we want to preserve debug features.
+
+To run the game, open `index.html` with any modern desktop browser and click the page area where it says "Click to play". A keyboard is required to play this game.
+
+How to play:
+- Use arrow keys to move
+- Use Z to jump
+- Use X to shoot
 
 To build this example, run `node build examples/game` from the repository root.
+
+To build this example while preserving debug features, run: `node build examples/game -debug` or `node build -debug examples/game`.

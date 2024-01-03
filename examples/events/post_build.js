@@ -10,7 +10,7 @@ console.log('This is output from post_build.js.');
 // We can discard the first two arguments (path to node and path to this script).
 const argv = process.argv.slice(2); 
 
-// Now we can extract some arguments:
+// Now we can extract the first two arguments:
 const build_source_dir = argv[0]; // Build source directory.
 const build_destination_dir = argv[1]; // Build destination directory.
 
@@ -22,7 +22,7 @@ const build_destination_dir = argv[1]; // Build destination directory.
 // by the build instructions file.
 
 // We can extract these parameters:
-const extra_params = argv.slice(2); // Discard the first two arguments.
+const extra_params = argv.slice(2); // Discard the first two arguments to get the list of extra params.
 const extra_params_output = extra_params.join(', '); // Stringify for output.
 
 console.log(`Using parameters: ${extra_params_output}`);
