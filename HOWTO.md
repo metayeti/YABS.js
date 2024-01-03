@@ -383,7 +383,7 @@ YABS.js can bundle multiple script files into one single output file. To do so, 
         "src/script1.js",
         "src/script2.js"
       ],
-      "output_file": "src/combined.js",
+      "output_file": "src/combined.min.js",
       "header": "/* This is a combined script! */"
     }
   ]
@@ -632,15 +632,9 @@ This example is found in [/examples/library](/examples/library).
 
 This example is found in [/examples/events](/examples/events).
 
-This example demonstrated use of build events. The `build.json` file in this example looks like this:
+This example demonstrates the use of build events. The relevant entry in the `build.json` file in this example is `"events"`:
 
 ```JSON
-{
-  "source_dir": "./",
-  "destination_dir": "build/examples/events/",
-  "sources": [
-    "script.js"
-  ],
   "events": {
     "prebuild": [
       "pre_build.js"
@@ -649,19 +643,22 @@ This example demonstrated use of build events. The `build.json` file in this exa
       "post_build.js -you -can -even -feed -it -parameters"
     ]
   }
-}
 ```
 
 Both the pre-build and post-build events are a script or list of scripts to be run upon entering the build.
 
-Please see the source code of `pre_build.js` and `post_build.js` for more detail.
+Please see the source code of `pre_build.js` and `post_build.js` for more detail and pay close attention to the commented text.
 
-The `pre_build.js` demonstrates a synchronous script that outputs some text and shows how arguments can be extracted. It then outputs the build source and destination directories. This script exits automatically.
+`pre_build.js` demonstrates a synchronous script that outputs some text. It also shows how arguments from YABS.js can be extracted. It outputs the build source and destination directories. This script exits automatically.
 
-The `post_build.js` demonstrates an asynchronous script that halts the build for 2 seconds before continuing using `process.send`. This script also shows how to extract the parameters fed by the build instructions file.
+`post_build.js` demonstrates an asynchronous script that halts the build for 2 seconds before continuing using `process.send`. This script also shows how to extract the extra parameters that were defined in the build instructions file.
 
 To build this example, run `node build examples/events` from the repository root.
 
 ### 7.8. Game
 
 This example is found in [/examples/game](/examples/game).
+
+This example demonstrates a simple game built on the myst.js engine.
+
+To build this example, run `node build examples/game` from the repository root.
