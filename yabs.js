@@ -1283,19 +1283,19 @@ yabs.Builder = class {
 		this._logger.info(`Starting build: ${build_instr_fullpath}`);
 		this._logger.info('Preparing build');
 
-		// = prepare build I =
+		// = prepare build, step I =
 		// build the file manifests. this creates three arrays with unified structures that
 		// have "source" and "destination" entries for each file. it also clones the
 		// header data into fresh arrays so they can be used for variable substitution
 		// on a per-source basis
 		this._buildManifests();
 
-		// = prepare build II =
+		// = prepare build, step II =
 		// now we have to verify the existence of all the files listed in manifests
 		// as sources, to make sure we don't have missing or unreadable source files
 		this._verifySourceFiles();
 
-		// = prepare build III =
+		// = prepare build, step III =
 		// process header data for sourcefiles
 		this._processSourceHeaders();
 
@@ -1306,21 +1306,21 @@ yabs.Builder = class {
 			this._logger.endl();
 		}
 
-		// = build I =
+		// = perform build, step I =
 		// update files from files manifest
 		if (this._files_manifest.length > 0) { // skip if empty
 			this._logger.info('Updating files');
 			this._buildStep_I_UpdateFiles();
 		}
 
-		// = build II =
+		// = perform build, step II =
 		// preprocess and compile sources
 		if (this._sources_manifest.length > 0) { // skip if empty
 			this._logger.info('Compiling sources');
 			await this._buildStep_II_CompileSources();
 		}
 
-		// = build III =
+		// = perform build, step III =
 		// finally, write updates into and clone HTML files
 		if (this._html_manifest.length > 0) { // skip if empty
 			this._logger.info('Writing HTML files');

@@ -4,7 +4,7 @@
  *    /__/|__|__|_____|_____|_|_| |___|
  *                            |___|
  *  v1.2.0 dev
- *  https://github.com/pulzed/YABS.js
+ *  https://github.com/metayeti/YABS.js
  *  (c) 2024 Danijel Durakovic
  *  Licensed under MIT
  */

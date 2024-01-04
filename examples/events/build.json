@@ -9,7 +9,7 @@
 			"pre_build.js"
 		],
 		"postbuild": [
-			"post_build.js -you -can -even -feed -it -parameters"
+			"post_build.js -you -can -also -feed -it -parameters"
 		]
 	}
 }

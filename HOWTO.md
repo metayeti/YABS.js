@@ -27,9 +27,9 @@
 
 ## 1. How it works
 
-This build system works on the basic observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. The idea of a build system then is to convert these 3 types of files into something that we may push into production (i.e. create a "release" build), or that we build something that behaves *slightly* differently but allows us to test things better (i.e. a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
+This build system is based on the principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. The idea of this build system then is to convert these 3 types of files into something that we may push into production (i.e. create a "release" build), or that we build something that behaves *slightly* differently but allows us to test things better (i.e. a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
 
-To make YABS.js work, we feed it a build instructions file. This is a JSON-formatted file that contains instructions on how the build should be performed. YABS.js then configures, prepares, and runs the build as described by the build instructions file. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
+To make YABS.js work, we feed it a build instructions file. This is a JSON-formatted file that contains instructions on how the build should be performed (i.e. tells YABS.js what to do). YABS.js then runs the build as instructed. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
 
 For the most part, this is a content-unaware build system which only deals with files and not source code directly (apart from the mangling and compressing capabilities provided by [uglify-js](https://www.npmjs.com/package/uglify-js) and preprocessing which is delegated to [MetaScript](https://www.npmjs.com/package/metascript), and the fact that JSDoc-like meta tags can be extracted from sourcefiles to construct information headers for output files). This build system does not understand modules, `import`, `export` or `require` statements. What it does is roughly the following:
 
@@ -66,7 +66,7 @@ YABS.js will automatically default to `build_all.json` or `build.json` (in that 
 
 If you wish to pass a custom build instructions file, invoke YABS.js with a parameter: `node build something.json`. Note that only one such parameter will be accepted (if you want to build multiple things in one go, you can use YABS.js in [batch mode](#56-batch-building)).
 
-If your `build.json` file is located in a directory relative to the location of YABS.js, you can just pass that directory to the build system: `node build something`. In this example, it is assumed that a `something/build.json` file (or `something/build_all.json`) exists.
+If your `build.json` file is located in a directory relative to the location of YABS.js, you can just pass that directory to the build system: `node build something`. In this example, the assumption is that `something/build.json` (or `something/build_all.json`) exists.
 
 You can build YABS.js itself by running `node yabs build.json` from the repository root, upon which you should see something like this as output:
 
@@ -74,7 +74,7 @@ You can build YABS.js itself by running `node yabs build.json` from the reposito
 
 Other commands you can try and run from the repository root are:
 
-- `node build examples/minimal` (builds the [minimal](/examples/minimal/) example)
+- `node build examples/minimal` (builds the [minimal](#71-minimal) example)
 - `node build examples` (builds all examples)
 - `node build tests` (builds all tests)
 - `node build` (build everything)
@@ -83,7 +83,7 @@ See [building.txt](/building.txt) for more detailed information on building this
 
 ## 4. Basic example
 
-To demonstrate principal usage, we will need a structure of a basic web application, and we will need a build instructions file. Let's start with the file hierarchy first.
+To demonstrate basic usage of YABS.js, we will need a structure of a basic web application, and we will need a build instructions file. Let's start with the file hierarchy first.
 
 The hierarchy of files for this minimal build will look like this:
 
@@ -125,13 +125,13 @@ The entries above represent the following concepts:
 
 - `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build/` directory. If this directory doesn't exist at build time, it will be created.
 
-- `"html"` lists all HTML files associated with the web application. This can be a plain string with a single file like used above, or it can be a list of many files. Files listed in this entry will have their `<script>` tags' `src` attributes appropriately updated to match the compiled sourcefiles (to avoid this you can list them in `"files"` instead).
+- `"html"` lists all HTML files associated with the web application. This can be a plain string with a single file like used above, or it can be a list of many files. Files listed in this entry will have their `<script>` tags' `src` attributes appropriately updated to match the compiled sourcefiles (if we wish to avoid this you we can list them in `"files"` instead).
 
 - `"sources"` lists all JavaScript files that we want to build and process.
 
 - `"files"` lists all other files associated with the web application that we do not wish to process in any way, we just want to have them copied over into the build output. These are usually all the files associated to the web application that aren't source code. This entry is a list pointing to individual files and can include basic pattern masks. In the example above, `"img/*"` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` mask would only capture all files within the directory, but it would skip any subdirectories. A `*.txt` would only capture files with `.txt` extension in the directory, skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
 
-Now that we have the file hierarchy and a build instructions file, we can build the project. To build, all we have to do is to invoke `node build` from the command line from the root of the project. Build output will materialize in the `build/` folder which will be created automatically if it doesn't exist. All subsequent builds will only update relevant files and will skip files listed under `"files"` that have not updated since the last build. Only the source files are processed with every build.
+Now that we have the file hierarchy and a build instructions file, we can build the project. To build, all we have to do is to invoke `node build` from the command line from the root of the project. Build output will materialize in the `build/` folder which will be created automatically if it doesn't exist. All subsequent builds will only update relevant files and will skip files listed under `"files"` that have not updated since the last build - only the source files are processed with every build.
 
 This is all we need to run a build for a simple web application, but YABS.js offers more options. In the following sections, additional capabilities of the build instructions file and directions on how to utilize them will be explained.
 
@@ -198,9 +198,9 @@ We can then refer to these entries with a `"use_header"` entry that we put insid
 
 ### 5.2. Adding variables to custom headers
 
-Sometimes the data we want to include in the sourcefile header is dynamic and may change with time. Things like application version number and copyright year would be irritating to work with if we needed to change the build instructions file every time the program version went up. This is why with YABS.js, we can use variables with script headers, which help us add dynamic data to the headers, such as versions and copyright information. The values are extracted from JSDoc-like tags in the sourcefiles, which are typically at the top of the file and the first thing to appear in a sourcefile.
+Sometimes we may want to include dynamic data into the header which changes over time, for example a version number, authors listing, or a copyright year. With YABS.js, we can use variables in script headers, which help us extract dynamic values from the headers. The values are extracted from JSDoc-like tags in the sourcefiles, which typically sit at the top of the sourcefile.
 
-To begin, at the top of the JavaScript sourcefile, we will add something like this:
+To start, at the top of the JavaScript sourcefile, we will add some variables formatted in a JSDoc style:
 
 ```JS
 /**
@@ -212,7 +212,7 @@ To begin, at the top of the JavaScript sourcefile, we will add something like th
  */
 ```
 
-We can now use these entries in output headers with the `%variable%` notation:
+With this setup, we can now use these entries using the `%variable%` notation, like so:
 
 ```JSON
   "sources": [
@@ -234,15 +234,17 @@ The header in the compiled sourcefile will become the following:
  * Copyright (c) 2023 Big Corp */
 ```
 
-Variable names are completely arbitrary and can be anything as long as they match the JSDoc tags in the sourcefile. They are required to be one single word without spaces and they are case-sensitive.
+Variable names are arbitrary and can be anything as long as they match the JSDoc tags in the sourcefile. They are required to be one single word without spaces and they are case-sensitive.
 
 `$YEAR$` is a special variable that outputs the current year.
 
-If we use the shared `"headers"` entry in the build instructions file, the variables we use will be relative to the individual scripts that use them. This means that every script that uses those headers has to include the matching JSDoc tags, and the values can vary from one another.
+If we used the shared `"headers"` entry in the build instructions file (and then pointed to it with `"use_header"`), then the variables we use will be relative to individual scripts that use them. This means that every script that uses those headers has to include the matching JSDoc tags, and the values can vary from one another.
+
+If we use a bundle, all scripts in the bundle will be scanned for values and the last read has priority and overwrites any previously read.
 
 ### 5.3. Output filenames and compile options
 
-You can use a custom output source filename by adding the `"output_file"` entry into `"sources"` entry.
+We can use a custom output source filename by adding the `"output_file"` entry into `"sources"` entry.
 
 Note that `"output_file"` needs to always specify the relative directory you want it to output to (this is to prevent ambiguity in cases where we wish to output the file into a different directory). A good rule of thumb to follow is that when your `"file"` value includes relative paths, then so should the `"output_file"` value.
 
@@ -451,7 +453,7 @@ Arguments are passed to the scripts, the first two of which are the build source
 ```JSON
   "events": {
     "postbuild": [
-      "script_B.js some -custom --parameters",
+      "script_B.js -some -custom -parameters",
     ],
   }
 ```
@@ -469,7 +471,7 @@ const build_destination_dir = argv[1]; // Build destination directory.
 // And here is how to extract all the extra arguments:
 const extra_params = argv.slice(2); // Discard the build source directories.
 // The value of extra_params for this example is now:
-// ["some", "-custom", "--parameters"]
+// ["-some", "-custom", "-parameters"]
 ```
 
 When invoking a pre-build script, note that the destination directory or any directory contained within the destination directory that is relevant to the application being built, might not yet exist at that point in the build. Normally, the directories are creates on demand as the build runs. But in the case where we're building for the first time, the directory structure in the prebuild event will be missing which means we may need to deal with directories manually. Check if the destination directory exists with `fs.existsSync` or create required directories with `fs.makedirSync`. Note that the `fs` module is required to access these functions.
@@ -658,7 +660,7 @@ This example demonstrates the use of build events. The relevant entry in the `bu
       "pre_build.js"
     ],
     "postbuild": [
-      "post_build.js -you -can -even -feed -it -parameters"
+      "post_build.js -you -can -also -feed -it -parameters"
     ]
   }
 ```
