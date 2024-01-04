@@ -1,6 +1,6 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/tests/backref_script/",
+	"destination_dir": "build/tests/04_backref_script/",
 	"html": "html/index.html",
 	"sources": [
 		"script_a.js",

@@ -1,8 +1,9 @@
 {
 	"batch_build": [
-		"backref_bundle",
-		"backref_files/project",
-		"backref_script",
-		"empty"
+		"01_empty",
+		"02_backref_bundle",
+		"03_backref_files/project",
+		"04_backref_script",
+		"05_script_with_params"
 	]
 }

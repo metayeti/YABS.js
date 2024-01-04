@@ -1,6 +1,6 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/tests/script_with_parameters/",
+	"destination_dir": "build/tests/05_script_with_params/",
 	"html": "index.html",
 	"sources": [
 		"src/script.js"
