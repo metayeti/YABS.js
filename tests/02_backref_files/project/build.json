@@ -1,0 +1,7 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/tests/02_backref_files/project/",
+	"files": [
+		"../somefiles/*"
+	]
+}
