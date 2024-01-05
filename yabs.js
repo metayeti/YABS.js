@@ -1185,7 +1185,6 @@ yabs.Builder = class {
 				// directory doesn't exist yet, create it
 				fs.mkdirSync(dir, { recursive: true });
 			}
-
 			const html_file_data = fs.readFileSync(manifest_entry.source, { encoding: 'utf8', flag: 'r' });
 			const html_line_data = html_file_data.split(/\r?\n/);
 			const html_base_dir = path.parse(manifest_entry.source).dir;
@@ -1198,7 +1197,11 @@ yabs.Builder = class {
 				let substitution_string = '';
 				if (src_regex_match) {
 					const extracted_src = src_regex_match[2];
-					const src_parsed = path.parse(extracted_src);
+					const extracted_src_params_index = extracted_src.indexOf('?');
+					const extracted_stripped_src = (extracted_src_params_index < 0)
+						? extracted_src
+						: extracted_src.slice(0, extracted_src_params_index);
+					const src_parsed = path.parse(extracted_stripped_src);
 					const src_joined_full = path.join(html_base_dir, src_parsed.dir, src_parsed.base);
 					this._sources_manifest.every(sources_manifest_entry => {
 						let keep_going = true;
@@ -1216,7 +1219,7 @@ yabs.Builder = class {
 									const substitute_path = path.join(src_parsed.dir, destination_parsed.base);
 									const substitute_src = substitute_path.replace(/\\/g, '/'); // normalize path output for html
 									// prepare the substitute
-									substitution_string = line_string.replace(new RegExp(extracted_src, 'g'), substitute_src);
+									substitution_string = line_string.replace(new RegExp(extracted_stripped_src, 'g'), substitute_src);
 									// remember this destination so we can skip it for associated bundled scripts
 									destinations_used.push(sources_manifest_entry.destination);
 								}

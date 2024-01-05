@@ -3,6 +3,7 @@
 - `FEATURE` Recursive batch builds are now allowed (you can batch-build a bunch of batch-builds).
 - `FEATURE` Better testcases and friendlier examples.
 - `FEATURE` Pre-build and post-build events.
+- `BUGFIX` Fixed an edge case where output `<script>` tags would not be updated properly when additional parameters were added to `src`, for example `<script src="code.js?a=param1&b=param2">`. Now updates correctly to `<script src="code.min.js?a=param1&b=param2">`.
 - `BUGFIX` More tiny bugfixes.
 - (wip) `FEATURE` Can now name builds via `"name"`.
 - (wip) `FEATURE` Can now specify a default set of preprocessor variables.
