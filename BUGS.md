@@ -12,6 +12,6 @@
 
 5. Potential bug: "use_variables" should probably work alongside with "variables" and merge the entries (priority "variables")?
 
-6. Batch build listing a folder with nonexisting build.json will output `Error: TypeError: Cannot read properties of null (reading 'isBatchBuild')`, should output something more coherent.
+6. ~~Batch build listing a folder with nonexisting build.json will output Error: TypeError: Cannot read properties of null (reading 'isBatchBuild'), should output something more coherent.~~ (fixed)
 
-7. ~~commented <script> tags in HTML should be ignored~~ (fixed)
+7. ~~commented script tags in HTML should be ignored~~ (fixed)

@@ -1,12 +1,12 @@
-                              %--------------%
-                           ////   YABS.JS   \\\\
-                           #>>----------------<<#
+                             %--------------%
+                          ////   YABS.JS   \\\\
+                          #>>----------------<<#
 
-                             BUILD INSTRUCTIONS
+                            BUILD INSTRUCTIONS
   
-                           #>>----------------<<#
-                           \\\\             ////
-                              %--------------%
+                          #>>----------------<<#
+                          \\\\             ////
+                             %--------------%
 
 
 
@@ -34,7 +34,7 @@ All commands listed below should be run from the project root folder.
 I. BUILD EVERYTHING AT ONCE
 ---------------------------
 
-If you just want to build everything and be done with it, just use:
+If you just want to build everything and be done with it, use:
 
   node build
 

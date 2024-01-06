@@ -1266,7 +1266,7 @@ yabs.Builder = class {
 	async runEvents(listing) {
 		const build_instr_dir = path.normalize(this._build_config.getBaseDir());
 		const build_dest_dir = path.normalize(this._build_config.getDestinationDir());
-		for (let i = 0; i < listing.length; i++) {
+		for (let i = 0; i < listing.length; ++i) {
 			const event_entry = listing[i];
 			const event_split = event_entry.split(' ');
 			const script_path = event_split.shift();
@@ -1437,6 +1437,9 @@ yabs.BatchBuilder = class {
 				else if (yabs.util.exists(path_buildall_json)) {
 					build_config = new yabs.BuildConfig(path_buildall_json);
 				}
+				else { // make sure we have build configuration
+					throw `Cannot locate ${path_build_json} or ${path_buildall_json}`;
+				}
 			}
 			else {
 				build_config = new yabs.BuildConfig(build_target);
@@ -1500,7 +1503,7 @@ yabs.BatchBuilder = class {
 				// build this item
 				await this._buildOne(build_index++);
 				// increment successful builds counter
-				n_successful_builds++;
+				n_successful_builds += 1;
 			}
 			catch (e) {
 				if (nofail_flag) {
@@ -1509,7 +1512,7 @@ yabs.BatchBuilder = class {
 					this._logger.error(e);
 					this._logger.out('\nBuild aborted.');
 					// increment failed builds counter
-					n_failed_builds++;
+					n_failed_builds += 1;
 				}
 				else {
 					// pass exception to main try/catch block
@@ -1606,21 +1609,22 @@ yabs.Application = class {
 				if (!yabs.util.exists(build_param_input)) {
 					throw 'Cannot find path or file: ' + build_param_input;
 				}
-				if (yabs.util.isDirectory(build_param_input)) { // append build.json if input is a directory		
-					if (yabs.util.exists(path.join(build_param_input, yabs.DEFAULT_BUILD_FILE))) { // prioritize build over build_all
-						build_config = new yabs.BuildConfig(path.join(build_param_input, yabs.DEFAULT_BUILD_FILE));
+				if (yabs.util.isDirectory(build_param_input)) { // implied build.json or build_all.json
+					const path_build_json = path.join(build_param_input, yabs.DEFAULT_BUILD_FILE);
+					const path_buildall_json = path.join(build_param_input, yabs.DEFAULT_BUILD_ALL_FILE);
+					if (yabs.util.exists(path_build_json)) { // prioritize build over build_all
+						build_config = new yabs.BuildConfig(path_build_json);
 					}
-					else if (yabs.util.exists(path.join(build_param_input, yabs.DEFAULT_BUILD_ALL_FILE))) {
-						build_config = new yabs.BuildConfig(path.join(build_param_input, yabs.DEFAULT_BUILD_ALL_FILE));
+					else if (yabs.util.exists(path.join(path_buildall_json))) {
+						build_config = new yabs.BuildConfig(path.join(path_buildall_json));
+					}
+					else { // make sure we have build configuration
+						throw `Cannot locate ${path_build_json} or ${path_buildall_json}`;
 					}
 				}
 				else {
 					build_config = new yabs.BuildConfig(build_param_input);
 				}
-			}
-			// make sure we have build configuration
-			if (!build_config) {
-				throw 'Missing input file!';
 			}
 			// check if this is a batch build
 			if (build_config.isBatchBuild()) {

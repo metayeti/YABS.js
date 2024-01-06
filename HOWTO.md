@@ -27,7 +27,7 @@
 
 ## 1. How it works
 
-This build system is based on the principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. The idea of this build system then is to convert these 3 types of files into something that we may push into production (i.e. create a "release" build), or that we build something that behaves *slightly* differently but allows us to test things better (i.e. a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
+This build system is based on a principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. Conveniently, these are the exact types of files we typically need to process before we prepare something for production (or, at least the author of this system does). The idea of this build system is to convert these 3 types of files into something we may push into production (i.e. create a "release" build), or that we build something that behaves *slightly* differently but allows us to test things better (i.e. a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
 
 To make YABS.js work, we feed it a build instructions file. This is a JSON-formatted file that contains instructions on how the build should be performed (i.e. tells YABS.js what to do). YABS.js then runs the build as instructed. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
 
@@ -45,7 +45,7 @@ Please double check your requirements to see if this featureset fits your needs 
 
 The first prerequisite is the latest version of [Node.js](https://nodejs.org/).
 
-From then on, YABS.js only has two dependencies (only one if you don't need preprocessing). They need to be installed globally rather than locally:
+From then on, YABS.js only has two dependencies (only one if you don't need preprocessing). These need to be installed globally rather than locally:
 
 - [uglify-js](https://www.npmjs.com/package/uglify-js) (install with `npm -g install uglify-js`)
 - [MetaScript](https://www.npmjs.com/package/metascript) (install with `npm -g install metascript`)
@@ -72,7 +72,7 @@ You can build YABS.js itself by running `node yabs build.json` from the reposito
 
 ![screenshot](/screenshot.png?raw=true)
 
-Other commands you can try and run from the repository root are:
+Some other commands you can try to run from the repository root:
 
 - `node build examples/minimal` (builds the [minimal](#71-minimal) example)
 - `node build examples` (builds all examples)
@@ -102,7 +102,7 @@ The hierarchy of files for this minimal build will look like this:
 
 For now, it doesn't really matter what these files contain. Let's imagine they contain some code and some data. The `build.js` file is the YABS.js build system (we could use the `yabs.js` sourcefile as well if we wanted to).
 
-Next, we need to focus on the build instructions file. That is the `build.json` file in the hierarchy above. The build instructions file is a plain JSON file with some entries. Let's write the following inside: 
+Next, we need to focus on the build instructions file. This is the `build.json` file in the hierarchy above. The build instructions file is a plain JSON file with some entries. Let's write the following inside: 
 
 ```JSON
 {
@@ -121,19 +121,19 @@ Next, we need to focus on the build instructions file. That is the `build.json` 
 
 The entries above represent the following concepts:
 
-- `"source_dir"` represents the source directory for the project we are building. The value `"./"` means that the source directory is the same as the root directory (the same directory build.json is in).
+- `"source_dir"` represents the source directory for the project which we are building. The value `"./"` means that the source directory is the same as the root directory (the directory build.json is in).
 
 - `"destination_dir"` represents the build output directory. In this case, we will output everything into the `build/` directory. If this directory doesn't exist at build time, it will be created.
 
-- `"html"` lists all HTML files associated with the web application. This can be a plain string with a single file like used above, or it can be a list of many files. Files listed in this entry will have their `<script>` tags' `src` attributes appropriately updated to match the compiled sourcefiles (if we wish to avoid this you we can list them in `"files"` instead).
+- `"html"` lists all HTML files associated with the web application. This can be a plain string with a single file like used above, or it can be a list of many HTML files. Files listed in this entry will have their `<script>` tags appropriately updated to match the compiled sourcefiles (if we wish to avoid this behavior we can list them in `"files"` instead). Note that YABS.js only supports `<script>` updates for elements which are listed on individual lines (for simplicity's sake YABS.js only does dirty substitution and doesn't actually parse the HTML files themselves).
 
-- `"sources"` lists all JavaScript files that we want to build and process.
+- `"sources"` lists all JavaScript sourcefiles that we want to build and process. By default, YABS.js will just minify the sources.
 
-- `"files"` lists all other files associated with the web application that we do not wish to process in any way, we just want to have them copied over into the build output. These are usually all the files associated to the web application that aren't source code. This entry is a list pointing to individual files and can include basic pattern masks. In the example above, `"img/*"` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` mask would only capture all files within the directory, but it would skip any subdirectories. A `*.txt` would only capture files with `.txt` extension in the directory, skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
+- `"files"` lists all files associated with the web application that we do not wish to process, we simply wish to have them copied over and updated on subsequent builds. These are usually all the files associated to the web application that aren't source code. Each entry is either an individual file or a pattern mask. In the example above, `img/*` means we wish to fetch everything in the `img/` directory. A `*` mask means we want to capture the contents of the directory plus all its subdirectories and their content. A `*.*` mask would capture all files within the directory, but it would skip subdirectories. A `*.txt` would capture files with `.txt` extension in the directory, skipping subdirectories. Please note that masks can only be used in the `"files"` entry.
 
-Now that we have the file hierarchy and a build instructions file, we can build the project. To build, all we have to do is to invoke `node build` from the command line from the root of the project. Build output will materialize in the `build/` folder which will be created automatically if it doesn't exist. All subsequent builds will only update relevant files and will skip files listed under `"files"` that have not updated since the last build - only the source files are processed with every build.
+Now that we have the file hierarchy and a build instructions file, we can build the project. To build, all we have to do is to invoke `node build` from the command line from the root of the project. Build output will materialize in the `build/` folder which will be created automatically if it doesn't exist. All subsequent builds will only update relevant files and will skip files listed under `"files"` that have not updated since the last build. Source files and HTML files are processed every time we build.
 
-This is all we need to run a build for a simple web application, but YABS.js offers more options. In the following sections, additional capabilities of the build instructions file and directions on how to utilize them will be explained.
+This is all we need to setup a build for a simple web application, but YABS.js offers more options. In the following sections, additional capabilities of the build instructions file will be described, along with examples on how to use them.
 
 ## 5. Build instructions file
 

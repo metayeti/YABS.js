@@ -1,12 +1,12 @@
 ## 1.2.0 (?)
-- `FEATURE` Added enumerated output to batch builds so that failed builds can be identified more easily.
-- `FEATURE` Recursive batch builds are now allowed (you can batch-build a bunch of batch-builds).
-- `FEATURE` Better testcases and friendlier examples.
-- `FEATURE` Pre-bui post-build events.
-- `BUGFIX` Fixed a bug where relative paths were calculated incorrectly for bundled scripts with backwards output src's (`<script src="../script.min.js">`). Also fixes relative paths for arbitrary `output_file` values.
+- `FEATURE` Recursive batch building is now allowed (you can batch-build a bunch of batch-builds).
+- `FEATURE` Pre-build and post-build events.
+- `FEATURE` Friendlier examples, better manual.
+- `FEATURE` If comments in source HTML files contain `<script>` tags, they are now ignored when writing HTML back to destination (this prevents nonsensical cases where we are updating commented code; as a side effect it helps to cleanup lazily commented markups). Any comments with `<script>` tags will be skipped entirely.
+- `FEATURE` Added enumerated output to batch builds so that failed builds can be identified clearly.
+- `BUGFIX` Fixed a bug where relative paths were calculated incorrectly for bundled scripts with paths going backwards (`<script src="../script.min.js">`). Fixes relative paths for arbitrary `output_file` values.
 - `BUGFIX` Fixed a bug where output `<script>` tags would not update correctly when additional parameters were added to `src`, for example `<script src="code.js?a=param1&b=param2">`.
-- `BUGFIX` If HTML comments contain `<script>` tags, they now get ignored when writing back the HTML to build destination. Such comments are skipped entirely in the output HTML.
-- `BUGFIX` Many more tiny bugfixes.
+- `BUGFIX` More tiny bugfixes.
 - (wip) `FEATURE` Can now specify a default set of preprocessor variables.
 - (wip) `FEATURE` Any parameter, not just preprocessor variables allowed in `"batch_build"` `"options"` entry (this means you can make batch builds where one of the items will always --rebuild, etc.).
 - (maybe) `BUGFIX` Preprocess includes can now be used in bundles as well.

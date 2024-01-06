@@ -6,7 +6,7 @@ v1.2.0 dev
 
 ## Features
 
-- Unreasonably easy to use: drop `build.js` into your project, describe your build with `build.json` and run your build with `node build`
+- Alarmingly easy to use: drop `build.js` into your project, describe your build with `build.json` and run your build with `node build`
 - Can prepend info headers (with copyright and such) to compiled scripts
 - Script bundling
 - Preprocessor superpowers
