@@ -839,13 +839,15 @@ yabs.Builder = class {
 					source_full_path_list.push(source_full_path);
 				});
 				// configure the output filename
-				let output_filename;
+				let output_filename, has_output_file_field;
 				if (listing_entry.output_file) {
 					output_filename = path.normalize(listing_entry.output_file);
+					has_output_file_field = true;
 				}
 				else {
 					const parsed_file_entry = path.parse(sources_list[0]);
 					output_filename = path.join(parsed_file_entry.dir, parsed_file_entry.name + yabs.COMPILED_SOURCE_EXTENSION);
+					has_output_file_field = false;
 				}
 				// configure full destination path
 				const destination_full_path = path.join(this._destination_dir, output_filename);
@@ -875,6 +877,8 @@ yabs.Builder = class {
 				this._sources_manifest.push({
 					sources: source_full_path_list,
 					destination: destination_full_path,
+					output_filename: output_filename,
+					has_output_file_field: has_output_file_field,
 					compile_options: compile_options,
 					header_data: header_data,
 					variables_data: variables_data,
@@ -1216,7 +1220,17 @@ yabs.Builder = class {
 									// we don't have this destination yet, create a substitution line
 									substitute_current_line = true;
 									const destination_parsed = path.parse(sources_manifest_entry.destination);
-									const substitute_path = path.join(src_parsed.dir, destination_parsed.base);
+									let substitute_path;
+									if (sources_manifest_entry.has_output_file_field) {
+										// diff the HTML and source directories so we get the correct relative path
+										const html_full_dir = path.parse(manifest_entry.destination).dir;
+										const output_file_full = path.join(this._destination_dir, sources_manifest_entry.output_filename);
+										const base_substitute_path = path.parse(path.relative(html_full_dir, output_file_full)).dir;
+										substitute_path = path.join(base_substitute_path, destination_parsed.base);
+									}
+									else {
+										substitute_path = path.join(src_parsed.dir, destination_parsed.base);
+									}
 									const substitute_src = substitute_path.replace(/\\/g, '/'); // normalize path output for html
 									// prepare the substitute
 									substitution_string = line_string.replace(new RegExp(extracted_stripped_src, 'g'), substitute_src);
