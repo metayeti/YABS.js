@@ -1180,6 +1180,7 @@ yabs.Builder = class {
 
 	_buildStep_III_WriteHTMLFiles() {
 		const script_src_regex = /<script\b[^>]*\bsrc=(["'])(.*?)(\1).*?>/;
+		const html_comment_with_script_regex = /\s*<\!--(?:(?!-->)[\S\s])*?<script[\s\S]*?-->\n?/g; 
 		// write each html file
 		this._html_manifest.forEach(manifest_entry => {
 			this._logger.out_raw(`${manifest_entry.destination} ...`);
@@ -1190,7 +1191,9 @@ yabs.Builder = class {
 				fs.mkdirSync(dir, { recursive: true });
 			}
 			const html_file_data = fs.readFileSync(manifest_entry.source, { encoding: 'utf8', flag: 'r' });
-			const html_line_data = html_file_data.split(/\r?\n/);
+			// remove any comments that contain <script> tags from HTML
+			const html_file_data_stripped = html_file_data.replace(html_comment_with_script_regex, '');
+			const html_line_data = html_file_data_stripped.split(/\r?\n/);
 			const html_base_dir = path.parse(manifest_entry.source).dir;
 			const html_output_lines = [];
 			const destinations_used = [];

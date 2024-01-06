@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>YABS.js test 06: html_with_comments</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<!-- This comment should be retained. -->
+	<header>
+		<h2 class="title">YABS.js html_with_comments test</h2>
+		<hr>
+	</header>
+	<main id="content">
+		<p>This test makes sure that HTML files whose `<source>` tags are commented get ignored.</p>
+	</main>
+	<!--
+	This and the next comment should be ignored.
+	<script src="src/script2.js"></script>
+	-->
+	<script src="src/script1.js"></script><!-- <script src="src/script2.js"></script> -->
+</body>
+</html>

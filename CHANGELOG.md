@@ -5,7 +5,8 @@
 - `FEATURE` Pre-bui post-build events.
 - `BUGFIX` Fixed a bug where relative paths were calculated incorrectly for bundled scripts with backwards output src's (`<script src="../script.min.js">`). Also fixes relative paths for arbitrary `output_file` values.
 - `BUGFIX` Fixed a bug where output `<script>` tags would not update correctly when additional parameters were added to `src`, for example `<script src="code.js?a=param1&b=param2">`.
-- `BUGFIX` More tiny bugfixes.
+- `BUGFIX` If HTML comments contain `<script>` tags, they now get ignored when writing back the HTML to build destination. Such comments are skipped entirely in the output HTML.
+- `BUGFIX` Many more tiny bugfixes.
 - (wip) `FEATURE` Can now specify a default set of preprocessor variables.
 - (wip) `FEATURE` Any parameter, not just preprocessor variables allowed in `"batch_build"` `"options"` entry (this means you can make batch builds where one of the items will always --rebuild, etc.).
 - (maybe) `BUGFIX` Preprocess includes can now be used in bundles as well.
