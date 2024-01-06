@@ -248,7 +248,7 @@ yabs.util.runUserScript = async function(path, params) {
 	return new Promise((resolve, reject) => {
 		const proc = fork(path, params);
 		proc.on('error', (err) => {
-			this._logger.out_raw('\n\n');
+			process.stdout.write('\n');
 			reject(err);
 		});
 		proc.on('exit', () => {
