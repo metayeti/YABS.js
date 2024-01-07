@@ -3,6 +3,8 @@
  * This example implements a simple HTML5 game.
  */
 
+// meta.js | Defines essentials like version and preprocessor variables.
+
 /*jshint esversion:9*/
 
 /**
@@ -15,6 +17,6 @@ const GAME_VERSION = '0.0.3';
 // >-- preprocessor variables -->
 
 //? if (typeof DEBUG === 'undefined') DEBUG = false;
-//? const RELEASE = !DEBUG;
+//? RELEASE = !DEBUG;
 
 // <-- preprocessor variables <--

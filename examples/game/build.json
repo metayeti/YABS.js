@@ -13,6 +13,13 @@
 				"src/init.js"
 			],
 			"output_file": "src/game.min.js",
+			"compile_options": "--mangle --compress --enclose",
+			"preprocess": true,
+			"variables": {
+				"debug": [
+					"DEBUG=true"
+				]
+			},
 			"header": [
 				"/* YABS.js game example v%version%",
 				" * (c) $YEAR$ %author% */"

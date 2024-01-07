@@ -1,3 +1,12 @@
+/*
+ * YABS.js game example
+ * This example implements a simple HTML5 game.
+ */
+
+// util.js | Utility functions.
+
+/*jshint esversion:9*/
+
 //
 // utilty
 //

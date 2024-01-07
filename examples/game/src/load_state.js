@@ -1,3 +1,12 @@
+/*
+ * YABS.js game example
+ * This example implements a simple HTML5 game.
+ */
+
+// load_state.js | Game load state.
+
+/*jshint esversion:9*/
+
 //
 // load state
 //

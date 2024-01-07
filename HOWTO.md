@@ -576,7 +576,7 @@ This build compiles several JavaScript sourcefiles and prepends headers to them:
 /* This is a simple, one-line header. */
 ```
 
-- `script2.js` is cmopiled into `script2.min.js` and prepended by a multi-line header  with static text:
+- `script2.js` is compiled into `script2.min.js` and prepended by a multi-line header  with static text:
 ```JS
 /* This is a
  * multiline
@@ -681,7 +681,7 @@ This example is found in [/examples/game](/examples/game).
 
 This example demonstrates a basic HTML5 platformer game built on the [myst.js](https://github.com/metayeti/myst.js) engine.
 
-The build demonstrates a typical game development scenario. The build accomplishes the following:
+The build demonstrates a typical game development scenario. It accomplishes the following:
 - Strips any debug-related code out of the release build
 - Bundles all scripts into one minified output and attaches a header with copyright and version info
 - Strips files we don't not need in release (files in `dev/` in this example)

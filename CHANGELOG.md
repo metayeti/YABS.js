@@ -9,7 +9,6 @@
 - `BUGFIX` More tiny bugfixes.
 - (wip) `FEATURE` Can now specify a default set of preprocessor variables.
 - (wip) `FEATURE` Any parameter, not just preprocessor variables allowed in `"batch_build"` `"options"` entry (this means you can make batch builds where one of the items will always --rebuild, etc.).
-- (maybe) `BUGFIX` Preprocess includes can now be used in bundles as well.
 
 ## 1.1.1 (September 12, 2023)
 - `HOTFIX` Glue step for bundled scripts now adds newlines between individual scripts to prevent cases where one script ending on a comment would comment out the next script's first line.

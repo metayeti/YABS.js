@@ -1,3 +1,12 @@
+/*
+ * YABS.js game example
+ * This example implements a simple HTML5 game.
+ */
+
+// init.js | Game initialization.
+
+/*jshint esversion:9*/
+
 const $canvas = document.getElementById('game');
 
 //
@@ -157,24 +166,53 @@ $canvas.addEventListener('click', () => {
 			// we have all assets required for the loadscreen
 			// run the game
 			game.run();
-			// play the loadscreen intro and wait until it's done
-			loadState.doIntro().then(() => {
-				// add a slight delay just for effect
-				const delay = 1500;
-				setTimeout(() => {
-					// start loading the game assets
-					assetList.game = loader.load({
-						assets: assetList.game,
-						done: function() {
-							// play the loadscreen outro
-							loadState.doOutro().then(() => {
-								// all done loading, allow input from the loadscreen
-								loadState.allowInput();
-							});
-						}
-					});
-				}, delay);
+
+// We will do perform some preprocessing wizardry here to determine if we're running a debug
+// (local) version of the game. For release, we want the fancy intro to be displayed and we
+// want to skip it normally.
+
+//? if (DEBUG) {
+
+	// Because this is a debug build, we can leave the code as-is as we want to run it locally.
+	// Trust the preprocessor to skip this block of code when building release.
+
+			// we're in debug, so just load assets and move to the game state immediately
+			assetList.game = loader.load({
+				assets: assetList.game, // here we are converting an asset list to actual assets
+				done: () => {
+					// all done loading assets
+					game.setState(gameState);
+				}
 			});
+
+//? } else if (RELEASE) {
+
+	// Because this is a release build and we do not wish this code to be running locally,
+	// we need to prefix every lines and enclose the lines with quotes. This will
+	// make the preprocessor "paste" the code in release.
+
+			// play the loadscreen intro and wait until it's done
+			//?= 'loadState.doIntro().then(() => {'
+				// add a slight delay just for effect
+				//?= 'const delay = 1500;'
+				//?= 'setTimeout(() => {'
+					// start loading the game assets
+					//?= 'assetList.game = loader.load({'
+						//?= 'assets: assetList.game,'
+						//?= 'done: () => {'
+							// play the loadscreen outro
+							//?= 'loadState.doOutro().then(() => {'
+								// all done loading, allow input from the loadscreen
+								//?= 'loadState.allowInput();'
+							//?= '});'
+						//?= '}'
+					//?= '});'
+				//?= '}, delay);'
+			//?= '});'
+
+//? }
+
+
 		}
 	});
 });

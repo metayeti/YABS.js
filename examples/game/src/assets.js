@@ -1,3 +1,11 @@
+/*
+ * YABS.js game example
+ * This example implements a simple HTML5 game.
+ */
+
+// assets.js | Lists game assets to be loaded.
+
+/*jshint esversion:9*/
 //
 // asset lists
 //
