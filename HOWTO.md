@@ -27,7 +27,7 @@
 
 ## 1. How it works
 
-This build system is based on a principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. Conveniently, these are the exact types of files we typically need to process before we prepare something for production (or, at least the author of this system does). The idea of this build system is to convert these 3 types of files into something we may push into production (i.e. create a "release" build), or that we build something that behaves *slightly* differently but allows us to test things better (i.e. a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
+This build system is based on a principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. Conveniently, these are the exact types of files we typically need to process before we prepare something for production (or, at least the author of this system does). The idea of this build system is to convert these 3 types of files into something we may push into production (i.e. create a "release" build), or that we build something which behaves *slightly* differently but allows us to test things better (i.e. a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
 
 To make YABS.js work, we feed it a build instructions file. This is a JSON-formatted file that contains instructions on how the build should be performed (i.e. tells YABS.js what to do). YABS.js then runs the build as instructed. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
 
@@ -37,7 +37,7 @@ For the most part, this is a content-unaware build system which only deals with 
 
 2. Compiles (and optionally, preprocesses or bundles) provided JavaScript sources and optionally attaches a custom header to the minified outputs. Headers may use variables extracted from the JSDoc-like tags in the sourcefile.
 
-3. Matches `<script src="...">` attributes in the HTML files to the associated JS sources and updates those entries to match compiled outputs (in practice this means that the `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
+3. Matches `<script src="...">` attributes in the output HTML files to the associated JS sources and updates those entries to match compiled outputs (in practice this means that `.js` extensions get converted to `.min.js`, but it is also possible to specify custom output filenames or bundle multiple scripts into one).
 
 Please double check your requirements to see if this featureset fits your needs and use one of the more advanced build systems if it does not.
 
@@ -679,7 +679,7 @@ To build this example, run `node build examples/events` from the repository root
 
 This example is found in [/examples/game](/examples/game).
 
-This example demonstrates a (very) basic platformer game built on the [myst.js](https://github.com/metayeti/myst.js) engine.
+This example demonstrates a basic HTML5 platformer game built on the [myst.js](https://github.com/metayeti/myst.js) engine.
 
 The build demonstrates a typical game development scenario. The build accomplishes the following:
 - Strips any debug-related code out of the release build
