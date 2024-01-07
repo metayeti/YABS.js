@@ -7,7 +7,9 @@
 
 /*jshint esversion:9*/
 
+//
 // asset loader
+//
 const loader = new myst.AssetLoader();
 
 //

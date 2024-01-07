@@ -7,9 +7,6 @@
 
 /*jshint esversion:9*/
 
-//
-// utilty
-//
 function waitUntil(conditionf) {
 	return new Promise((resolve, reject) => {
 		(function waitForIt() {

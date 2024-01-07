@@ -100,9 +100,22 @@ loadState.update = function() {
 };
 
 loadState.doIntro = function() {
+	const doingRandomThing = myst.choose([
+		'Retreiving hot sauce',
+		'Calling the flying saucer',
+		'Reticulating splines',
+		'Making tea',
+		'Mastering kung-fu',
+		'Soldering CPU',
+		'Powering up awesome',
+		'Activating almonds',
+		'Grinding gears',
+		'Activating flux capacitor',
+		'Staying hydrated'
+	]);
 	this.emulatedConsole.pushText('> HTML/5GW protected mode runtime\n\n');
 	this.emulatedConsole.pushText('Loading system ... ok!\n');
-	this.emulatedConsole.pushText('Loading hot sauce ... ok!\n');
+	this.emulatedConsole.pushText(`${doingRandomThing} ... ok!\n`);
 	this.emulatedConsole.pushText('Loading resources ... ');
 	// wait until the intro finishes
 	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
