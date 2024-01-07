@@ -101,17 +101,17 @@ loadState.update = function() {
 
 loadState.doIntro = function() {
 	const doingRandomThing = myst.choose([
-		'Retreiving hot sauce',
+		'Getting hot sauce',
 		'Calling the flying saucer',
 		'Reticulating splines',
-		'Making tea',
 		'Mastering kung-fu',
 		'Soldering CPU',
 		'Powering up awesome',
 		'Activating almonds',
-		'Grinding gears',
+		'Writing read-only memory',
 		'Activating flux capacitor',
-		'Staying hydrated'
+		'Staying hydrated',
+		'Milking space cows'
 	]);
 	this.emulatedConsole.pushText('> HTML/5GW protected mode runtime\n\n');
 	this.emulatedConsole.pushText('Loading system ... ok!\n');
