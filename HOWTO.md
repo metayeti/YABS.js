@@ -405,7 +405,7 @@ Preprocessor variables in bundles are on a per-bundle basis, not per-script - th
 
 YABS.js has two build events which occur at build time, the pre-build event (occurs before the build begins) and the post-build event (occurs after the build completes).
 
-We can call custom scripts when these events occur. We do so by adding an `"events"` entry to our build instructions file and inside, add either `"prebuild"`, `"postbuild"` (or both) entries. Then, list the scripts we wish to run on this events in them:
+We can call custom scripts when these events occur. We do so by adding an `"events"` entry to our build instructions file and inside, add either `"prebuild"`, `"postbuild"` (or both) entries. Then, list the scripts we wish to run on these events in them:
 
 ```JSON
   "events": {
