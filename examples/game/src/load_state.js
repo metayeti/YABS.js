@@ -102,7 +102,7 @@ loadState.update = function() {
 loadState.doIntro = function() {
 	this.emulatedConsole.pushText('> HTML/5GW protected mode runtime\n\n');
 	this.emulatedConsole.pushText('Loading system ... ok!\n');
-	this.emulatedConsole.pushText('Loading awesome ... ok!\n');
+	this.emulatedConsole.pushText('Loading hot sauce ... ok!\n');
 	this.emulatedConsole.pushText('Loading resources ... ');
 	// wait until the intro finishes
 	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
@@ -111,7 +111,7 @@ loadState.doIntro = function() {
 loadState.doOutro = function() {
 	this.emulatedConsole.pushText('all done!\n\n');
 	this.emulatedConsole.pushText('----\n\n');
-	this.emulatedConsole.pushText('PRESS ANY KEY TO CONTINUE');
+	this.emulatedConsole.pushText('PRESS ANY KEY');
 	// wait until the outro finishes
 	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
 };

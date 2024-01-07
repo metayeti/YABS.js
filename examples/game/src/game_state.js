@@ -15,6 +15,11 @@ const gameState  = new myst.State();
 gameState.init = function() {
 };
 
+gameState.enter = function() {
+	// play game music as we enter game
+	assets.game.music.gametrack.play();
+};
+
 gameState.draw = function() {
 	this.surface.clear();
 };
