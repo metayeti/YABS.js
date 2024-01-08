@@ -1,6 +1,6 @@
 ![YABS.js](/logo.png?raw=true)
 
-YABS.js is a single-file, minimalistic, general-purpose build system for JavaScript projects.
+YABS.js is a single-file, minimalistic, general-purpose and old-school to the core build system for JavaScript projects.
 
 v1.2.0 dev
 
