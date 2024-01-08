@@ -1,0 +1,31 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/tests/10_preproc_default/",
+	"html": "index.html",
+	"sources": [
+		{
+			"file": "src/script.js",
+			"preprocess": "true",
+			"variables": {
+				"default": [
+					"DEBUG=true",
+					"FLAG_A=false",
+					"FLAG_B=true"
+				],
+				"debug": [
+					"DEBUG=true",
+					"FLAG_A=true",
+					"FLAG_B=false"
+				],
+				"release": [
+					"DEBUG=false",
+					"FLAG_A=true",
+					"FLAG_B=true"
+				]
+			}
+		}
+	],
+	"files": [
+		"css/*.css"
+	]
+}

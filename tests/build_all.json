@@ -8,6 +8,7 @@
 		"06_backref_script",
 		"07_backref_bundle",
 		"08_script_with_params",
-		"09_html_with_comments"
+		"09_html_with_comments",
+		"10_preproc_default"
 	]
 }
