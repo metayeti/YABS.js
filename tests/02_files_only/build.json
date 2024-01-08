@@ -1,0 +1,7 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/tests/02_files_only/",
+	"files": [
+		"*.txt"
+	]
+}

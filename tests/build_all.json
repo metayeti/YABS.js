@@ -1,10 +1,13 @@
 {
 	"batch_build": [
 		"01_empty",
-		"02_backref_files/project",
-		"03_backref_script",
-		"04_backref_bundle",
-		"05_script_with_params",
-		"06_html_with_comments"
+		"02_files_only",
+		"03_html_only",
+		"04_js_only",
+		"05_backref_files/project",
+		"06_backref_script",
+		"07_backref_bundle",
+		"08_script_with_params",
+		"09_html_with_comments"
 	]
 }

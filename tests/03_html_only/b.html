@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>YABS.js test 03: html_only</title>
+	<style>
+body {
+	margin: 0;
+	padding: 15px;
+	background-color: #e3d666;
+	background-size: 5px 5px;
+	background-image:
+		linear-gradient(to right, #ddce4a 1px, transparent 1px),
+		linear-gradient(to bottom, #ddce4a 1px, transparent 1px);
+}
+hr {
+	border: 0;
+	border-top: 1px solid #000;
+	margin: 10px 0;
+}
+h1, h2, p, a {
+	margin: 0;
+	font-family: sans-serif;
+	color: #000;
+}
+h2 {
+	padding: 5px 0;
+}
+p {
+	padding: 10px 0;
+	font-size: 15px;
+}
+a {
+	color: #0e43e3;
+	text-decoration: none;
+}
+a:hover,
+a:focus {
+	text-decoration: underline;
+}
+img {
+	padding: 10px 0;
+}
+.highlight {
+	color: #e3430e;
+}
+h2.title {
+	font-size: 23px;
+	font-weight: bold;
+}
+a.inactive {
+	color: #000;
+	pointer-events: none;
+}
+a.inactive::before {
+	content: '[ ';
+}
+a.inactive::after {
+	content: ' ]';
+}
+code {
+	background-color: rgba(0,0,0,0.15);
+	color: #000;
+}
+	</style>
+</head>
+<body>
+	<header>
+		<h2 class="title">YABS.js html_only test</h2>
+		<hr>	
+	</header>
+	<main id="content">
+		<p>This test makes sure HTML files can be built by themselves.</p>
+		<p class="highlight">b.html</p>
+	</main>
+</body>
+</html>

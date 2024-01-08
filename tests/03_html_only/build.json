@@ -1,0 +1,8 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/tests/03_html_only/",
+	"html": [
+		"a.html",
+		"b.html"
+	]
+}

@@ -1,4 +1,4 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/01_empty/"
+	"destination_dir": "build/tests/01_empty/"
 }
