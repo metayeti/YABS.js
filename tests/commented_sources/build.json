@@ -1,6 +1,6 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/tests/09_html_with_comments/",
+	"destination_dir": "build/tests/commented_sources/",
 	"html": "index.html",
 	"sources": [
 		"src/script1.js"

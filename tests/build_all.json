@@ -1,14 +1,14 @@
 {
 	"batch_build": [
-		"01_empty",
-		"02_files_only",
-		"03_html_only",
-		"04_js_only",
-		"05_backref_files/project",
-		"06_backref_script",
-		"07_backref_bundle",
-		"08_script_with_params",
-		"09_html_with_comments",
-		"10_preproc_default"
+		"empty",
+		"files_only",
+		"html_only",
+		"js_only",
+		"backref_files/project",
+		"backref_script",
+		"backref_bundle",
+		"script_with_params",
+		"commented_sources",
+		"preproc_default"
 	]
 }

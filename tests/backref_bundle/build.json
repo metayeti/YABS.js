@@ -1,6 +1,6 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/tests/07_backref_bundle/",
+	"destination_dir": "build/tests/backref_bundle/",
 	"html": "html/index.html",
 	"sources": [
 		{

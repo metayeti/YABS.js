@@ -1,6 +1,6 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/tests/04_js_only/",
+	"destination_dir": "build/tests/js_only/",
 	"sources": [
 		"a.js",
 		"b.js"

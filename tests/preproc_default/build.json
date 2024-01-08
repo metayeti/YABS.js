@@ -1,6 +1,6 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/tests/10_preproc_default/",
+	"destination_dir": "build/tests/preproc_default/",
 	"html": "index.html",
 	"sources": [
 		{
