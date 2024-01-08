@@ -1,0 +1,11 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/tests/08_script_with_params/",
+	"html": "index.html",
+	"sources": [
+		"src/script.js"
+	],
+	"files": [
+		"css/*.css"
+	]
+}

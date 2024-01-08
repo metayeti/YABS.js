@@ -1,9 +1,9 @@
 {
 	"source_dir": "./",
-	"destination_dir": "build/tests/05_script_with_params/",
+	"destination_dir": "build/tests/09_html_with_comments/",
 	"html": "index.html",
 	"sources": [
-		"src/script.js"
+		"src/script1.js"
 	],
 	"files": [
 		"css/*.css"
