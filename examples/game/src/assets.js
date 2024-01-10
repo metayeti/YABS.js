@@ -25,10 +25,11 @@ const assets = {
 	// main game assets
 	game: {
 		graphics: {
-			gamefont: 'data/gfx/gamefont.png'
+			gamefont: 'data/gfx/gamefont.png',
+			player: 'data/gfx/player.png'
 		},
 		music: {
-			gametrack: 'data/music/game.mp3'
+			//gametrack: 'data/music/game.mp3'
 		}
 	}
 };

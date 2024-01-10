@@ -82,7 +82,7 @@ $canvas.addEventListener('click', () => {
 			// run the game
 			game.run();
 
-// We will do perform some preprocessing wizardry here to determine if we're running a debug
+// We will do some preprocessing wizardry here to determine if we're running a debug
 // (local) version of the game. For release, we want the fancy intro to be displayed and we
 // want to skip it normally.
 
@@ -133,7 +133,7 @@ $canvas.addEventListener('click', () => {
 
 //? if (DEBUG) {
 
-	// Comment or uncomment the following lineto skip the splash for debug builds.
-	//$canvas.click();
+	// Comment or uncomment the following line to skip the splash for debug builds.
+	$canvas.click();
 
 //? }

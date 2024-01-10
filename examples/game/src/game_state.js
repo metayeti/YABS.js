@@ -13,11 +13,18 @@
 const gameState  = new myst.State();
 
 gameState.init = function() {
+	// graphics
+	//this.gfx_master = assets.game.master;
+
+	this.world = null;
+
+	this.camera = [0, 0];
 };
 
 gameState.enter = function() {
+	this.startNewGame();
 	// play game music as we enter game
-	assets.game.music.gametrack.play();
+	//assets.game.music.gametrack.play();
 };
 
 gameState.draw = function() {
@@ -25,4 +32,8 @@ gameState.draw = function() {
 };
 
 gameState.update = function() {
+};
+
+gameState.startNewGame = function() {
+	this.world = new World();
 };
