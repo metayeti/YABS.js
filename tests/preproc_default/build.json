@@ -9,16 +9,13 @@
 			"variables": {
 				"default": [
 					"DEBUG=true",
-					"FLAG_A=false",
 					"FLAG_B=true"
 				],
 				"debug": [
 					"DEBUG=true",
-					"FLAG_A=true",
-					"FLAG_B=false"
+					"FLAG_A=true"
 				],
 				"release": [
-					"DEBUG=false",
 					"FLAG_A=true",
 					"FLAG_B=true"
 				]

@@ -27,7 +27,7 @@
 
 ## 1. How it works
 
-This build system is based on a principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. Conveniently, these are the exact types of files we typically need to process before we prepare something for production (or, at least the author of this system does). The idea of this build system is to convert these 3 types of files into something we may push into production (i.e. create a "release" build), or that we build something which behaves *slightly* differently but allows us to test things better (i.e. a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
+This build system is based on a principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. Conveniently, these are the exact types of files we typically need to process before we prepare something for production (or, at least the author of this system does). The idea of this build system is to convert these 3 types of files into something we can push into production (create a "release" build), or that we create something which behaves *slightly* differently than usual but allows us to test things better (create "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
 
 To make YABS.js work, we feed it a build instructions file. This is a JSON-formatted file that contains instructions on how the build should be performed (i.e. tells YABS.js what to do). YABS.js then runs the build as instructed. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
 
@@ -286,6 +286,23 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
 The above build instructions file generates a `build.js` file (rather than the default `yabs.min.js` if the `"output_file"` entry were omitted), and it uses the `"--compress"` compiler option rather than the default `"--mangle --compress"`. A brief explanation of these options is that `--compress` will eliminate whitespace and comments whereas `--mangle` will also rename variables to their shortest forms. The reason YABS.js uses --compress only is so the code is easier to beautify and audit.
 
 ### 5.4. Using the preprocessor
+
+The preprocessor adds a layer of metaprogramming which adds a lot of power and flexibility to our build process. Preprocessing is delegated to [MetaScript](https://github.com/dcodeIO/MetaScript).
+
+
+YABS.js by default will not invoke the preprocessor. The preprocessor will be invoked in one of the following two scenarios:
+
+1. bla bla
+
+```code
+```
+
+2. bla bla
+
+
+### (old) 5.4. Using the preprocessor
+
+(TODO remove)
 
 The preprocessor adds a layer of metaprogramming facilities which we can utilize when compiling sourcefiles. This adds a lot of power to our build process. For example, we can use preprocessor variables to control which code inside of a sourcefile gets compiled into the final output file. This way we can for example add debugging features which we can use during development, and which we can then skip in the final release build. Or we can make separate debug and release builds, such as the example below will attempt to demonstrate. YABS.js primarily focuses on preprocessor variables, but there is a lot more we can achieve with the preprocessor.
 
@@ -637,9 +654,18 @@ To build this example, run `node build examples/website` from the repository roo
 
 This example is found in [/examples/preprocessor](/examples/preprocessor).
 
-This example demonstrates several ways to use the preprocessor.
+This example demonstrates sone of the ways in which we can use the preprocessor.
+
+The relevant files are the following, the comments of which exaplain most of what is going on.
+- script1.js
+- script2.js
+- script3.js
+
+
 
 To build this example, run `node build examples/preprocessor` from the repository root.
+
+Some other ways to build this example, using varying set preprocessor 
 
 ### 7.5. Bundle
 

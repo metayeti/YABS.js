@@ -1,0 +1,37 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/examples/preprocessor/",
+	"variables": {
+		"my_variables": {
+			"debug": [
+				"DEBUG=true"
+			]
+		}
+	},
+	"html": "index.html",
+	"sources": [
+		{
+			"file": "src/script.js",
+			"use_variables": "my_variables",
+			"preprocess": true
+		},
+		{
+			"file": "src/include.js",
+			"preprocess": true
+		},
+		{
+			"file": "src/variables.js",
+			"variables": {
+				"param1": [
+					"PARAM1=true"
+				],
+				"param2": [
+					"PARAM2=true"
+				]
+			}
+		}
+	],
+	"files": [
+		"css/*.css"
+	]
+}
