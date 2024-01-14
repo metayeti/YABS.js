@@ -1084,13 +1084,21 @@ yabs.Builder = class {
 			const has_variables = variables_data.has_variables;
 			const variables_listing = variables_data.variables;
 			if (manifest_entry.force_preprocessor) {
+				// we're forcing the preprocessor, so we're gonna use it regardless
 				use_preprocessor = true;
 			}
-			else {
-				if (has_variables) {
+			else if (has_variables) {
+				if (!variable_params.length && variables_listing.hasOwnProperty('default')) {
+					// we have a default variable listing and no parameters, in which case we enable the preprocessor
+					use_preprocessor = true;
+					// add the implied -default parameter
+					variable_params.push('default');
+				}
+				else {
 					// check if any entry in variables_list matches a provided -variable parameter
 					for (let i = 0; i < variable_params.length; ++i) {
 						if (variables_listing.hasOwnProperty(variable_params[i])) {
+							// we have a match, enable the preprocessor
 							use_preprocessor = true;
 							break;
 						}
@@ -1117,7 +1125,7 @@ yabs.Builder = class {
 				});
 				preprocessor_params = preprocessor_params_list.join(' ');
 			}
-			// set skip flag so we can optimize the build process
+			// set skip flag so we can optimize the build process in some cases
 			const skip_glue = (manifest_entry.sources.length <= 1);
 
 			// we can now begin the compilation process for this entry

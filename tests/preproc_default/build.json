@@ -8,16 +8,16 @@
 			"preprocess": "true",
 			"variables": {
 				"default": [
-					"DEBUG=true",
-					"FLAG_B=true"
+					"DEBUG=1",
+					"FLAG_B=1"
 				],
 				"debug": [
-					"DEBUG=true",
-					"FLAG_A=true"
+					"DEBUG=1",
+					"FLAG_A=1"
 				],
 				"release": [
-					"FLAG_A=true",
-					"FLAG_B=true"
+					"FLAG_A=1",
+					"FLAG_B=1"
 				]
 			}
 		}

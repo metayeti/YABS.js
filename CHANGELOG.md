@@ -3,8 +3,7 @@
 - `FEATURE` Pre-build and post-build events.
 - `FEATURE` Friendlier examples and better manual.
 - `FEATURE` Added enumerated output to batch builds so that failed builds can be identified clearly.
-- (wip) `FEATURE` Can now specify a default set of preprocessor variables.
-- (wip) `FEATURE` Any parameter and not just preprocessor variables allowed in `"batch_build"` `"options"` entry (this means you can make batch builds where one of the items will always --rebuild, etc.).
+- `FEATURE` Can now specify a default set of preprocessor variables.
 - `BUGFIX` HTML comments which contain `<script>` definitions will be skipped in output to prevent needlessly modifying commented-out markup code.
 - `BUGFIX` Fixed a bug where relative paths were calculated incorrectly for bundled scripts with paths going backwards (`<script src="../script.min.js">`). Also fixes relative paths for arbitrary `output_file` values.
 - `BUGFIX` Fixed a bug where output `<script>` tags would not update correctly when additional parameters were added to `src`, for example `<script src="code.js?a=p1&b=p2">`.
