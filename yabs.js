@@ -282,7 +282,7 @@ yabs.Logger = class {
 		this._OUTPUT_BRIGHT    = (is_tty) ? '\x1b[1m'  : '';
 		this._OUTPUT_FG_RED    = (is_tty) ? '\x1b[31m' : '';
 		this._OUTPUT_FG_GREEN  = (is_tty) ? '\x1b[32m' : '';
-		this._OUTPUT_FG_YELLOW = (is_tty) ? "\x1b[33m" : '';
+		this._OUTPUT_FG_YELLOW = (is_tty) ? '\x1b[33m' : '';
 	}
 	/**
 	 * Prints a message, followed by newline.
