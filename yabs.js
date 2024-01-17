@@ -52,7 +52,7 @@ yabs.COMPILE_FILE_EXTENSION = '.cmp';
 
 yabs.COMPILED_SOURCE_EXTENSION = '.min.js';
 
-yabs.URL_YABS_MANUAL = 'https://github.com/metayeti/YABS.js/blob/main/HOWTO.md';
+yabs.URL_YABS_MANUAL = 'https://github.com/metayeti/YABS.js/blob/main/MANUAL.md';
 
 ////////////////////////////////////////////////////////////////////////////////
 //

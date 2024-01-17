@@ -16,7 +16,7 @@ v1.2.0 dev
 
 ## Reference
 
-Please see [HOWTO.md](/MANUAL.md) for a detailed overview.
+Please see [MANUAL.md](/MANUAL.md) for a detailed overview.
 
 ## Contribution
 
