@@ -1,0 +1,11 @@
+{
+	"source_dir": "./",
+	"destination_dir": "build/examples/preprocessor/",
+	"variables": {
+	},
+	"html": "index.html",
+	"sources": [
+	],
+	"files": [
+	]
+}
