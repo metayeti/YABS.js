@@ -27,7 +27,7 @@
 
 ## 1. How it works
 
-This build system is based on a principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. Conveniently, these are the exact types of files we typically need to process before we prepare something for production (or, at least the author of this system does). The idea of this build system is to convert these 3 types of files into something we can push into production (create a "release" build), or that we create something which behaves *slightly* differently than usual but allows us to test things better (create "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
+This build system is based on a principal observation that web projects typically consist of three relatively distinct things: some HTML files, some JavaScript files and some *other* files like stylesheets, images, or any other files relevant to the project. Conveniently, these are the exact types of files we typically need to process before we prepare something for production (or, at least the author of this system does). The idea of this build system is to convert these 3 types of files into something we can push into production (create a "release" build), or that we create something which behaves *slightly* differently than usual but allows us to test things better (create a "debug" build). There are of course countless other ways in which we could use a build system to our advantage.
 
 To make YABS.js work, we feed it a build instructions file. This is a JSON-formatted file that contains instructions on how the build should be performed (i.e. tells YABS.js what to do). YABS.js then runs the build as instructed. If the build is successful, a "Build finished!" message will appear and the finished build will materialize at the build destination directory.
 
@@ -325,7 +325,7 @@ With the above variables listing, the preprocessor will be invoked for `script.j
 
 This will ensure the preprocessor is always invoked when compiling `script.js`.
 
-3. We have a `"default"` entry in our variables listing:
+3. We have a `"default"` entry in the variables listing:
 
 ```JSON
   "sources": [
