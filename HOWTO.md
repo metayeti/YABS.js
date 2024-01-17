@@ -1,7 +1,5 @@
 ![YABS.js](/logo.png?raw=true)
 
-This is the user manual for YABS.js.
-
 ## Contents
 
 1. [How it works](#1-how-it-works)
@@ -295,9 +293,9 @@ TODO variables
 
 ---
 
-YABS.js by default will not invoke the preprocessor. The preprocessor will be invoked in one of the following two scenarios:
+YABS.js by default will not run the preprocessor when compiling sourcefiles. The preprocessor will be invoked in one of the following three scenarios:
 
-1. We run the build with a variable group which is defined in `build.json`, for example:
+1. We run the build with the variable group which is defined in `build.json`, for example:
 
 ```JSON
   "sources": [
@@ -305,14 +303,14 @@ YABS.js by default will not invoke the preprocessor. The preprocessor will be in
       "file": "src/script.js",
       "variables": {
         "debug": [
-          "DEBUG=true"
+          "VARIABLE=example_value"
         ]
       }
     }
   ]
 ```
 
-With the above variables listing, the preprocessor will be invoked when compiling `script.js` whenever a `-debug` flag is passed to the build system.
+With the above variables listing, the preprocessor will be invoked for `script.js` if the `-debug` flag has been passed to the build system.
 
 2. We manually enable preprocessing using the `"preprocessor"` flag:
 
@@ -327,6 +325,22 @@ With the above variables listing, the preprocessor will be invoked when compilin
 
 This will ensure the preprocessor is always invoked when compiling `script.js`.
 
+3. We have a `"default"` entry in our variables listing:
+
+```JSON
+  "sources": [
+    {
+      "file": "src/script.js",
+      "variables": {
+        "default": [
+          "VARIABLE=example_value"
+        ]
+      }
+    }
+  ]
+```
+
+With above listing, the preprocessor will be invoked for `script.js` by default.
 
 ### (old) 5.4. Using the preprocessor
 

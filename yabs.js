@@ -1088,6 +1088,8 @@ yabs.Builder = class {
 				use_preprocessor = true;
 			}
 			else if (has_variables) {
+				//TODO fix; this is not good because a batch build might be invoked with -blah for X while Y will want to build default
+				//          instead of this we need to simply see if -blah exists in the variables listing, if not use default
 				if (!variable_params.length && variables_listing.hasOwnProperty('default')) {
 					// we have a default variable listing and no parameters, in which case we enable the preprocessor
 					use_preprocessor = true;

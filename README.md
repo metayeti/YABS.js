@@ -12,11 +12,11 @@ v1.2.0 dev
 - Adds preprocessor superpowers
 - Build events
 - Batch building
-- [And more!](/MANUAL.md)
+- [And more!](/HOWTO.md)
 
 ## Reference
 
-Please see [MANUAL.md](/MANUAL.md) for a detailed overview.
+Please see [HOWTO.md](/HOWTO.md) for a detailed overview.
 
 ## Contribution
 
