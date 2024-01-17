@@ -6,17 +6,17 @@ v1.2.0 dev
 
 ## Features
 
-- Stupid simple to use: drop `build.js` into your project, describe your build with `build.json` and run your build with `node build`
+- Amusingly easy to use: drop `build.js` into your project, describe your build with `build.json` and run your build with `node build`
 - Script minification and bundling
 - Can prepend info headers (with copyright and such) to compiled scripts
-- Preprocessor superpowers
+- Adds preprocessor superpowers
 - Build events
 - Batch building
-- [And more!](/HOWTO.md)
+- [And more!](/MANUAL.md)
 
 ## Reference
 
-Please see [HOWTO.md](/HOWTO.md) for a detailed overview.
+Please see [HOWTO.md](/MANUAL.md) for a detailed overview.
 
 ## Contribution
 

@@ -1,5 +1,7 @@
 ![YABS.js](/logo.png?raw=true)
 
+This is the user manual for YABS.js.
+
 ## Contents
 
 1. [How it works](#1-how-it-works)
@@ -289,15 +291,41 @@ The above build instructions file generates a `build.js` file (rather than the d
 
 The preprocessor adds a layer of metaprogramming which adds a lot of power and flexibility to our build process. Preprocessing is delegated to [MetaScript](https://github.com/dcodeIO/MetaScript).
 
+TODO variables
+
+---
 
 YABS.js by default will not invoke the preprocessor. The preprocessor will be invoked in one of the following two scenarios:
 
-1. bla bla
+1. We run the build with a variable group which is defined in `build.json`, for example:
 
-```code
+```JSON
+  "sources": [
+    {
+      "file": "src/script.js",
+      "variables": {
+        "debug": [
+          "DEBUG=true"
+        ]
+      }
+    }
+  ]
 ```
 
-2. bla bla
+With the above variables listing, the preprocessor will be invoked when compiling `script.js` whenever a `-debug` flag is passed to the build system.
+
+2. We manually enable preprocessing using the `"preprocessor"` flag:
+
+```JSON
+  "sources": [
+    {
+      "file": "src/script.js",
+      "preprocess": true
+    }
+  ]
+```
+
+This will ensure the preprocessor is always invoked when compiling `script.js`.
 
 
 ### (old) 5.4. Using the preprocessor
