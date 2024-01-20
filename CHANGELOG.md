@@ -1,4 +1,5 @@
 ## 1.2.0 (?)
+- (maybe) `FEATURE` When using preprocessor variables, `"false"` and `"0"` values are now passed as falsies. This enables us to create preprocessor values with `"true"` and `"false"` values, for example: `"FOO=true"` and `"BAR=false"`.
 - `FEATURE` Recursive batch building is now allowed (you can batch-build a bunch of batch-builds).
 - `FEATURE` Pre-build and post-build events.
 - `FEATURE` Friendlier examples and better manual.

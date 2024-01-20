@@ -1,6 +1,6 @@
 {
 	const $content = document.getElementById('content');
 	const $p = document.createElement('p');
-	$p.innerHTML = 'Output from <span class="highlight">included_b.js</span>!';
+	$p.innerHTML = 'This is output from included script at <span class="highlight">include\\include_a.js</span>!';
 	$content.appendChild($p);
 }

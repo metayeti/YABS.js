@@ -1088,27 +1088,6 @@ yabs.Builder = class {
 				use_preprocessor = true;
 			}
 			else if (has_variables) {
-				//TODO remove
-				/*
-				//TODO fix; this is not good because a batch build might be invoked with -blah for X while Y will want to build default
-				//          instead of this we need to simply see if -blah exists in the variables listing, if not use default
-				if (!variable_params.length && variables_listing.hasOwnProperty('default')) {
-					// we have a default variable listing and no parameters, in which case we enable the preprocessor
-					use_preprocessor = true;
-					// add the implied -default parameter
-					variable_params.push('default');
-				}
-				else {
-					// check if any entry in variables_list matches a provided -variable parameter
-					for (let i = 0; i < variable_params.length; ++i) {
-						if (variables_listing.hasOwnProperty(variable_params[i])) {
-							// we have a match, enable the preprocessor
-							use_preprocessor = true;
-							break;
-						}
-					}
-				}
-				*/
 				// check if any entry in variables_list matches a provided -variable parameter
 				for (let i = 0; i < variable_params.length; ++i) {
 					if (variables_listing.hasOwnProperty(variable_params[i])) {
@@ -1118,6 +1097,7 @@ yabs.Builder = class {
 					}
 				}
 				// if not, we may still have the "default" variable group
+				// (passed variable parameters are prioritized, which is why we check those first)
 				if (!use_preprocessor && variables_listing.hasOwnProperty('default')) {
 					// default group found, enable the preprocessor
 					use_preprocessor = true;

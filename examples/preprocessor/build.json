@@ -2,10 +2,35 @@
 	"source_dir": "./",
 	"destination_dir": "build/examples/preprocessor/",
 	"variables": {
+		"some_variables": {
+			"param1": [
+				"VAR=foo"
+			],
+			"param2": [
+				"VAR=bar"
+			]
+		}
 	},
 	"html": "index.html",
 	"sources": [
+		{
+			"file": "src/local.js",
+			"variables": {
+				"release": [
+					"RELEASE=true"
+				]
+			}
+		},
+		{
+			"file": "src/variables.js",
+			"use_variables": "some_variables"
+		},
+		{
+			"file": "src/include.js",
+			"preprocess": true
+		}
 	],
 	"files": [
+		"css/*.css"
 	]
 }

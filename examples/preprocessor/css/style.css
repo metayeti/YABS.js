@@ -42,3 +42,6 @@ h2.title {
 	font-size: 23px;
 	font-weight: bold;
 }
+code {
+	background-color: rgba(0,0,0,0.2);
+}
