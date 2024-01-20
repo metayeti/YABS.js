@@ -9,11 +9,13 @@
 			"variables": {
 				"default": [
 					"DEBUG=1",
+					"FLAG_A=",
 					"FLAG_B=1"
 				],
 				"debug": [
 					"DEBUG=1",
-					"FLAG_A=1"
+					"FLAG_A=1",
+					"FLAG_B="
 				],
 				"release": [
 					"FLAG_A=1",
