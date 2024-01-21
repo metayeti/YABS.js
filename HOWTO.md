@@ -523,9 +523,7 @@ setTimeout(() => {
 
 The `{exit: 'ok'}` parameter which we send back to YABS.js is merely convention as any non-empty parameter will signal YABS.js to continue building.
 
-First two arguments sent to the script are the current build source directory, and the current build destination directory, which we can extract like this:
-
-Additional arguments can be passed to the scripts. All arguments that come after the first two are custom arguments which we can add to the events entry in the build instructions file. For example:
+First two arguments sent to the script are the current build source directory and the current build destination directory. Additional arguments can be passed to the scripts in the following way: 
 
 ```JSON
   "events": {
@@ -535,19 +533,19 @@ Additional arguments can be passed to the scripts. All arguments that come after
   }
 ```
 
-Now we can extract these parameters in the script:
+We can extract all of these parameters in the script:
 
 ```JS
 // Discard the first two arguments if we don't need them.
 // (Path to node and path to script.)
 const argv = process.argv.slice(2);
 
-// Now we can extract the first two arguments from YABS.js:
+// Now we can extract the first two arguments that come from YABS.js:
 const build_source_dir = argv[0]; // Build source directory.
 const build_destination_dir = argv[1]; // Build destination directory.
 
-// At this point we can extract all the other extra arguments:
-const extra_params = argv.slice(2); // Discard the build source directories.
+// At this point we can extract all the other extra arguments to get the surplus arguments.
+const extra_params = argv.slice(2);
 // The value of extra_params for this example is now:
 // ["-some", "-custom", "-parameters"]
 ```
