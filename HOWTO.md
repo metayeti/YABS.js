@@ -65,7 +65,7 @@ The `📄 build.js` file is a compiled version of `📄 yabs.js` - you can use e
 
 YABS.js will automatically default to `📄 build_all.json` or `📄 build.json` (in that order) whenever the build instructions file is not explicitly provided as a command line parameter.
 
-If you wish to pass a custom build instructions file, invoke YABS.js with a parameter: `node build something.json`. Note that only one such parameter will be accepted (if you want to build multiple things in one go, you can use YABS.js in [batch mode](#56-batch-building)).
+If you wish to pass a custom build instructions file, invoke YABS.js with a parameter: `node build something.json`. Note that only one such parameter will be accepted (if you want to build multiple things in one go, you can use YABS.js in [batch mode](#58-batch-building)).
 
 If your `📄 build.json` file is located in a directory relative to the location of YABS.js, you can just pass that directory to the build system: `node build something`. In this example, the assumption is that `something/build.json` (or `something/build_all.json`) exists.
 
