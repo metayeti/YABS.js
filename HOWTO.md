@@ -75,7 +75,7 @@ You can build YABS.js itself by running `node yabs build.json` from the reposito
 
 Some other commands you can try to run from the repository root:
 
-- `node build examples/minimal` (builds the [minimal](#71-minimal) example)
+- `node build examples/minimal` (builds the [minimal](#61-minimal) example)
 - `node build examples` (builds all examples)
 - `node build tests` (builds all tests)
 - `node build` (build everything)
