@@ -11,11 +11,11 @@
 
 //? if (VAR=="foo") {
 
-	$p.innerHTML = 'This build was invoked with -param1 and has <code>VAR="foo"</code>.';
+	$p.innerHTML = 'This build was invoked with -param1 and has variable<code>VAR="foo"</code>.';
 
 //? } else if (VAR=="bar") {
 
-	$p.innerHTML = 'This build was invoked with -param2 and has <code>VAR="bar"</code>.';
+	$p.innerHTML = 'This build was invoked with -param2 and has variable <code>VAR="bar"</code>.';
 
 //? } else {
 

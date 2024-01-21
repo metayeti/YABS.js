@@ -21,7 +21,7 @@
 
 /* This will be evaluated locally, or whenever the -release parameter has not been passed. */
 
-	$p.innerHTML = 'This example is running locally, or was not invoked with -release.';
+	$p.innerHTML = 'This example is running locally, or this build was not invoked with -release.';
 
 //? }
 

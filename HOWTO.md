@@ -9,21 +9,22 @@
 5. [Build instructions file](#5-build-instructions-file)  
   5.1. [Adding custom headers to scripts](#51-adding-custom-headers-to-scripts)  
   5.2. [Adding variables to custom headers](#52-adding-variables-to-custom-headers)  
-  5.3. [Output filenames and compile options](#53-output-filenames-and-compile-options)  
-  5.4. [Using the preprocessor](#54-using-the-preprocessor)  
-  5.5. [Bundling scripts](#55-bundling-scripts)  
-  5.6. [Build events](#56-build-events)  
-  5.7. [Batch building](#57-batch-building)
-6. [Command line parameters](#6-command-line-parameters)
-7. [Examples](#7-examples)  
-  7.1. [Minimal](#71-minimal)  
-  7.2. [Headers](#72-headers)  
-  7.3. [Website](#73-website)  
-  7.4. [Preprocessor](#74-preprocessor)  
-  7.5. [Bundle](#75-bundle)  
-  7.6. [Library](#76-library)  
-  7.7. [Events](#77-events)  
-  7.8. [Game](#78-game)
+  5.3. [Source output filename](#53-source-output-filename)  
+  5.4. [Compile options](#54-compile-options)  
+  5.5. [Using the preprocessor](#55-using-the-preprocessor)  
+  5.6. [Bundling scripts](#56-bundling-scripts)  
+  5.7. [Build events](#57-build-events)  
+  5.8. [Batch building](#58-batch-building)
+6. [Examples](#6-examples)  
+  6.1. [Minimal](#61-minimal)  
+  6.2. [Headers](#62-headers)  
+  6.3. [Website](#63-website)  
+  6.4. [Preprocessor](#64-preprocessor)  
+  6.5. [Bundle](#65-bundle)  
+  6.6. [Library](#66-library)  
+  6.7. [Events](#67-events)  
+  6.8. [Game](#68-game)
+7. [Command line parameters](#7-command-line-parameters)
 
 ## 1. How it works
 
@@ -56,17 +57,17 @@ The MetaScript package is only needed if your builds leverage the preprocessor, 
 
 The most common usage pattern goes like this:
 
-1. Drop `build.js` or `yabs.js` into your project's root folder.
-2. Create a `build.json` file and describe the build you wish to perform.
-3. Run the build with `node build` (or `node yabs` if you used `yabs.js`).
+1. Drop `📄 build.js` or `📄 yabs.js` into your project's root folder.
+2. Create a `📄 build.json` file and describe the build you wish to perform.
+3. Run the build with `node build` (or `node yabs` if you used `📄 yabs.js`).
 
-The `build.js` file is a compiled version of `yabs.js` - you can use either for your projects, they are equivalent in function.
+The `📄 build.js` file is a compiled version of `📄 yabs.js` - you can use either for your projects, they are equivalent in function.
 
-YABS.js will automatically default to `build_all.json` or `build.json` (in that order) whenever the build instructions file is not explicitly provided as a command line parameter.
+YABS.js will automatically default to `📄 build_all.json` or `📄 build.json` (in that order) whenever the build instructions file is not explicitly provided as a command line parameter.
 
 If you wish to pass a custom build instructions file, invoke YABS.js with a parameter: `node build something.json`. Note that only one such parameter will be accepted (if you want to build multiple things in one go, you can use YABS.js in [batch mode](#56-batch-building)).
 
-If your `build.json` file is located in a directory relative to the location of YABS.js, you can just pass that directory to the build system: `node build something`. In this example, the assumption is that `something/build.json` (or `something/build_all.json`) exists.
+If your `📄 build.json` file is located in a directory relative to the location of YABS.js, you can just pass that directory to the build system: `node build something`. In this example, the assumption is that `something/build.json` (or `something/build_all.json`) exists.
 
 You can build YABS.js itself by running `node yabs build.json` from the repository root, upon which you should see something like this as output:
 
@@ -242,11 +243,11 @@ If we used the shared `"headers"` entry in the build instructions file (and then
 
 If we use a bundle, all scripts in the bundle will be scanned for values and the last read has priority and overwrites any previously read.
 
-### 5.3. Output filenames and compile options
+### 5.3. Source output filename
 
-We can use a custom output source filename by adding the `"output_file"` entry into `"sources"` entry.
+We can define custom output source filenames by adding an `"output_file"` listing to a source listing.
 
-Note that `"output_file"` needs to always specify the relative directory you want it to output to (this is to prevent ambiguity in cases where we wish to output the file into a different directory). A good rule of thumb to follow is that when your `"file"` value includes relative paths, then so should the `"output_file"` value.
+Note that `"output_file"` needs to **always** include the relative path. A good rule of thumb to follow is that when your `"file"` value includes relative paths, then so should the `"output_file"` value.
 
 For example:
 
@@ -257,17 +258,19 @@ For example:
   "sources": [
     {
       "file": "src/script.js",
-      "output_file": "src/script-custom-name.min.js",
+      "output_file": "src/custom_name.min.js",
     }
   ]
 }
 ```
 
-This will take the source file at `/src/script.js` and output `build/src/script-custom-name.min.js`.
+This will take the source file at `/src/script.js` and output `build/src/custom_name.min.js`.
 
-You can control compile options by adding a `"compile_options"` entry. These options will be passed to the compiler directly. Default value for compile options is `"--mangle --compress"`. (See the [uglify-js](https://github.com/mishoo/UglifyJS) documentation for more options.)
+### 5.4. Compile options
 
-The `build_yabs.json` build instructions file demonstrates the use of these features:
+We can control compile options by adding a `"compile_options"` entry to a source listing. These options will be passed to the compiler. Default value for compile options is `"--mangle --compress"`.
+
+The `📄 build.json` build instructions file (for building YABS.js) demonstrates the use of these features:
 
 ```JSON
 {
@@ -278,14 +281,14 @@ The `build_yabs.json` build instructions file demonstrates the use of these feat
       "file": "yabs.js",
       "output_file": "build.js",
       "compile_options": "--compress",
-    }
-  ]
-}
+...
 ```
 
-The above build instructions file generates a `build.js` file (rather than the default `yabs.min.js` if the `"output_file"` entry were omitted), and it uses the `"--compress"` compiler option rather than the default `"--mangle --compress"`. A brief explanation of these options is that `--compress` will eliminate whitespace and comments whereas `--mangle` will also rename variables to their shortest forms. The reason YABS.js uses --compress only is so the code is easier to beautify and audit.
+The above directive informs the compiler that we only want to use `--compress` (rather than the default `--mangle --compress`). The effect of this is that while `--mangle` shortens variables names in the script, omitting this parameter will preserve variable names. The `--compress` options tells the compiler we want minified output. Another useful flag is `--enclose`, which wraps output into an IIFE, which protects the contents from leaking out into the global scope.
 
-### 5.4. Using the preprocessor
+See the [uglify-js](https://github.com/mishoo/UglifyJS) documentation for the full list of available options.
+
+### 5.5. Using the preprocessor
 
 The preprocessor adds a layer of metaprogramming which adds a lot of power and flexibility to our build process. Preprocessing is delegated to [MetaScript](https://github.com/dcodeIO/MetaScript).
 
@@ -442,7 +445,7 @@ This will ensure the preprocessor is always invoked when compiling `script.js`.
 
 With above listing, the preprocessor will be invoked for `script.js` by default and the variables listed in the `"default"` entry will be passed to the preprocessor.
 
-### 5.5. Bundling scripts
+### 5.6. Bundling scripts
 
 YABS.js can bundle multiple script files into one single output file. To do so, add a `"bundle"` (rather than a `"file"`) entry inside a `"sources"` item:
 
@@ -467,7 +470,7 @@ When using header variables in a bundle, all listed source files will be process
 
 Preprocessor variables in bundles are on a per-bundle basis, not per-script - the input files will be preprocessed as if they are one file, glued together. Note that preprocessor includes will **not** work with bundles because the glued output file materializes on the build side and as such cannot reference files which are relative to the file on the source side. This shouldn't be a problem in real-world cases because if you're already using bundles, you probably shouldn't be also using preprocessor includes at the same time.
 
-### 5.6. Build events
+### 5.7. Build events
 
 YABS.js has two build events which occur at build time, the pre-build event (occurs before the build begins) and the post-build event (occurs after the build completes).
 
@@ -553,7 +556,7 @@ When invoking a pre-build script, note that the destination directory or any dir
 
 The above is not relevant for post-build scripts since those run only after any relevant directories have already been created.
 
-### 5.7. Batch building
+### 5.8. Batch building
 
 YABS.js can build in batch mode! To do so, create a `build_all.json` (the filename can be anything, but `build_all.json` is a useful convention).
 
@@ -591,25 +594,17 @@ When invoking preprocessor parameters via the command line, they will be applied
   ]
 ```
 
-## 6. Command line parameters
-
-Option parameters begin with `--` and provide additional features to be used in the command line.
-
-- `--nofail` In a [batch build](#6-batch-building), will keep the build going even if any of the builds in line fail.
-- `--version` Displays version info.
-- `--help` Opens the online repository with help reference.
-
-## 7. Examples
+## 6. Examples
 
 Examples are provided to demonstrate various ways to use YABS.js. Examples can be built one by one, or you can use `node build examples` from the repository root to build all examples in one go.
 
-### 7.1. Minimal
+### 6.1. Minimal
 
 This example is found in [/examples/minimal](/examples/minimal).
 
 The build instructions JSON file in this example describes a basic build consisting of a single HTML file, a single JavaScript source file to be compiled, and some extra files relevant to the build (CSS stylesheets and image files).
 
-To get a closer look at the syntax, investigate `build.json`:
+To get a closer look at the syntax, investigate `📄 build.json`:
 
 ```JSON
 {
@@ -627,7 +622,7 @@ To get a closer look at the syntax, investigate `build.json`:
 
 ```
 
-`"source_dir"` is relative to the `build.json` file. When set to `"./"`, it means "current directory where this build instructions file is located".
+`"source_dir"` is relative to the `📄 build.json` file. When set to `"./"`, it means "current directory where this build instructions file is located".
 
 `"destination_dir"` is relative to the directory from which we are calling YABS.js *from*. When building this example, this example this would typically be the repository root.
 
@@ -638,27 +633,27 @@ To get a closer look at the syntax, investigate `build.json`:
 
 To build this example, run `node build examples/minimal` from the repository root.
 
-### 7.2. Headers
+### 6.2. Headers
 
 This example is found in [/examples/headers](/examples/headers).
 
-This example demonstrates various ways of prepending compiled output with commented headers that contain some data. Investigate the `build.json` file to see details on how to setup the build.
+This example demonstrates various ways of prepending compiled output with commented headers that contain some data. Investigate the `📄 build.json` file to see details on how to setup the build.
 
 This build compiles several JavaScript source files and prepends headers to them:
 
-- `script1.js` is compiled into `script1.min.js` and prepended by a one-line header with static text:
+- `📄 script1.js` is compiled to `📄 script1.min.js` and prepended by a one-line header with static text:
 ```JS
 /* This is a simple, one-line header. */
 ```
 
-- `script2.js` is compiled into `script2.min.js` and prepended by a multi-line header  with static text:
+- `📄 script2.js` is compiled to `📄 script2.min.js` and prepended by a multi-line header  with static text:
 ```JS
 /* This is a
  * multiline
  * header. */
 ```
 
-- `script3.js` is compiled into `script3.min.js` and prepended by a multi-line header containing variables extracted from the source file:
+- `📄 script3.js` is compiled to `📄 script3.min.js` and prepended by a multi-line header containing variables extracted from the source file:
 ```JS
 /* This is a multiline header
  * that uses some variables.
@@ -668,7 +663,7 @@ This build compiles several JavaScript source files and prepends headers to them
 ```
 
 
-- `script4.js` is compiled into `script4.min.js` and prepended by a multi-line shared header that is described globally inside `build.json` and can be reused across many source files. This header also uses variables:
+- `📄 script4.js` is compiled to `📄 script4.min.js` and prepended by a multi-line shared header that is described globally inside `build.json` and can be reused across many source files. This header also uses variables:
 ```JS
 /* This is a global header that can be reused many times.
  * Variables used here will depend on the individual
@@ -678,7 +673,7 @@ This build compiles several JavaScript source files and prepends headers to them
  * (c) 2023 DataSphere Innovations */
 ```
 
-- `script5.js` is compiled into `script5.min.js` and prepended by the same multi-line shared header as `script4.js`. Same variables are used, but values from `script5.js` are extracted instead:
+- `📄 script5.js` is compiled to `📄 script5.min.js` and prepended by the same multi-line shared header as `📄 script4.js`. Same variables are used, but values from `📄 script5.js` are extracted instead:
 ```JS
 /* This is a global header that can be reused many times.
  * Variables used here will depend on the individual
@@ -691,52 +686,109 @@ This build compiles several JavaScript source files and prepends headers to them
 
 To build this example, run `node build examples/headers` from the repository root.
 
-### 7.3. Website
+### 6.3. Website
 
 This example is found in [/examples/website](/examples/website).
 
-This example demonstrates a simple website consisting of `index.html`, `blog.html` and `about.html` with associated scripts and stylesheets.
+This example is a basic website template consisting of `📄 index.html`, `📄 blog.html` and `📄 about.html` with some associated scripts and stylesheets.
 
 To build this example, run `node build examples/website` from the repository root.
 
-### 7.4. Preprocessor
+### 6.4. Preprocessor
 
 This example is found in [/examples/preprocessor](/examples/preprocessor).
 
-This example demonstrates sone of the ways in which we can use the preprocessor.
+This example demonstrates sone of the ways in which we can use the preprocessor. All the relevant scripts are located in `src/`:
 
-The relevant files are the following, the comments of which exaplain most of what is going on.
-- script1.js
-- script2.js
-- script3.js
+- `📄 variables.js` shows a basic way to use preprocessor variables. When `-param1` is passed to the build system, `VAR="foo"` will be sent to the preprocessor. When `-param2` is passed, `VAR="bar"` will be passed instead.
 
+- `📄 local.js` shows a basic technique where we run one block of code locally, and another in a release build. We can pass `-release` to the build system and see what effects it has in `📄 index.html`.
 
+- `📄 include.js` shows how we can use the preprocessor to easily "paste" the contents of another script, into our script. Note that the preprocessor has to be forced when compiling this script, which is the reason for the `"preprocess": true` entry in the `📄 build.json` build instructions file.
+
+The structure in `📄 build.json` should be self-explanatory. We define groups of variables and then pass them as parameters on the command line.
 
 To build this example, run `node build examples/preprocessor` from the repository root.
 
-Some other ways to build this example, using varying set preprocessor 
+Some other ways to build this example are:
+```
+node build examples/preprocessor -param1
+node build examples/preprocessor -param2
+node build examples/preprocessor -release
+node build examples/preprocessor -param1 -release
+node build examples/preprocessor -param2 -release
+```
 
-### 7.5. Bundle
+Depending on which parameters are sent, the build will behave differenty and build-side output in `📄 index.html` will differ.
+
+### 6.5. Bundle
 
 This example is found in [/examples/bundle](/examples/bundle).
 
 This example demonstrates script bundling.
 
+What we're doing in this example is we're taking the following structure offiles:
+```
+📁 src
+ └─ 📄 script_a.js
+ └─ 📄 script_b.js
+ └─ 📄 script_c.js
+```
+
+And we're gluing them together and then compiling them. After building, we get:
+```
+📁 src
+ └─ 📄 script.min.js
+```
+
+YABS.js will also automatically update the `📄 index.html` file such that:
+```
+<script src="src/script_a.js"></script>
+<script src="src/script_b.js"></script>
+<script src="src/script_c.js"></script>
+```
+
+Becomes:
+```
+<script src="src/script.min.js"></script>
+```
+
 To build this example, run `node build examples/bundle` from the repository root.
 
-### 7.6. Library
+### 6.6. Library
 
 This example is found in [/examples/library](/examples/library).
 
-This example demonstrates building a basic utility library.
+This example demonstrates building a basic utility library. The basic idea here is that we have a development environment and a distribution build.
+
+On the development side, we have:
+```
+📁 src
+ └─ 📄 library.js
+📁 tests
+ └─ 📄 test_local.js
+ └─ 📄 test_dist.js
+```
+
+We can run `📄 test_local.js` by navigating to `examples/library/tests/` and typing `node test_local`. Note that `test_dist` will not work here (it is copied over to the distribution side when building).
+
+On the distribution side (after building), we have:
+```
+📁 src
+ └─ 📄 library.min.js
+📁 tests
+ └─ 📄 test_dist.js
+```
+
+And here we can run `📄 test_dist.js` by navigating to `build/examples/library/tests/` and typing `node test_dist`.
 
 To build this example, run `node build examples/library` from the repository root.
 
-### 7.7. Events
+### 6.7. Events
 
 This example is found in [/examples/events](/examples/events).
 
-This example demonstrates the use of build events. The relevant entry in the `build.json` file in this example is `"events"`:
+This example demonstrates the use of build events. The relevant entry in the `📄 build.json` file in this example is `"events"`:
 
 ```JSON
   "events": {
@@ -751,15 +803,15 @@ This example demonstrates the use of build events. The relevant entry in the `bu
 
 Both the pre-build and post-build events are a script or list of scripts to be run upon entering the build.
 
-`pre_build.js` demonstrates a synchronous script that outputs some text and shows the basics of how how arguments from YABS.js can be extracted.
+`📄 pre_build.js` demonstrates a synchronous script that outputs some text and shows the basics of how how arguments from YABS.js can be extracted.
 
-`post_build.js` demonstrates an asynchronous script that halts the build for 2 seconds before continuing by signaling YABS.js with a `process.send` to let it know it can move on with the build. This example script also shows how to extract the extra parameters that were defined in the build instructions file.
+`📄 post_build.js` demonstrates an asynchronous script that halts the build for 2 seconds before continuing by signaling YABS.js with a `process.send` to let it know it can move on with the build. This example script also shows how to extract the extra parameters that were defined in the build instructions file.
 
-Please see the source code of `pre_build.js` and `post_build.js` for more detail and pay close attention to the commented text.
+Please see the source code of `📄 pre_build.js` and `📄 post_build.js` for more detail and pay close attention to the commented text.
 
 To build this example, run `node build examples/events` from the repository root.
 
-### 7.8. Game
+### 6.8. Game
 
 This example is found in [/examples/game](/examples/game).
 
@@ -795,7 +847,7 @@ With this setup, any time we run the release build now (which is the default bui
 
 We can build with the `-debug` flag if we want to preserve debug features.
 
-To run the game, open `index.html` with any modern desktop browser and click the page area where it says "Click to play". A keyboard is required to play this game.
+To run the game, open `📄 index.html` with any modern desktop browser and click the page area where it says "Click to play". A keyboard is required to play this game.
 
 How to play:
 - Use arrow keys to move
@@ -805,3 +857,11 @@ How to play:
 To build this example, run `node build examples/game` from the repository root.
 
 To build this example while preserving debug features, run: `node build examples/game -debug` or `node build -debug examples/game`.
+
+## 7. Command line parameters
+
+Optional parameters begin with `--` and provide additional features to be used in the command line.
+
+- `--nofail` In a [batch build](#57-batch-building), will keep the build going even if any of the builds in line fail.
+- `--version` Displays version info.
+- `--help` Opens the online repository with help reference.
