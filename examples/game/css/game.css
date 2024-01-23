@@ -30,6 +30,7 @@ body > .darken.active {
 	background-repeat: no-repeat;
 	background-position: center;
 	transition: border-color 0.3s linear;
+	transition: scale 0.55s;
 }
 #game.pressed {
 	background-color: #2f2f2f;
@@ -38,4 +39,5 @@ body > .darken.active {
 #game.active {
 	background-image: none;
 	border: 10px solid #1d3f7c;
+	scale: 1.8;
 }

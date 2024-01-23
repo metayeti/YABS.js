@@ -232,7 +232,7 @@ The header in the compiled source file will now become the following:
 ```JS
 /* Minified Awesome sourcefile, v0.9.0
  * Written by Scooby, released under MIT
- * Copyright (c) 2023 Big Corp */
+ * Copyright (c) 2024 Big Corp */
 ```
 
 Now we can simply control what gets output into the header by changing the variables in the script.
@@ -283,7 +283,6 @@ The `build.json` build instructions file (for building YABS.js) demonstrates the
       "file": "yabs.js",
       "output_file": "build.js",
       "compile_options": "--compress",
-…
 ```
 
 The above directive informs the compiler that we only want to use `--compress` (rather than the default `--mangle --compress`). The effect of this is that while `--mangle` shortens variables names in the script, omitting this parameter will preserve variable names so that the output can be beautified back into readable code easily. The `--compress` options tells the compiler we want minified output. Another useful flag is `--enclose`, which wraps output into an IIFE, protecting the contents of the source file from leaking out into the global scope.
@@ -390,8 +389,8 @@ Variables are passed as raw strings. This means that for example, `"VAR=true"` w
 
 Compile-time code has the following constructs which we can use:
 
-- `//?` begins a preprocessor line of meta-code
-- `/*?` begins a preprocessor block of meta-code (`*/` ends it)
+- `//?` begins a line of meta-code
+- `/*?` begins a block of meta-code (`*/` ends it)
 - `?=` writes the expression result exactly.
 - `?==` writes the expression result, but runs it through `JSON.stringify` first.
 
@@ -681,7 +680,7 @@ This build compiles several JavaScript source files and prepends headers to them
  * that uses some variables.
  *
  * Script written by Alice Adams
- * (c) 2023 ByteWave Technologies */
+ * (c) 2024 ByteWave Technologies */
 ```
 
 
@@ -692,7 +691,7 @@ This build compiles several JavaScript source files and prepends headers to them
  * scripts that use this header.
  *
  * Script written by Brian Baker
- * (c) 2023 DataSphere Innovations */
+ * (c) 2024 DataSphere Innovations */
 ```
 
 - `script5.js` is compiled to `script5.min.js` and prepended by the same multi-line shared header as `script4.js`. Same variables are used, but values from `script5.js` are extracted instead:
@@ -702,7 +701,7 @@ This build compiles several JavaScript source files and prepends headers to them
  * scripts that use this header.
  *
  * Script written by Charlotte Carter
- * (c) 2023 QuantumLogic Systems */
+ * (c) 2024 QuantumLogic Systems */
 ```
 
 
@@ -834,15 +833,15 @@ To build this example, run `node build examples/events` from the repository root
 
 This example is found in [/examples/game](/examples/game).
 
-This example demonstrates a basic HTML5 platformer game built on the [myst.js](https://github.com/metayeti/myst.js) engine.
+This example demonstrates a simple HTML5 platformer game built on the [myst.js](https://github.com/metayeti/myst.js) engine.
 
 The setup demonstrates a typical game development scenario. The build accomplishes the following:
 - It strips any debug-related code out of the release build.
 - It bundles all scripts into one minified output and attaches a header with copyright and version info.
-- It excludes files we don't not need in release (files in `dev/` in this example), separating our development and production environment.
-- It updates associated files (files in `css/`, `data/` and `lib/` in this example).
+- It excludes files we do not need in release (files in `dev/` in this example), thereby separating our development and production environment.
+- It updates associated files (files in `css/`, `data/` and `lib/` in this example) to the newest version.
 
-This example also demonstrates a useful setup for the preprocessor. If we take a peak into `src/meta.js`, we will see this:
+This example demonstrates a useful setup for the preprocessor. If we look at the contents of `src/meta.js`, we will see the following block of code:
 
 ```JS
 // >-- preprocessor variables -->

@@ -66,7 +66,7 @@ $canvas.addEventListener('click', () => {
 	if (game.getState()) { // if game has state it is already running
 		return;
 	}
-	// darken screen	
+	// darken screen
 	document.body.querySelector('body > .darken').classList.add('active');
 	$canvas.classList.add('active');
 	// remove splash press listeners
@@ -82,13 +82,13 @@ $canvas.addEventListener('click', () => {
 			// run the game
 			game.run();
 
-// We will do some preprocessing wizardry here to determine if we're running a debug
-// (local) version of the game. For release, we want the fancy intro to be displayed and we
-// want to skip it normally.
+// We will do some preprocessing sorcery here to determine if we're running a debug
+// (local) version of the game. For release, we want the fancy intro to be displayed
+// and for debug we want to skip it.
 
 //? if (DEBUG) {
 
-	// Because this is a debug build, we can leave the code as-is as we want to run it locally.
+	// This is a debug build, so we can leave this code uncommented as-is, since we want to run it locally.
 	// Trust the preprocessor to skip this block of code when building release.
 
 			// load assets and move to game state immediately, skipping loadscreen
@@ -102,9 +102,13 @@ $canvas.addEventListener('click', () => {
 
 //? } else if (RELEASE) {
 
-	// Because this is a release build and we do not wish this code to be running locally,
-	// we need to prefix every lines and enclose the lines with quotes. This will
-	// make the preprocessor "paste" the code in release.
+	// This is a release build
+
+	// Because this is a release build and we do not wish this code to run locally,
+	// we need to comment the code for local side to ignore it, but evaluate it as string expressions so it is
+	// written literally in the (release) version.
+
+	// Because this is a release build, the following 
 
 			// play the loadscreen intro and wait until it's done
 			//?= 'loadState.doIntro().then(() => {'
