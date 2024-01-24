@@ -28,7 +28,7 @@ gameState.enter = function() {
 	// TODO: create the game camera
 	// TODO: center the camera on the player
 	// play game music as we enter game, this will just continuously loop
-	assets.game.music.gametrack.seek(0.05); // makes cross-fade effect at start a little bit less annoying
+	assets.game.music.gametrack.fade(0, 1, 300); // fade in tract to cover up the the loop cross-fade effect which is baked in the track itself
 	assets.game.music.gametrack.play();
 	// we're all good now!
 };

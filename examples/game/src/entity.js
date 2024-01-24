@@ -14,6 +14,7 @@ class Entity {
 	constructor() {
 		this.x = 0;
 		this.y = 0;
+		this.bbox = 0;
 	}
 	draw() {
 		console.log('draw from entity!');

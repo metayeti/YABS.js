@@ -100,7 +100,7 @@ loadState.update = function() {
 };
 
 loadState.doIntro = function() {
-	const doingRandomThing = [
+	const listOfRandomThings = [
 		'Getting hot sauce',
 		'Calling the flying saucer',
 		'Reticulating splines',
@@ -117,11 +117,12 @@ loadState.doIntro = function() {
 	];
 	this.emulatedConsole.pushText('> HTML/5GW protected mode runtime\n\n');
 	this.emulatedConsole.pushText('Loading system ... ok!\n');
-	if (myst.getRandomInt(1, doingRandomThing.length + 1) === 1) {
+	if (myst.getRandomInt(1, listOfRandomThings.length + 1) === 1) {
 		this.emulatedConsole.pushText('Calculating meaning of life ... 42!\n');
 	}
 	else {
-		this.emulatedConsole.pushText(`${myst.choose(doingRandomThing)} ... ok!\n`);
+		const doingRandomThing = myst.choose(listOfRandomThings);
+		this.emulatedConsole.pushText(`${doingRandomThing} ... ok!\n`);
 	}
 	this.emulatedConsole.pushText('Loading resources ... ');
 	// wait until the intro finishes
