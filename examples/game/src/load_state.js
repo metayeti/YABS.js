@@ -131,7 +131,7 @@ loadState.doIntro = function() {
 loadState.doOutro = function() {
 	this.emulatedConsole.pushText('all done!\n\n');
 	this.emulatedConsole.pushText('----\n\n');
-	this.emulatedConsole.pushText('PRESS ANY KEY TO ENTER');
+	this.emulatedConsole.pushText('PRESS ANY KEY');
 	// wait until the outro finishes
 	return waitUntil(() => this.emulatedConsole.isQueueEmpty());
 };

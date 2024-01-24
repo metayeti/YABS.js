@@ -8,6 +8,8 @@
 				"src/meta.js",
 				"src/util.js",
 				"src/load_state.js",
+				"src/entity.js",
+				"src/world.js",
 				"src/game_state.js",
 				"src/assets.js",
 				"src/init.js"

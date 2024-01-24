@@ -22,9 +22,15 @@ gameState.init = function() {
 };
 
 gameState.enter = function() {
-	this.startNewGame();
-	// play game music as we enter game
-	//assets.game.music.gametrack.play();
+	// we've entered the game state. we need to prepare the game state first
+	// begin by creating the game world
+	this.world = new World();
+	// TODO: create the game camera
+	// TODO: center the camera on the player
+	// play game music as we enter game, this will just continuously loop
+	assets.game.music.gametrack.seek(0.05); // makes cross-fade effect at start a little bit less annoying
+	assets.game.music.gametrack.play();
+	// we're all good now!
 };
 
 gameState.draw = function() {
@@ -32,8 +38,4 @@ gameState.draw = function() {
 };
 
 gameState.update = function() {
-};
-
-gameState.startNewGame = function() {
-	this.world = new World();
 };

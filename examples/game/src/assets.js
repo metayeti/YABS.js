@@ -29,7 +29,7 @@ const assets = {
 			player: 'data/gfx/player.png'
 		},
 		music: {
-			//gametrack: 'data/music/game.mp3'
+			gametrack: 'data/music/game.mp3'
 		}
 	}
 };
