@@ -6,9 +6,11 @@
 		{
 			"bundle": [
 				"src/meta.js",
+				"src/const.js",
 				"src/util.js",
 				"src/load_state.js",
-				"src/entity.js",
+				"src/components.js",
+				"src/entities.js",
 				"src/world.js",
 				"src/game_state.js",
 				"src/assets.js",

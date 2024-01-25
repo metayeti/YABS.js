@@ -3,10 +3,26 @@
  * This example implements a simple HTML5 game.
  */
 
-// entity.js | Implements the Entity class and defines all game entities.
+// entities.js | Implements game entities.
 
 /*jshint esversion:9*/
 
+const entities = {};
+
+//
+// player entity
+//
+entities.player = function(scene, x, y, properties) {
+	myst.compose(
+		this,
+		new components.position(x, y),
+		new components.velocity(),
+		new components.acceleration(0, GRAVITY),
+		new components.size(20, 40)
+	);
+};
+
+/*
 //
 //  Entity base class
 //
@@ -30,5 +46,7 @@ class Player extends Entity {
 	}
 	draw() {
 		console.log('draw from player!');
-	}	
+	}
 }
+
+*/

@@ -11,10 +11,10 @@
  * @author Danijel Durakovic
  * @version 0.0.3
  */
-//            A
+//            ^
 //            |
 //            |
-//     For build system
+//   For the build system
 
 //                For the player
 //                      |

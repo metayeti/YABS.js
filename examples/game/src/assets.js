@@ -19,16 +19,28 @@ const assets = {
 	// preload assets, required for loadscreen
 	preload: {
 		graphics: {
-			gamefont: 'data/gfx/gamefont.png'
+			// bitmap font glyphs
+			gamefont: 'data/gfx/gamefont.png',
+			// scanlines for a fake CRT-like effect
+			scanlines: 'data/gfx/scanlines.png'
 		}
 	},
 	// main game assets
 	game: {
 		graphics: {
-			gamefont: 'data/gfx/gamefont.png',
-			player: 'data/gfx/player.png'
+			// master tileset
+			master: 'data/gfx/master.png',
+			// player tileset
+			player: 'data/gfx/player.png',
+			// entities tilesets
+			barrier: 'data/gfx/barrier.png',
+		},
+		data: {
+			// levels
+			level1: 'data/levels/level1.json'
 		},
 		music: {
+			// game music
 			gametrack: 'data/music/game.mp3'
 		}
 	}

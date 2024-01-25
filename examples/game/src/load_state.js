@@ -84,6 +84,8 @@ loadState.draw = function() {
 	this.paint.surface(this.emulatedConsole.surface, 0, 0);
 	// draw the cursor
 	this.paint.bmptext(game.font, `v${GAME_VERSION}`, 414, 316, 0, 2);
+	// draw scanlines
+	this.paint.graphics(assets.preload.graphics.scanlines, 0, 0);
 };
 
 loadState.update = function() {
@@ -101,7 +103,7 @@ loadState.update = function() {
 
 loadState.doIntro = function() {
 	const listOfRandomThings = [
-		'Getting hot sauce',
+		'Acquiring hot sauce',
 		'Calling the flying saucer',
 		'Reticulating splines',
 		'Mastering kung-fu',
