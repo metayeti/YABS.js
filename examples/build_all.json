@@ -6,7 +6,6 @@
 		"library",
 		"website",
 		"events",
-		"preprocessor",
-		"game"
+		"preprocessor"
 	]
 }
