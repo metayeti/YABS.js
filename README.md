@@ -2,7 +2,7 @@
 
 YABS.js is a single-file, minimalistic, general-purpose and old-school to the bones build system for JavaScript projects.
 
-v1.2.0 dev
+v1.2.0
 
 ## Features
 
