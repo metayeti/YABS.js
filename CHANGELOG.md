@@ -1,4 +1,4 @@
-## 1.2.0 (?)
+## 1.2.0 (January 26, 2024)
 - `FEATURE` Recursive batch building is now allowed (you can batch-build a bunch of batch-builds).
 - `FEATURE` Pre-build and post-build events.
 - `FEATURE` Friendlier examples and better manual.
