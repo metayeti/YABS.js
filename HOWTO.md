@@ -23,7 +23,6 @@
   6.5. [Bundle](#65-bundle)  
   6.6. [Library](#66-library)  
   6.7. [Events](#67-events)  
-  6.8. [Game](#68-game)
 7. [Command line parameters](#7-command-line-parameters)
 
 ## 1. How it works
@@ -828,53 +827,6 @@ Both the pre-build and post-build events listings are a script or a list of scri
 Please see the source code of `pre_build.js` and `post_build.js` for more detail as they are well-commented.
 
 To build this example, run `node build examples/events` from the repository root.
-
-### 6.8. Game
-
-This example is found in [/examples/game](/examples/game).
-
-This example demonstrates a simple HTML5 platformer game built on the [myst.js](https://github.com/metayeti/myst.js) engine.
-
-The setup demonstrates a typical game development scenario. The build accomplishes the following:
-- It strips any debug-related code out of the release build.
-- It bundles all scripts into one minified output and attaches a header with copyright and version info.
-- It excludes files we do not need in release (files in `dev/` in this example), thereby separating our development and production environment.
-- It updates associated files (files in `css/`, `data/` and `lib/` in this example) to the newest version.
-
-This example demonstrates a useful setup for the preprocessor. If we look at the contents of `src/meta.js`, we will see the following block of code:
-
-```JS
-// >-- preprocessor variables -->
-
-//? if (typeof DEBUG === 'undefined') DEBUG = false;
-//? const RELEASE = !DEBUG;
-
-// <-- preprocessor variables <--
-```
-
-This defines two compile-time variables named `DEBUG` and `RELEASE`. In this example we set the environment such that our local code behaves as if it is in "debug" mode by default so during development, we treat everything as if debug is on. For release builds, we simply strip this code out by wrapping it like this:
-
-```JS
-//? if (DEBUG) {
-  debug_feature1()
-  debug_feature2()
-//? }
-```
-
-With a setup like this, any time we run the build we will skip this block of code. This allows us to maintain a debug version of the game on the development-side and a release version of the game on production-side. An alternative approach would involve dedicated debug builds (but it would also avoid the convenience of being able to locally run code live).
-
-We can build with the `-debug` flag if we want to preserve debug features.
-
-To run the game, open `index.html` with any modern desktop browser and click the center of the page where it says "Click to play". A keyboard is required to play this game.
-
-How to play:
-- Use arrow keys to move
-- Use Z to jump
-- Use X to shoot
-
-To build this example, run `node build examples/game` from the repository root.
-
-To build this example while preserving debug features, run: `node build examples/game -debug` or `node build -debug examples/game`.
 
 ## 7. Command line parameters
 
