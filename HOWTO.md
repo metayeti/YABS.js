@@ -832,6 +832,6 @@ To build this example, run `node build examples/events` from the repository root
 
 Optional parameters begin with `--` and provide additional features to be used in the command line.
 
-- `--nofail` In a [batch build](#57-batch-building), will keep the build going even if any of the builds in line fail.
+- `--nofail` In a [batch build](#58-batch-building), will keep the build going even if any of the builds in line fail.
 - `--version` Displays version info.
 - `--help` Opens the online repository with help reference.
