@@ -644,12 +644,11 @@ To get a closer look at the syntax, investigate `build.json`:
 
 `"source_dir"` is relative to the `build.json` file. When set to `"./"`, it means "current directory where this build instructions file is located".
 
-`"destination_dir"` is relative to the directory from which we are calling YABS.js *from*. When building this example, this example this would typically be the repository root.
+`"destination_dir"` is relative to the directory from which we are calling YABS.js *from*. When building this example, this would typically be the repository root.
 
 `"sources"` is a list of JavaScript source files to be processed.
 
 `"files"` is a list of files relevant to the build, for example CSS files and images. These files will be copied over on first run. On subsequent builds, only files which are newer than build-side files will be copied. Masks (`*` - everything including subfolders, `*.*` - everything excluding subfolders, `*.css` - all css files, and similar) can be used in this entry.
-
 
 To build this example, run `node build examples/minimal` from the repository root.
 
