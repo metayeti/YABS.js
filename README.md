@@ -1,14 +1,16 @@
 ![YABS.js](/logo.png?raw=true)
 
-YABS.js is a single-file, minimalistic, general-purpose and old-school to the bones build system for JavaScript projects.
+YABS.js is a single-file, minimalistic, general-purpose and old-school to the bones build system for legacy JavaScript projects.
 
 v1.2.0
 
+## Overview
+
+This is a very specific build system which may not find much use in most modern JS environments. It can however be useful for legacy, pre-modular codebases or certain special cases. This build system is capable of updating your `<script src="...">` lines across HTML files, and it can do some source processing like minifying, preprocessing or gluing codefiles together (it implements a primitive bundler), but it does not actually parse the code at any point, so it doesn't know about your import and export statements, which makes this build system suited mostly for non-modular codebases. This build system does not require your project to depend on node.js. The system itself does use node to run, but all its dependencies are installed globally and you can use it as you would any other utility script simply by invoking `node build`.
+
 ## tl;dr
 
-This is a very specific build system which can come useful for historic codebases (that don't use modules). This build system can update your `<script>` elements in HTML files and it can do some processing on your script files, but it does not actually parse the code and look for import and export statements. It can be used in some very specific contexts, for example pure JS codebases which you simply want compiled and detached from the node ecosystem (even though this build system requires node, it can however exist entirely detached from your project given that its dependencies are installed globally and not locally).
-
-If you're doing modern JS development, use esbuild, vite or similar. If you have very specific or legacy-bound needs, this system may work for you.
+For modern JS development prefer esbuild, vite or similar. If you have specific needs that are met by this system, or your project is legacy-bound and/or non-modular, then this system may work out for you.
 
 ## Features
 
